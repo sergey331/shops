@@ -1,9 +1,18 @@
 <script setup>
     import AdminLayout from "@/Layouts/AdminLayout.vue";
+    import CategoryData from "@/Components/Content/CategoryData.vue";
+    import Pagination from "@/Components/Pagination.vue";
+
 
     defineProps({
-        categories: Array
+        categories: Array,
+        currentPage: Number,
     })
+
+
+    const  changeCurrentPage = (page) => {
+        location.href="/admin/categories?page=" + page;
+    }
 </script>
 
 <template>
@@ -17,6 +26,16 @@
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
                     </svg>
                 </a>
+            </div>
+
+            <div v-if="categories.data.length" class="mt-10 " >
+                <CategoryData :categories="categories.data" />
+                <pagination
+                    class="mt-6"
+                    :currentPage="currentPage"
+                    :maxPages="categories.last_page"
+                    @changeCurrentPage="changeCurrentPage"
+                />
             </div>
         </div>
     </admin-layout>

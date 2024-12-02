@@ -5,7 +5,7 @@ defineProps({
     label: String,
     id: String,
     modelValue: String,
-    error: String
+    error: Array | String
 })
 
 const emit = defineEmits(["update:modelValue"]);
@@ -32,7 +32,13 @@ defineExpose({focus: () => input.value.focus()});
             :placeholder="placeholder"
         />
 
-        <div v-if="error !== '' " class="text-sm font-medium text text-red-500 ">
+        <div v-if="typeof error === `object` "
+             class="text-sm font-medium text text-red-500 "
+             v-for="(e,i) in error" :key="i"
+        >
+            {{ e }}
+        </div>
+        <div v-else-if="error !== '' " class="text-sm font-medium text text-red-500 ">
             {{ error }}
         </div>
     </div>

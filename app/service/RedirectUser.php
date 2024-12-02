@@ -14,7 +14,8 @@ class RedirectUser
             if($user->checkRole(1)) {
                 return redirect()->route('dashboard.index');
             }
-            return self::redirect()->route('home');
+            return redirect()->route('home');
         }
+        return redirect()->route('/');
     }
 }

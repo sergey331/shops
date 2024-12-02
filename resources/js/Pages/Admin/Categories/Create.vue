@@ -31,13 +31,14 @@
                 <div class="flex gap-3">
                     <SelectInput
                         class="w-full"
+                        :options="categories"
                         v-model="form.parent_id"
                         placeholder="Parent Category"
                         label="Parent Category"
                         id="parent_id"
                         title="category Parent Category"
                     />
-                    <FileInput class="w-full" @change="setFile"/>
+                    <FileInput class="w-full" @change="setFile" :error="errors.image"/>
                 </div>
 
                 <SuccessButton @click="save">
@@ -47,7 +48,7 @@
             </div>
         </div>
 
-
+    <SuccessModal :show="showSuccessModal" :message="successModalMessage" />
     </admin-layout>
 </template>
 <script setup>
@@ -57,28 +58,31 @@ import {ref} from "vue";
 import SuccessButton from "@/Components/Form/SuccessButton.vue";
 import SelectInput from "@/Components/Form/SelectInput.vue";
 import FileInput from "@/Components/Form/FileInput.vue";
+import SuccessModal from "@/Components/Modal/SuccessModal.vue";
 
 defineProps({
     categories: Array
 })
 
-const  errors = ref({
+const errors = ref({
     name: '',
     slug: '',
 })
+
+let showSuccessModal = ref(false);
+let successModalMessage = ref('');
 const setFile = (e) => {
     form.value.image = e.target.files[0];
-    console.log(form.value)
 }
 const form = ref({
     name: "",
     slug: "",
-    image: "",
+    image: null,
     parent_id: ""
 });
 
 const validate = () => {
-    let check  = true;
+    let check = true;
     errors.value.name = '';
     errors.value.slug = '';
     if (form.value.name === '') {
@@ -92,8 +96,29 @@ const validate = () => {
     return check;
 }
 const save = () => {
-    if(!validate()){
+    if (!validate()) {
         return;
     }
+    let formData = new FormData();
+    formData.append("name", form.value.name);
+    formData.append("slug", form.value.slug);
+    formData.append("parent_id", form.value.parent_id);
+    if (form.value.image) {
+        formData.append("image", form.value.image);
+    }
+    axios.post(route('categories.store'), formData)
+        .then(({data}) => {
+            if (data.success) {
+                showSuccessModal.value = true;
+                successModalMessage.value = data.message;
+                setTimeout(() => {
+                    showSuccessModal.value = false;
+                    location.href="/admin/categories";
+                },5000)
+            }
+        })
+        .catch((e) => {
+            errors.value = e.response.data.errors;
+        })
 }
 </script>

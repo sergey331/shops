@@ -11,7 +11,7 @@
     const emit = defineEmits(["update:modelValue"]);
 
     function updateValue(value) {
-        emit("update:modelValue", value);
+        emit("update:modelValue", value.target.value);
     }
     defineExpose({ focus: () => input.value.focus() });
 </script>
@@ -24,8 +24,10 @@
         <option
             v-if="options?.length"
             v-for="(option,i) in options"
+            :selected="selected && selected === option?.id"
             :key="i"
-            :value="option.id">{{ option?.name }}
+            :value="option.id"
+        >{{ option?.name }}
         </option>
     </select>
 </div>
