@@ -1,14 +1,16 @@
 <script setup>
+import {ref} from "vue";
+
 defineProps({
+    modelValue: String,
     type: String,
     placeholder: String,
     label: String,
     id: String,
-    modelValue: String,
     error: Array | String
 })
-
-const emit = defineEmits(["update:modelValue"]);
+const input = ref(null);
+const emit = defineEmits(["update:modelValue","blur"]);
 
 function updateValue(value) {
     emit("update:modelValue", value);
@@ -30,6 +32,7 @@ defineExpose({focus: () => input.value.focus()});
             :type="type" :id="id"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             :placeholder="placeholder"
+            :value="modelValue"
         />
 
         <div v-if="typeof error === `object` "

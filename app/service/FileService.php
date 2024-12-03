@@ -14,4 +14,9 @@ class FileService
         return $filename;
 
     }
+
+    public function delete($file, $path)
+    {
+        Storage::disk('public')->delete($path . '/' . $file);
+    }
 }

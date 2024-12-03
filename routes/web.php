@@ -26,9 +26,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware('role:admin')->prefix('admin')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
-    Route::resource('categories', CategoryController::class);
-});
 
 require __DIR__.'/auth.php';
+require __DIR__.'/admin.php';

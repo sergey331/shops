@@ -21,4 +21,9 @@ class CategoryService
     {
         Category::create($data);
     }
+
+    public function update(Category $category, $data)
+    {
+        $category->update($data);
+    }
 }

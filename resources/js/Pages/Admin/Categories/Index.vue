@@ -2,6 +2,7 @@
     import AdminLayout from "@/Layouts/AdminLayout.vue";
     import CategoryData from "@/Components/Content/CategoryData.vue";
     import Pagination from "@/Components/Pagination.vue";
+    import axios from "axios";
 
 
     defineProps({
@@ -12,6 +13,15 @@
 
     const  changeCurrentPage = (page) => {
         location.href="/admin/categories?page=" + page;
+    }
+
+    const deleteCategory = id => {
+        axios.delete(route('categories.destroy',id))
+        .then(({data}) => {
+            if (data) {
+                location.reload();
+            }
+        })
     }
 </script>
 
@@ -28,8 +38,8 @@
                 </a>
             </div>
 
-            <div v-if="categories.data.length" class="mt-10 " >
-                <CategoryData :categories="categories.data" />
+            <div  class="mt-10 " >
+                <CategoryData :categories="categories.data" @deleteCategory="deleteCategory" />
                 <pagination
                     class="mt-6"
                     :currentPage="currentPage"

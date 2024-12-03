@@ -1,16 +1,17 @@
 <script setup>
-import {router} from "@inertiajs/vue3";
 import EditIcon from "@/Components/Icons/EditIcon.vue";
 import DeleteIcon from "@/Components/Icons/DeleteIcon.vue";
 
 defineProps({
     categories: Array
 })
+const emit = defineEmits(["deleteCategory"]);
+const deleteCategory = (id) => {
+  emit("deleteCategory", id);
+}
 </script>
 
 <template>
-
-
     <div class="relative overflow-x-auto">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -37,6 +38,7 @@ defineProps({
             </thead>
             <tbody>
             <tr
+                v-if="categories.length"
                 v-for="category in categories" :key="category.id"
                 class="bg-white border-b dark:bg-gray-800  text-center dark:border-gray-700"
             >
@@ -57,13 +59,18 @@ defineProps({
                 </td>
                 <td class="px-6 py-4">
                    <div class="flex items-center justify-center gap-4"   >
-                       <a :href="route('categories.update',category.id)">
+                       <a :href="route('categories.edit',category.id)">
                             <EditIcon />
                        </a>
-                       <a :href="route('categories.update',category.id)">
+                       <button @click="deleteCategory(category.id)">
                            <DeleteIcon />
-                       </a>
+                       </button>
                    </div>
+                </td>
+            </tr>
+            <tr v-else>
+                <td align="center" colspan="6">
+                    no data
                 </td>
             </tr>
             </tbody>

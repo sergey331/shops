@@ -56,16 +56,22 @@ class CategoryController extends Controller
     public function edit(Category $category)
     {
         $categories = Category::query()->whereNot('id',$category->id)->whereNull('parent_id')->get();
-        dd($categories);
         return Inertia::render('Admin/Categories/Edit', compact('category', 'categories'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(CategoryRequest $request, Category $category)
     {
-        //
+        $validated = $request->validated();
+        if ($request->hasFile('image')) {
+            $this->fileService->delete($category->image, 'categories');
+            $validated['image'] = $this->fileService->upload($request->file('image'), 'categories');
+        }
+
+        $this->categoryService->update($category,$validated);
+        return response()->json(['success' => true, 'message' => 'Category updated successfully.']);
     }
 
     /**
@@ -73,6 +79,8 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $category->delete();
+        $categories = $this->categoryService->getCategories();
+        return response()->json(true);
     }
 }

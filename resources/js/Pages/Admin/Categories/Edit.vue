@@ -10,7 +10,7 @@
                 <div class="flex  gap-3">
                     <TextInput
                         class="w-full"
-                        v-model="form.name"
+                        v-model="category.name"
                         placeholder="Name"
                         label="Name"
                         type="text"
@@ -20,7 +20,7 @@
 
                     <TextInput
                         class="w-full"
-                        v-model="form.slug"
+                        v-model="category.slug"
                         placeholder="Slug"
                         label="Slug"
                         type="text"
@@ -31,8 +31,9 @@
                 <div class="flex gap-3">
                     <SelectInput
                         class="w-full"
+                        :selected="category.parent_id"
                         :options="categories"
-                        v-model="form.parent_id"
+                        v-model="category.parent_id"
                         placeholder="Parent Category"
                         label="Parent Category"
                         id="parent_id"
@@ -60,7 +61,7 @@ import SelectInput from "@/Components/Form/SelectInput.vue";
 import FileInput from "@/Components/Form/FileInput.vue";
 import SuccessModal from "@/Components/Modal/SuccessModal.vue";
 
-defineProps({
+let props = defineProps({
     categories: Array,
     category: Object,
 })
@@ -72,25 +73,21 @@ const errors = ref({
 
 let showSuccessModal = ref(false);
 let successModalMessage = ref('');
+let image = ref(null);
 const setFile = (e) => {
-    form.value.image = e.target.files[0];
+    image.value.image = e.target.files[0];
 }
-const form = ref({
-    name: "",
-    slug: "",
-    image: null,
-    parent_id: ""
-});
 
 const validate = () => {
     let check = true;
     errors.value.name = '';
     errors.value.slug = '';
-    if (form.value.name === '') {
+    console.log(props.category);
+    if (props.category.name === '') {
         errors.value.name = "Name is required";
         check = false;
     }
-    if (form.value.slug === '') {
+    if (props.category.slug === '') {
         errors.value.slug = "slug is required";
         check = false;
     }
@@ -101,13 +98,16 @@ const save = () => {
         return;
     }
     let formData = new FormData();
-    formData.append("name", form.value.name);
-    formData.append("slug", form.value.slug);
-    formData.append("parent_id", form.value.parent_id);
-    if (form.value.image) {
-        formData.append("image", form.value.image);
+    formData.append("name", props.category.name);
+    formData.append("slug", props.category.slug);
+    if (props.category.parent_id) {
+        formData.append("parent_id", props.category.parent_id);
     }
-    axios.post(route('categories.store'), formData)
+    if (image.value) {
+        formData.append("image", image.value);
+    }
+    axios.patch(route('categories.update',props.category.id), formData,
+        { headers: { 'Content-Type': 'application/json' } })
         .then(({data}) => {
             if (data.success) {
                 showSuccessModal.value = true;
