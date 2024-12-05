@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug');
             $table->string('image')->nullable();
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->integer('price');
             $table->integer('discount')->nullable();
             $table->integer('stock');
-            $table->boolean('active')->default(true);
+            $table->boolean('active')->default(false);
             $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
             $table->timestamps();
         });
