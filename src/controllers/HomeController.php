@@ -19,4 +19,15 @@ class HomeController extends BaseController
         ]);
 
     }
+
+    /**
+     * @throws Exception
+     */
+    public function show($id): void
+    {
+        $this->view()->load('Home.Show', [
+            'title' => 'Show',
+            'content' => 'Welcome to the show page!'
+        ]);
+    }
 }

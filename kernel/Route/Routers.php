@@ -16,6 +16,10 @@ class Routers
         $this->getRoutes();
         $this->container = $container;
     }
+
+    /**
+     * @throws Exception
+     */
     public function dispatch(): void
     {
         $this->match();
@@ -31,19 +35,22 @@ class Routers
      */
     private function match(): void
     {
-        $url = $this->container->get('request')->getUri();
-        $method = $this->container->get('request')->getMethod();
-        $action = null;
-         foreach($this->routes as $route)  {
-            $action = $route->getRoutes()[$method][$url]['action'] ?? null;
-        }
-        if (is_array($action)) {
-            [$controller, $method] = $action;
-            $controller = new $controller();
-            call_user_func([$controller, 'setContainer'], $this->container);
-            call_user_func([$controller, $method]);
-        } else if (is_callable($action)) {
-            call_user_func($action);
+        $route = $this->container->get('routeAction')->getAction($this->routes);
+        if ($route) {
+            $action = $route['action'];
+            $params = $route['params'] ?? [];
+
+            if (is_array($action)) {
+                [$controller, $method] = $action;
+                $controller = new $controller();
+
+                call_user_func([$controller, 'setContainer'], $this->container);
+                call_user_func([$controller, $method],...$params);
+            } else if (is_callable($action)) {
+                call_user_func($action);
+            } else {
+                echo "404 | not found";
+            }
         } else {
             echo "404 | not found";
         }

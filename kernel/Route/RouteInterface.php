@@ -2,6 +2,8 @@
 
 namespace Kernel\Route;
 
+use Closure;
+
 interface RouteInterface
 {
 
@@ -13,4 +15,6 @@ interface RouteInterface
     public static function delete($uri,$action,$params = []);
 
     public function getRoutes();
+
+    public static function group(array $prefix, Closure $callback);
 }

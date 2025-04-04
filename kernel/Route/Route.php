@@ -2,6 +2,7 @@
 
 namespace Kernel\Route;
 
+use Closure;
 use Kernel\Route\RouteInterface;
 
 class Route implements RouteInterface
@@ -45,5 +46,10 @@ class Route implements RouteInterface
     public function getRoutes(): array
     {
        return $this->routes;
+    }
+
+    public static function group(array $prefix, Closure $callback)
+    {
+        $callback();
     }
 }
