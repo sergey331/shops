@@ -3,53 +3,69 @@
 namespace Kernel\Route;
 
 use Closure;
-use Kernel\Route\RouteInterface;
 
 class Route implements RouteInterface
 {
 
-    private array $routes = [
-        'GET' => [],
-        'POST' => [],
-        'PUT' => [],
-        'DELETE' => [],
-    ];
+    protected string $groupPrefix = '';
+    protected array $groupMiddleware = [];
 
-
-    public function __construct($url, $action,$method, $params)
+    public function __construct()
     {
-        $this->routes[$method][$url] = [
+    }
+
+    public static function get(string $uri, $action, array $params = []): array
+    {
+        return [
+            'method' => 'GET',
+            'uri' => $uri,
             'action' => $action,
-            'params' => $params
-            ];
-    }
-    public static function get($uri, $action, $params = []): static
-    {
-        return new static($uri, $action,'GET', $params);
+            'params' => $params,
+        ];
     }
 
-    public static function post($uri, $action, $params = []): static
+    public static function post(string $uri, $action, array $params = []): array
     {
-        return new static($uri, $action,"POST", $params);
+        return [
+            'method' => 'POST',
+            'uri' => $uri,
+            'action' => $action,
+            'params' => $params,
+        ];
+    }
+    public static function put(string $uri, $action, array $params = []): array
+    {
+        return [
+            'method' => 'PUT',
+            'uri' => $uri,
+            'action' => $action,
+            'params' => $params,
+        ];
+    }
+    public static function delete(string $uri, $action, array $params = []): array
+    {
+        return [
+            'method' => 'PUT',
+            'uri' => $uri,
+            'action' => $action,
+            'params' => $params,
+        ];
     }
 
-    public static function put($uri, $action, $params = []): static
+    public static function group(array $params, Closure $callback): array
     {
-        return new static($uri, $action,"PUT" , $params);
-    }
+        $prefix = $params['prefix'] ?? '';
 
-    public static function delete($uri, $action, $params = []): static
-    {
-        return new static($uri, $action,"DELETE", $params);
-    }
+        $router = new static();
 
-    public function getRoutes(): array
-    {
-       return $this->routes;
-    }
+        $groupRoutes = $callback($router);
+        $result = [];
+        foreach ($groupRoutes as $route) {
+            $route['uri'] = rtrim($prefix . $route['uri'], '/');
+            $route['group'] = $params;
+            $result[] = $route;
+        }
 
-    public static function group(array $prefix, Closure $callback)
-    {
-        $callback();
+        return $result;
     }
 }

@@ -3,6 +3,7 @@
 namespace Kernel\Route;
 
 use Exception;
+use JetBrains\PhpStorm\NoReturn;
 use Kernel\Container\Container;
 
 class Routers
@@ -11,7 +12,8 @@ class Routers
     protected string $method;
 
     protected Container $container;
-    public function __construct(Container $container)
+
+    #[NoReturn] public function __construct(Container $container)
     {
         $this->getRoutes();
         $this->container = $container;
@@ -36,6 +38,21 @@ class Routers
     private function match(): void
     {
         $route = $this->container->get('routeAction')->getAction($this->routes);
+
+        if (!empty($route['group']['middleware'])) {
+            $middlewares = (array) $route['group']['middleware'];
+            foreach ($middlewares as $middlewareClass) {
+                $resolver = new RouteMiddleware();
+                $middleware = $resolver->getMiddleware($middlewareClass);
+
+                if (class_exists($middleware)) {
+                    if (!(new $middleware())->handle()) {
+                        echo "You not have permission for this action";
+                        exit(500);
+                    }
+                }
+            }
+        }
         if ($route) {
             $action = $route['action'];
             $params = $route['params'] ?? [];

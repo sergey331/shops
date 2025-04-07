@@ -1,6 +1,7 @@
 <?php
 
 use Kernel\Container\Container;
+use Kernel\Databases\Db;
 use Kernel\Request\Request;
 use Kernel\Route\RouteAction;
 use Kernel\Route\Routers;
@@ -15,6 +16,10 @@ $container->set('request', function () {
 
 $container->set('views', function () {
     return new View();
+});
+
+$container->set('db', function () {
+    return new Db();
 });
 
 $container->set('routeAction', function ($container) {

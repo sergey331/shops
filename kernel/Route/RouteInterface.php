@@ -7,14 +7,13 @@ use Closure;
 interface RouteInterface
 {
 
-    public function __construct($uri,$action,$method,$params);
+    public function __construct();
 
-    public static function get($uri,$action,$params = []);
-    public static function post($uri,$action,$params = []);
-    public static function put($uri,$action,$params = []);
-    public static function delete($uri,$action,$params = []);
+    public static function get(string $uri,$action,array $params = []);
+    public static function post(string $uri, $action, array $params = []);
+    public static function put(string $uri,$action,array $params = []);
+    public static function delete(string $uri,$action,array $params = []);
 
-    public function getRoutes();
 
-    public static function group(array $prefix, Closure $callback);
+    public static function group(array $params, Closure $callback);
 }

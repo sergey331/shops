@@ -12,26 +12,47 @@ class RouteAction
     ) {
     }
 
-    public function getAction($routers)
+
+    public function getAction(array $routers)
     {
-        $url = $this->container->get('request')->getUri();
-        $method = $this->container->get('request')->getMethod();
-        $p = explode('/', trim($url,'/'));
-        $id = end($p);
+        $request = $this->container->get('request');
+        $url = $request->getUri();
+        $method = $request->getMethod();
+        $segments = explode('/', trim($url, '/'));
+        $id = end($segments);
+        $flatRouters = $this->flattenRoutes($routers);
         $newRouters = [];
-        foreach ($routers as $router) {
-            foreach ($router->getRoutes()[$method] as $path => $route) {
-                preg_match($this->pattern, $path, $matches);
-                if (!empty($matches)) {
-                    $path = preg_replace($this->pattern, $id, $path);
-                    if (is_numeric($id)) {
-                        $param = [$matches[1] => $id];
-                        $route['params'] = array_merge($route['params'], $param);
-                    }
-                }
-                $newRouters[$path] = $route;
+        foreach ($flatRouters as $router) {
+            if ($router['method'] !== $method) {
+                continue;
             }
+            preg_match($this->pattern, $router['uri'], $matches);
+            if (!empty($matches)) {
+                if (is_numeric($id)) {
+                    $param = [$matches[1] => $id];
+                    $router['params'] = array_merge($router['params'], $param);
+                }
+            }
+            $newRouters[$router['uri']] = $router;
         }
         return $newRouters[$url] ?? null;
+
+        return null;
+    }
+    protected function flattenRoutes(array $routers): array
+    {
+        $flat = [];
+
+        foreach ($routers as $router) {
+            if (is_array($router) && isset($router[0]) && is_array($router[0])) {
+                foreach ($router as $route) {
+                    $flat[] = $route;
+                }
+            } else {
+                $flat[] = $router;
+            }
+        }
+
+        return $flat;
     }
 }

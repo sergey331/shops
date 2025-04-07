@@ -32,6 +32,11 @@ abstract class BaseController
         return $this->container->get('views');
     }
 
+    public function model($name)
+    {
+        return $this->container->get('db')->model($name);
+    }
+
     /**
      * @param Container $container
      */

@@ -4,8 +4,9 @@ namespace Shop\middleware;
 
 class AuthMiddleware
 {
-    public function handle($next)
+    public function handle()
     {
-        return $next();
+
+        return false;
     }
 }
