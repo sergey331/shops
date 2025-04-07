@@ -3,8 +3,9 @@
 namespace Kernel\Route;
 
 use Kernel\Container\Container;
+use Kernel\Request\RequestInterface;
 
-class RouteAction
+class RouteAction implements RouteActionInterface
 {
     protected string $pattern = '/\{([^}]+)\}/';
     public function __construct(
@@ -15,6 +16,7 @@ class RouteAction
 
     public function getAction(array $routers)
     {
+        /* @var RequestInterface $request */
         $request = $this->container->get('request');
         $url = $request->getUri();
         $method = $request->getMethod();

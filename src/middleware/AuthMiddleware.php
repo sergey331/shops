@@ -2,7 +2,9 @@
 
 namespace Shop\middleware;
 
-class AuthMiddleware
+use Kernel\Route\MiddlewareInterface;
+
+class AuthMiddleware implements MiddlewareInterface
 {
     public function handle()
     {

@@ -37,6 +37,7 @@ class Routers
      */
     private function match(): void
     {
+        /** @var RouteAction $route */
         $route = $this->container->get('routeAction')->getAction($this->routes);
 
         if (!empty($route['group']['middleware'])) {
@@ -46,6 +47,7 @@ class Routers
                 $middleware = $resolver->getMiddleware($middlewareClass);
 
                 if (class_exists($middleware)) {
+                    /* @var MiddlewareInterface $middleware */
                     if (!(new $middleware())->handle()) {
                         echo "You not have permission for this action";
                         exit(500);

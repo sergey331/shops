@@ -7,9 +7,6 @@ use Closure;
 class Route implements RouteInterface
 {
 
-    protected string $groupPrefix = '';
-    protected array $groupMiddleware = [];
-
     public function __construct()
     {
     }
