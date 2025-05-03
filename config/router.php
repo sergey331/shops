@@ -2,15 +2,13 @@
 
 use Kernel\Route\Route;
 use Shop\controllers\HomeController;
+use Shop\controllers\LoginController;
+use Shop\controllers\RegisterController;
 
 return [
     Route::get('/', [HomeController::class, 'index']),
-    Route::get('/show/{id}', [HomeController::class, 'show']),
-
-    Route::group(['middleware' => 'auth'], function ($router) {
-        return [
-            $router::get('/dashboard', [HomeController::class, 'index']),
-            $router::get('/settings', [HomeController::class, 'show']),
-        ];
-    }),
+    Route::get('/register', [RegisterController::class, 'index']),
+    Route::post('/register', [RegisterController::class, 'register']),
+    Route::get('/login', [LoginController::class, 'index']),
+    Route::post('/login', [LoginController::class, 'login']),
 ];

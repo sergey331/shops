@@ -22,8 +22,7 @@ class ModelWhere
         return $this;
     }
 
-
-    public function resolve()
+    public function resolve(): static
     {
         if (!empty($this->wheres) || !empty($this->orWheres)) {
             $this->whereQuery = "WHERE ";
@@ -40,6 +39,7 @@ class ModelWhere
             }
 
         }
+        return $this;
     }
 
     public function getWhereQuery(): string

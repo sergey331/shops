@@ -10,8 +10,11 @@
 
 </head>
 <body>
+<header>
+    <?php include __DIR__ . "/component/navbar.php" ?>
+</header>
 <main>
-    <!-- Inject content here -->
+
     <?= $content ?>
 </main>
 

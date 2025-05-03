@@ -24,6 +24,17 @@ abstract class BaseController
         return $this->container->get("request");
     }
 
+    protected function session()
+    {
+        return $this->container->get('session');
+    }
+
+
+    protected function redirect()
+    {
+        return $this->container->get('redirect');
+    }
+
     /**
      * @throws Exception
      */

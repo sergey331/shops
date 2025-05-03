@@ -12,10 +12,6 @@ class HomeController extends BaseController
      */
     public function index(): void
     {
-        $users = $this->model('User')
-            ->all();
-
-        dd($users);
         $this->view()->load('Home.Index', [
             'title' => 'Home',
             'content' => 'Welcome to the home page!'
