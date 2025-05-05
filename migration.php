@@ -1,9 +1,10 @@
 <?php
+require __DIR__ . "/config/env.php";
 
-$host = 'localhost';
-$user = 'root';
-$pass = '12345678';
-$dbName = 'shops';
+$host = env('DB_HOST','localhost');
+$user = env('DB_USERNAME','root');
+$pass = env('DB_PASSWORD','');
+$dbName = env('DB_DATABASE','');
 $charset = 'utf8mb4';
 $migrationDir = __DIR__ . '/migration';
 $initialSqlFile = "$migrationDir/database.sql";

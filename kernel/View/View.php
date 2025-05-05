@@ -2,14 +2,13 @@
 
 namespace Kernel\View;
 
+use Kernel\Container\Container;
 use Kernel\Session\Session;
 
 class View implements ViewInterface
 {
-    private Session $session;
-    public function __construct(Session $session)
+    public function __construct(protected Container $container)
     {
-        $this->session = $session;
     }
     public function load($path, $data = [], $layout = 'app'): void
     {
@@ -20,13 +19,15 @@ class View implements ViewInterface
         if (file_exists($path)) {
             ob_start();
             require $path;
-            $this->layout($layout);
+            $this->layout($layout,$data);
         }
     }
 
-    private function layout($layout): void
+    private function layout($layout,$data): void
     {
         $content = ob_get_clean();
+        $data = $this->getData();
+        extract($data);
         require $this->getHeaderPath($layout);
     }
 
@@ -48,11 +49,22 @@ class View implements ViewInterface
         return APP_PATH . "/src/Views/" . str_replace('.', '/', $path) . ".php";
     }
 
-    private function getData($data) 
+    private function getData($data = []) 
     {
-        return array_merge($data,['session' => $this->session]);
+        return array_merge($data,[
+            'session' => $this->getSession(),
+            'auth' => $this->getAuth(),
+        ]);
 
     }
 
+    private function getSession() 
+    {
+        return $this->container->get('session');   
+    }
 
+    private function getAuth() 
+    {
+        return $this->container->get('auth');   
+    }
 }

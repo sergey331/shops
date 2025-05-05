@@ -13,7 +13,7 @@ class Routers
 
     protected Container $container;
 
-    #[NoReturn] public function __construct(Container $container)
+    public function __construct(Container $container)
     {
         $this->getRoutes();
         $this->container = $container;
@@ -48,7 +48,7 @@ class Routers
 
                 if (class_exists($middleware)) {
                     /* @var MiddlewareInterface $middleware */
-                    if (!(new $middleware())->handle()) {
+                    if (!(new $middleware($this->container))->handle()) {
                         echo "You not have permission for this action";
                         exit(500);
                     }

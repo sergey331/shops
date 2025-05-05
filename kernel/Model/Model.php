@@ -76,13 +76,13 @@ class Model extends Connection
         $result = $this->query($query, $whereData);
 
         $rows = $result->fetchAll(\PDO::FETCH_ASSOC);
-
-        return $this->fetchData($rows[0]) ?? null;
+        return !empty($rows) ? $this->fetchData($rows[0]) : null;
     }
 
     public function find($id)
     {
-
+        $this->where(['id' => $id]);
+        return $this->first();
     }
 
     public function where(array $wheres): static

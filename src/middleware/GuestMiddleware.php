@@ -6,7 +6,7 @@ use Kernel\Container\Container;
 use Kernel\Route\Middleware;
 use Kernel\Route\MiddlewareInterface;
 
-class AuthMiddleware extends Middleware implements MiddlewareInterface
+class GuestMiddleware extends Middleware implements MiddlewareInterface
 {
     public function __construct(Container $container) {
        parent::__construct($container);
@@ -14,7 +14,7 @@ class AuthMiddleware extends Middleware implements MiddlewareInterface
 
     public function handle()
     {
-        if (!$this->auth()->check()) {
+        if ($this->auth()->check()) {
             $this->redirect()->back();
         }
         return true;

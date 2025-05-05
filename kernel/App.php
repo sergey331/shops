@@ -1,5 +1,6 @@
 <?php
 
+use Kernel\Auth\Auth;
 use Kernel\Container\Container;
 use Kernel\Databases\Db;
 use Kernel\Redirect\Redirect;
@@ -24,13 +25,19 @@ $container->set('redirect', function() {
     return new Redirect();
 });
 
-$container->set('views', function () use ($container) {
-    return new View($container->get("session"));
-});
-
 $container->set('db', function () {
     return new Db();
 });
+
+$container->set('auth', function () use($container) {
+    return new Auth($container);
+});
+
+$container->set('views', function () use ($container) {
+    return new View($container);
+});
+
+
 
 $container->set('routeAction', function ($container) {
     return new RouteAction($container);

@@ -3,7 +3,7 @@
 namespace Kernel\Request;
 
 
-readonly class Request implements RequestInterface
+class Request implements RequestInterface
 {
     public function __construct(
         public array $get,

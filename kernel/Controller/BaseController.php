@@ -43,6 +43,11 @@ abstract class BaseController
         return $this->container->get('views');
     }
 
+    public function auth()
+    {
+        return $this->container->get('auth');
+    }
+
     public function model($name)
     {
         return $this->container->get('db')->model($name);
