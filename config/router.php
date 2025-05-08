@@ -23,7 +23,7 @@ return [
         ]; 
     }),
 
-    Route::group(["middleware" => ["admin"],'prefix' => 'admin'], function ($route) {
+    Route::group(["middleware" => ["admin"],'prefix' => '/admin'], function ($route) {
         return [
             $route->get('/', [AdminController::class, 'index']),
         ]; 

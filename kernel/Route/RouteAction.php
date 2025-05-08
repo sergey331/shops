@@ -38,8 +38,6 @@ class RouteAction implements RouteActionInterface
             $newRouters[$router['uri']] = $router;
         }
         return $newRouters[$url] ?? null;
-
-        return null;
     }
     protected function flattenRoutes(array $routers): array
     {

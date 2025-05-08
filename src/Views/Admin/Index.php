@@ -1,1 +1,5 @@
-<h2>Admin</h2>
+@auth
+
+{{ $auth->user()->username }}
+
+@endauth

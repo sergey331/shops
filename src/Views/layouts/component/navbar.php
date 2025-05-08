@@ -6,12 +6,12 @@
     </div>
     <div class="menu"></div>
     <div class="authentication">
-    @if (!$auth->check())
-            <a href="/login" class="btn btn-primary">Login</a>
-            <a href="/register" class="btn btn-secondary">Register</a>
-    @else
+        @auth
             <span> {{ $auth->user()->username }}</span>
             <a href="/logout" class="btn btn-secondary">logout</a>
-        @endif
+        @else
+            <a href="/login" class="btn btn-primary">Login</a>
+            <a href="/register" class="btn btn-secondary">Register</a>
+        @endauth
     </div>
 </nav>

@@ -7,60 +7,40 @@
 body {
     background-color: #f0f0f0;
     font-family: cursive;
-    
 }
-.wide {
-    width: 15%;
-  }
-  .narrow {
-    width: 3%;
-  }
-
-  .d-none {
-    display: none;
-  }
-
   
 .content {
     display: flex;
     & .menu {
-        background-color: #2b332c;
+        width: 10%;
+        background-color: #78a0bd;
         color: white;
         padding: 10px 0;
         text-align: center;
         height: 100vh;
         transition: width 0.3s ease;
-        & .toggle-menu-block {
-            width: 100%;
-            position: relative;
-            margin: 0;
-            .toggle-menu {
-                background-color: transparent;
-                border: none;
-                position: absolute;
-                top: 10px;
-                right: 19px;
-                color: #f1f1f1;
-                font-size: 20px;
-                cursor: pointer;
-            }
-        } & nav {
+        & nav {
             width: 100%;
             height: 100%;
             margin: 0 auto;
-            display: flex
+            display: flex;
             flex-direction: column;
-            justify-content: space-between;
             align-items: center;
-    
-            & .logo {
-                & a img {
-                    width: 65px;
-                    height: 65px;
+            & .logo > a > img {
+                    width: 125px;
+                    height: 125px;
+                
+            } & .menuContent ul {
+                list-style: none;
+                li {
+                    cursor: pointer;
+                    position: relative;
+                    & ul {
+                        position: absolute;
+                        right: -100%;
+                    }
                 }
-            }
-    
-            & .authentication {
+            } & .authentication {
                 display: flex;
                 gap: 20px;
     
@@ -86,5 +66,6 @@ body {
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         flex: auto;
-    } 
+    }
 }
+
