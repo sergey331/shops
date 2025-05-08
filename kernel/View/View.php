@@ -28,7 +28,10 @@ class View implements ViewInterface
         $content = ob_get_clean();
         $data = $this->getData();
         extract($data);
-        require $this->getHeaderPath($layout);
+        $layoutPath = $this->getHeaderPath($layout);
+        $layoutContent = file_get_contents($layoutPath);
+        $compiledLayout = $this->extract($layoutContent);
+        eval('?>' . $compiledLayout);
     }
 
     /**
@@ -67,4 +70,44 @@ class View implements ViewInterface
     {
         return $this->container->get('auth');   
     }
+
+
+    private function extract(string $template): string
+{
+
+    $pattern = '/@if\s*\(\s*(.*?)\s*\)/';
+
+    $template = preg_replace_callback($pattern, function ($m) {
+        return "<?php if ({$m[1]}): ?>";
+    }, $template);
+    // @elseif (...)
+    $template = preg_replace_callback('/@elseif\s*\((.*?)\)/', function ($m) {
+        return "<?php elseif ({$m[1]}): ?>";
+    }, $template);
+
+    // @else / @endif
+    $template = str_replace('@else', '<?php else: ?>', $template);
+    $template = str_replace('@endif', '<?php endif; ?>', $template);
+
+    // @foreach
+    $template = preg_replace_callback('/@foreach\s*\((.*?)\)/', function ($m) {
+        return "<?php foreach ({$m[1]}): ?>";
+    }, $template);
+    $template = str_replace('@endforeach', '<?php endforeach; ?>', $template);
+
+    // Echo: {{ $var }}
+    $template = preg_replace('/{{\s*(.*?)\s*}}/', '<?php echo htmlspecialchars($1); ?>', $template);
+
+    // @include('path')
+    $template = preg_replace_callback('/@include\s*\(\s*[\'"](.+?)[\'"]\s*\)/', function ($m) {
+        $includedPath = APP_PATH . '/src/Views/' . str_replace('.', '/', $m[1]) . '.php';
+        return "<?php include '{$includedPath}'; ?>";
+    }, $template);
+
+dd($template);
+
+    return $template;
+}
+
+    
 }

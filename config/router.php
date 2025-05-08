@@ -15,7 +15,6 @@ return [
             $route->post('/login', [AuthController::class, 'login']),
         
         ];
-        
     }),
     Route::group(["middleware" => ["auth"]], function ($route) {
         return [
@@ -24,9 +23,9 @@ return [
         ]; 
     }),
 
-    Route::group(["middleware" => ["admin"]], function ($route) {
+    Route::group(["middleware" => ["admin"],'prefix' => 'admin'], function ($route) {
         return [
-            $route->get('/admin', [AdminController::class, 'index']),
+            $route->get('/', [AdminController::class, 'index']),
         ]; 
     }),
     Route::get('/', [HomeController::class, 'index']),

@@ -52,17 +52,16 @@ class Route implements RouteInterface
     public static function group(array $params, Closure $callback): array
     {
         $prefix = $params['prefix'] ?? '';
-
-        $router = new static();
+        unset($params['prefix']);
+        $router = new static(); 
 
         $groupRoutes = $callback($router);
         $result = [];
         foreach ($groupRoutes as $route) {
-            $route['uri'] = rtrim($prefix . $route['uri'], '/');
+            $route['uri'] =rtrim($prefix . $route['uri'], '/');
             $route['group'] = $params;
             $result[] = $route;
         }
-
         return $result;
     }
 }
