@@ -7,7 +7,9 @@ class Validator
     protected array $allowedRules = [
         'required', 'email', 'url', 'integer', 'string',
         'max', 'min', 'between', 'confirmed', 'unique',
+        'image', 'mimes'
     ];
+
 
     protected array $rules = [];
     protected array $messages = [];
@@ -122,15 +124,25 @@ class Validator
         return true;
     }
 
-    protected function validateMax(string $field, ?string $param,$rule): bool
+    protected function validateMax(string $field, ?string $param, $rule): bool
     {
-        $value = $this->data[$field] ?? '';
-        if (strlen($value) > (int)$param) {
-            $this->addError($field, "The {$field} must not exceed {$param} characters.",$rule);
-            return false;
+        $value = $this->data[$field] ?? null;
+
+        if (is_array($value) && isset($value['size'])) {
+            if ($value['size'] > ((int)$param * 1024)) {
+                $this->addError($field, "The {$field} must not be larger than {$param} kilobytes.", $rule);
+                return false;
+            }
+        } elseif (is_string($value)) {
+            if (strlen($value) > (int)$param) {
+                $this->addError($field, "The {$field} must not exceed {$param} characters.", $rule);
+                return false;
+            }
         }
+
         return true;
     }
+
 
     protected function validateBetween(string $field, ?string $param,$rule): bool
     {
@@ -154,6 +166,54 @@ class Validator
         }
         return true;
     }
+
+    protected function validateImage(string $field, ?string $param, $rule): bool
+    {
+        $file = $this->data[$field] ?? null;
+
+        if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+            $this->addError($field, "The {$field} must be a valid uploaded image.", $rule);
+            return false;
+        }
+
+        $check = getimagesize($file['tmp_name']);
+        if ($check === false) {
+            $this->addError($field, "The {$field} must be a valid image file.", $rule);
+            return false;
+        }
+
+        return true;
+    }
+    protected function validateMimes(string $field, ?string $param, $rule): bool
+    {
+        $file = $this->data[$field] ?? null;
+
+        if (!isset($file['type'])) {
+            $this->addError($field, "The {$field} file type could not be determined.", $rule);
+            return false;
+        }
+
+        $allowed = array_map('strtolower', explode(',', $param));
+        $mime = mime_content_type($file['tmp_name'] ?? '');
+
+        $map = [
+            'jpeg' => 'image/jpeg',
+            'jpg'  => 'image/jpeg',
+            'png'  => 'image/png',
+            'gif'  => 'image/gif',
+            // Add more as needed
+        ];
+
+        $allowedMimes = array_intersect_key($map, array_flip($allowed));
+
+        if (!in_array($mime, $allowedMimes)) {
+            $this->addError($field, "The {$field} must be a file of type: {$param}.", $rule);
+            return false;
+        }
+
+        return true;
+    }
+
 
     public function errors(): array
     {

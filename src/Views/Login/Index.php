@@ -1,8 +1,11 @@
-<?php 
+{!! $error = $session->getCLean('login_error') ?? [];  !!}
 
-$errors = $session->getCLean('errors') ?? [];
-?>
 
+@noempty($error)
+    <div>
+        {{ $error }}
+    </div>
+@endempty
 <div class="container">
     <ul class="register">
         <h1 class="header">Login</h1>
@@ -13,25 +16,13 @@ $errors = $session->getCLean('errors') ?? [];
                 <input type="email" name="email" id="email"  />
             </div>
 
-            <?php if (!empty($errors) && isset($errors['email'])) { ?>
-                <ul class="errors">
-                    <?php foreach ($errors['email'] as $error) { ?>
-                        <li><?= $error ?></li>
-                    <?php } ?> 
-                </ul>
-            <?php } ?>
+           
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" name="password" id="password"  />
             </div>
 
-            <?php if (!empty($errors) && isset($errors['password'])) { ?>
-                <ul class="errors">
-                    <?php foreach ($errors['password'] as $error) { ?>
-                        <li><?= $error ?></li>
-                    <?php } ?> 
-                </ul>
-            <?php } ?>
+            
             <button type="submit" >Login</button>
         </form>
     </div>

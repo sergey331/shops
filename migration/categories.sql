@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS categories (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    category_id INT UNSIGNED NULL,
+    description TEXT,
+    avatar VARCHAR(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+
+    CONSTRAINT fk_category
+    FOREIGN KEY (category_id)
+    REFERENCES categories(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+    );

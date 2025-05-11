@@ -1,3 +1,5 @@
+
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -10,21 +12,24 @@
     <title>Admin</title>
 </head>
 <body>
-    <div class="content">
-        
-   
-        <div class="menu">
+<div class="admin-container">
+    <aside class="sidebar">
+        <h2>Admin Panel</h2>
+        <nav>
             @include('layouts.component.adminNavBar')
-        </div>
-        <main>
-            <?= $content ?>
-        </main>
-    </div> 
+        </nav>
+    </aside>
 
+    <main class="content">
+        {{ $content }}
+    </main>
+</div>
+
+<script src="/assets/js/admin/admin.js"></script>
     <footer>
    
     </footer>
 
-    <script src="/assets/js/admin/admin.js"></script>
+
 </body>
 </html>

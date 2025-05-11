@@ -13,7 +13,7 @@ class RegisterController extends BaseController
      */
     public function index(): void
     {
-        $this->view()->load('Register.Index');
+        $this->view()->load('Register.Index',['a' => "test"]);
     }
 
     public function register(): void

@@ -2,6 +2,7 @@
 
 use Kernel\Route\Route;
 use Shop\controllers\admin\AdminController;
+use Shop\controllers\admin\CategoryController;
 use Shop\controllers\HomeController;
 use Shop\controllers\AuthController;
 use Shop\controllers\RegisterController;
@@ -26,7 +27,10 @@ return [
     Route::group(["middleware" => ["admin"],'prefix' => '/admin'], function ($route) {
         return [
             $route->get('/', [AdminController::class, 'index']),
-        ]; 
+            $route->get('/categories', [CategoryController::class, 'index']),
+            $route->get('/category/create', [CategoryController::class, 'create']),
+            $route->post('/category/store', [CategoryController::class, 'store']),
+        ];
     }),
     Route::get('/', [HomeController::class, 'index']),
     

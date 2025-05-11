@@ -9,7 +9,7 @@ class Auth
     public function __construct(private Container $container)
     {   
     }
-    public function attempt(string $email, string $password) 
+    public function attempt(string $email, string $password): bool 
     {
         $user = $this->model()->where(["email" => $email])->first();
 
