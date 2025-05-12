@@ -19,4 +19,17 @@ class QueryBuilder
         return sprintf('INSERT INTO %s %s VALUES %s',$table,$fields,$values);
     }
 
+    public function getUpdateQuery($table,$data, $where)
+    {
+        $keys = array_keys($data);
+        $fields = implode(', ', array_map(fn($field) => "$field=?", $keys));
+        
+        return sprintf('UPDATE  %s SET %s  %s',$table,$fields,$where);
+    }
+
+    public function getDeleteQuery($table, $where)
+    {
+        return sprintf('DELETE FROM  %s   %s',$table,$where);
+    }
+
 }

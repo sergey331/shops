@@ -35,20 +35,27 @@ class Model extends Connection
 
     }
 
-    public function save()
+    public function save($update = false)
     {
         if (empty($this->data)) {
             return false;
         }
-
-        $query = $this->queryBuilder->getInsertQuery($this->table,$this->data);
+        $values = array_values($this->data);
+        if ($update) {
+            $this->where(['id' => $this->id]);
+            $this->modelWhere->resolve();
+            $query = $this->queryBuilder->getUpdateQuery($this->table,$this->data,$this->modelWhere->getWhereQuery());
+            $values = array_merge($values, $this->modelWhere->getWhereData());
+        } else {
+            $query = $this->queryBuilder->getInsertQuery($this->table,$this->data);    
+        }
 
         if ($this->table === 'users') {
             if (isset($this->data['password'])) {
                 $this->data['password'] = password_hash($this->data['password'],PASSWORD_DEFAULT);
             }
         }
-        $values = array_values($this->data);
+        
         if ($this->query($query,$values)) {
             return true;
         }
@@ -113,12 +120,18 @@ class Model extends Connection
     public function update(array $data): bool
     {
         $this->fill($data);
-        return $this->save();
+        return $this->save(true);
     }
 
     public function delete(): bool
     {
-        return true;
+        $this->where(['id' => $this->id]);
+        $this->modelWhere->resolve();
+        $query = $this->queryBuilder->getDeleteQuery($this->table,$this->modelWhere->getWhereQuery());
+        if ($this->query($query,$this->modelWhere->getWhereData())) {
+            return true;
+        }
+        return false;
     }
 
     public function __get(string $name)

@@ -31,6 +31,7 @@ class RouteAction implements RouteActionInterface
             preg_match($this->pattern, $router['uri'], $matches);
             if (!empty($matches)) {
                 if (is_numeric($id)) {
+                    $router['uri'] = preg_replace($this->pattern, $id, $router['uri'],);
                     $param = [$matches[1] => $id];
                     $router['params'] = array_merge($router['params'], $param);
                 }

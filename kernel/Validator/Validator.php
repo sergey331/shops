@@ -7,7 +7,7 @@ class Validator
     protected array $allowedRules = [
         'required', 'email', 'url', 'integer', 'string',
         'max', 'min', 'between', 'confirmed', 'unique',
-        'image', 'mimes'
+        'image', 'mimes', 'nullable'
     ];
 
 
@@ -29,22 +29,34 @@ class Validator
     }
 
     public function validate(): bool
-    {
-        foreach ($this->rules as $field => $ruleSet) {
-            $rules = explode('|', $ruleSet);
-            foreach ($rules as $rule) {
-               $this->applyRule($field, $rule);
-            }
+{
+    foreach ($this->rules as $field => $ruleSet) {
+        $rules = explode('|', $ruleSet);
+        $isNullable = in_array('nullable', $rules);
+        $value = $this->data[$field] ?? null;
+
+        if ($isNullable && ($value === null || $value === '' || (!isset($value['size']) || $value['size'] === 0 ))) {
+            continue;
         }
-        return empty($this->errors);
+
+        foreach ($rules as $rule) {
+            if ($rule === 'nullable') {
+                continue;
+            }
+
+            $this->applyRule($field, $rule);
+        }
     }
+
+    return empty($this->errors);
+}
 
     protected function applyRule(string $field, string $rule): bool
     {
         [$ruleName, $param] = array_pad(explode(':', $rule, 2), 2, null);
 
         if (!in_array($ruleName, $this->allowedRules)) {
-            $this->addError($field, "The {$field} field has an invalid rule: {$ruleName}.");
+            $this->addError($field, "The {$field} field has an invalid rule: {$ruleName}.",$rule);
             return false;
         }
 

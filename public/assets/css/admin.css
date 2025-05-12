@@ -185,3 +185,11 @@ tr:hover {
 .btn:hover {
     background-color: #218838;
 }
+
+.errors {
+    padding: 0 19px;
+    & li {
+        font-size: 11px;
+        color: red;
+    }
+}

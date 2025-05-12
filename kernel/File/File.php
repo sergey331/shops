@@ -1,0 +1,73 @@
+<?php
+namespace Kernel\File;
+
+class File implements FileInterface 
+{
+    private $path;
+    private $file;
+    private $fileName;
+    private $size;
+
+    private $error = '';
+
+    public function __construct()
+    {
+        $this->size = ini_get('upload_max_filesize');
+    }
+    public function setPath($path)
+    {
+        $this->path = $path;
+    }
+
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    public function setFile($file)
+    {
+        $this->file = $file;
+    }
+
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    public function upload()
+    {
+        $file = $this->getFile();
+
+        $path = $this->getPath();
+        if ($file['size'] > $this->size) {
+            $this->errors = 'File size connot be more then ' . $this->size;
+            return false;
+        }
+
+        if (!is_dir($path) && !mkdir($path, 0777, true)) {
+            $this->error = 'Failed to create upload directory.';
+            return false;
+        }
+        $safeName = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', basename($file['name']));
+        $targetPath = $path . $safeName;
+
+        if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+            $this->error = 'Failed to move uploaded file.';
+            return false;
+        }
+
+        $this->fileName = $safeName;
+        return true;
+
+    }
+
+    public function getName() 
+    {
+        return $this->fileName;
+    }
+
+    public function getError()
+    {
+        return $this->error;
+    }
+}

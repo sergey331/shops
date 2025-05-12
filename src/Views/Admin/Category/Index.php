@@ -9,21 +9,23 @@
         <table>
             <thead>
             <tr>
-                <th>ID</th>
+                <th>#</th>
                 <th>Name</th>
+                <th>Description</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             @foreach ($categories as $category)
-            <tr>
-                <td>{{ $category->id }}</td>
-                <td>{{ $category->name }}</td>
-                <td>
-                    <a href="/admin/category/edit/{{ $category->id }}" class="btn btn-sm btn-edit">Edit</a>
-                    <a href="/admin/category/delete/{{ $category->id }}" class="btn btn-sm btn-delete">Delete</a>
-                </td>
-            </tr>
+                <tr>
+                    <td>{{ $category->id }}</td>
+                    <td>{{ $category->name }}</td>
+                    <td>{{ $category->description }}</td>
+                    <td>
+                        <a href="/admin/category/{{ $category->id }}" class="btn btn-sm btn-edit">Edit</a>
+                        <a href="/admin/category/delete/{{ $category->id }}" class="btn btn-sm btn-delete">Delete</a>
+                    </td>
+                </tr>
             @endforeach
             </tbody>
         </table>

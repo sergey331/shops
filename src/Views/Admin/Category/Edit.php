@@ -1,11 +1,11 @@
 {!! $errors = $session->getCLean('errors') ?? []; !!}
 <div class="form-wrapper">
-    <h2>Create New Category</h2>
+    <h2>Edit Category</h2>
 
-    <form action="/admin/category/store" method="POST" enctype="multipart/form-data" class="form-grid">
+    <form action="/admin/category/{{$category->id}}" method="POST" enctype="multipart/form-data" class="form-grid">
         <div class="form-row">
             <label for="name">Category Name</label>
-            <input type="text" name="name" id="name"  placeholder="e.g. Electronics">
+            <input type="text" name="name" id="name"  placeholder="e.g. Electronics" value="{{$category->name}}">
             @isset($errors['name'])
                 <ul class="errors">
                     @foreach ($errors['name'] as $error)
@@ -17,7 +17,7 @@
     
         <div class="form-row">
             <label for="description">Description</label>
-            <textarea name="description" id="description" rows="3" placeholder="Short description..."></textarea>
+            <textarea name="description" id="description" rows="3" placeholder="Short description...">{{$category->description}}</textarea>
             @isset($errors['description'])
                 <ul class="errors">
                     @foreach ($errors['description'] as $error)
@@ -44,20 +44,20 @@
             <select name="category_id" id="category_id">
                 <option value="">-- None --</option>
                 @foreach ($categories as $cat)
-                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                <option value="{{ $cat->id }}" @if($cat->id === $category->category_id) selected @endauth>{{ $cat->name }}</option>
                 @endforeach
             </select>
             @isset($errors['category_id'])
                 <ul class="errors">
                     @foreach ($errors['category_id'] as $error)
-                        <li>{{ $error }}</li>
+                        <li >{{ $error }}</li>
                     @endforeach
                 </ul>
             @endisset
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn">Create Category</button>
+            <button type="submit" class="btn">Update Category</button>
         </div>
     </form>
 </div>

@@ -53,8 +53,12 @@ class Request implements RequestInterface
         return $_SERVER['REQUEST_METHOD'] ?? '';
     }
 
-    public function file($name): string
+    public function file($name): string|array
     {
         return $this->files[$name] ?? '';
+    }
+    public function hasFile($name): bool
+    {
+        return isset($_FILES[$name]) && $_FILES[$name]['error'] !== UPLOAD_ERR_NO_FILE;
     }
 }

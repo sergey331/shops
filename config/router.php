@@ -30,6 +30,9 @@ return [
             $route->get('/categories', [CategoryController::class, 'index']),
             $route->get('/category/create', [CategoryController::class, 'create']),
             $route->post('/category/store', [CategoryController::class, 'store']),
+            $route->get('/category/{id}', [CategoryController::class, 'edit']),
+            $route->post('/category/{id}', [CategoryController::class, 'update']),
+            $route->get('/category/delete/{id}', [CategoryController::class, 'delete']),
         ];
     }),
     Route::get('/', [HomeController::class, 'index']),
