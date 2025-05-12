@@ -5,6 +5,7 @@ namespace Shop\controllers\admin;
 use Kernel\Controller\BaseController;
 use Kernel\File\File;
 use Kernel\Validator\Validator;
+use Shop\model\Category;
 
 class CategoryController extends BaseController
 {
@@ -43,16 +44,18 @@ class CategoryController extends BaseController
         $this->redirect()->to('/admin/categories');
     }
 
-    public function edit($id) 
+    public function edit(Category $category) 
     {
+      
         $this->view()->load('Admin.Category.Edit', [
-            'category' => $this->model('Category')->find($id), 
+            'category' => $category, 
             'categories' => $this->model('Category')->all(),
         ], 'admin');
      }
 
-     public function update($id)
+     public function update(Category $category)
      {
+        
         $data = $this->request()->all();
         $validator = Validator::make($data, $this->rules(), $this->messages());
 
@@ -65,15 +68,15 @@ class CategoryController extends BaseController
         $data = $this->handleAvatarUpload($data);
         $this->cleanCategoryId($data);
 
-        $this->model('Category')->find($id)->update($data);
+        $category->update($data);
 
         $this->session()->set('success', 'created');
         $this->redirect()->to('/admin/categories');
      }
 
-     public function delete($id)
+     public function delete(Category $category)
      {
-        $this->model('Category')->find($id)->delete();
+        $category->delete();
 
         $this->session()->set('success', 'created');
         $this->redirect()->to('/admin/categories');

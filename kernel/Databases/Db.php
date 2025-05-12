@@ -10,6 +10,6 @@ class Db
         if (class_exists($class)) {
             return new $class();
         }
-        throw new \Exception("Model not found: " . $name);
+        return false;
     }
 }

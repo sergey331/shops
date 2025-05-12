@@ -53,6 +53,7 @@ $app = new App($container);
 try {
     $app->run();
 } catch (Exception $e) {
+    dd($e);
     echo "Error: " . $e->getMessage();
     die();
 }

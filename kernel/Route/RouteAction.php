@@ -32,7 +32,7 @@ class RouteAction implements RouteActionInterface
             if (!empty($matches)) {
                 if (is_numeric($id)) {
                     $router['uri'] = preg_replace($this->pattern, $id, $router['uri'],);
-                    $param = [$matches[1] => $id];
+                    $param = $this->getParams($matches[1] ,$id);
                     $router['params'] = array_merge($router['params'], $param);
                 }
             }
@@ -55,5 +55,17 @@ class RouteAction implements RouteActionInterface
         }
 
         return $flat;
+    }
+
+    protected function getParams($param,$id)  
+    {
+        $model = $this->container->get('db')->model($param);
+
+        if ($model) {
+            return [$model->find($id)];
+        }
+
+        return [$param => $id];
+
     }
 }
