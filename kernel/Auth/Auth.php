@@ -59,7 +59,7 @@ class Auth
     
     private function model()
     {
-        return $this->container->get('db')->model("User");
+        return $this->container->get('db')->model("user");
     }
 
     private function session()

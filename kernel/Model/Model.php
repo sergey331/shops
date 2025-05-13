@@ -5,7 +5,7 @@ namespace Kernel\Model;
 use Kernel\Databases\Connection;
 
 #[\AllowDynamicProperties]
-class Model extends Connection
+class Model extends Connection implements ModelInterface
 {
     protected string $table;
     protected array $data = [];
@@ -23,6 +23,63 @@ class Model extends Connection
         $this->queryBuilder = new QueryBuilder();
     }
 
+    public function all():array
+    {
+        $query = $this->queryBuilder->getSelectQuery($this->table);
+        $result = $this->query($query, $this->modelWhere->getWhereData());
+        return $result->fetchAll(\PDO::ATTR_CASE);
+    }
+    public function get(): array
+    {
+        $this->modelWhere->resolve();
+        
+        $query = $this->queryBuilder->getSelectQuery($this->table, $this->modelWhere->getWhereQuery());
+        
+        $result = $this->query($query, $this->modelWhere->getWhereData());
+        $result = $result->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->fetchArrayData($result);
+    }
+
+    public function first() 
+    {
+        $this->modelWhere->resolve();
+
+        $whereClause = $this->modelWhere->getWhereQuery();
+        $whereData = $this->modelWhere->getWhereData();
+
+        $query = $this->queryBuilder->getSelectQuery($this->table, $whereClause);
+        $result = $this->query($query, $whereData);
+
+        $rows = $result->fetchAll(\PDO::FETCH_ASSOC);
+        return !empty($rows) ? $this->fetchData($rows[0]) : null;
+    }
+
+    public function find($id)
+    {
+        $this->where(['id' => $id]);
+        return $this->first();
+    }
+    public function create(array $data): bool
+    {
+        $this->fill($data);
+        return $this->save();
+    }
+    public function update(array $data): bool
+    {
+        $this->fill($data);
+        return $this->save(true);
+    }
+
+    public function delete(): bool
+    {
+        $this->where(['id' => $this->id]);
+        $this->modelWhere->resolve();
+        $query = $this->queryBuilder->getDeleteQuery($this->table,$this->modelWhere->getWhereQuery());
+        if ($this->query($query,$this->modelWhere->getWhereData())) {
+            return true;
+        }
+        return false;
+    }
     public function fill(array $data): void
     {
         foreach ($data as $key => $value) {
@@ -63,35 +120,6 @@ class Model extends Connection
         return false;
     }
 
-    public function get(): array
-    {
-        $this->modelWhere->resolve();
-        $query = $this->queryBuilder->getSelectQuery($this->table, $this->modelWhere->getWhereQuery());
-        $result = $this->query($query, $this->modelWhere->getWhereData());
-        $result = $result->fetchAll(\PDO::FETCH_ASSOC);
-        return $this->fetchArrayData($result);
-    }
-
-    public function first()
-    {
-        $this->modelWhere->resolve();
-
-        $whereClause = $this->modelWhere->getWhereQuery();
-        $whereData = $this->modelWhere->getWhereData();
-
-        $query = $this->queryBuilder->getSelectQuery($this->table, $whereClause);
-        $result = $this->query($query, $whereData);
-
-        $rows = $result->fetchAll(\PDO::FETCH_ASSOC);
-        return !empty($rows) ? $this->fetchData($rows[0]) : null;
-    }
-
-    public function find($id)
-    {
-        $this->where(['id' => $id]);
-        return $this->first();
-    }
-
     public function where(array $wheres): static
     {
         $this->modelWhere->setWhere($wheres);
@@ -104,36 +132,64 @@ class Model extends Connection
         return $this;
     }
 
-    public function all()
+    public function whereNull(array $column): static
     {
-        $query = $this->queryBuilder->getSelectQuery($this->table);
-        $result = $this->query($query, $this->modelWhere->getWhereData());
-        return $result->fetchAll(\PDO::ATTR_CASE);
+        $this->modelWhere->setWhereNull($column);
+        return $this;
     }
 
-    public function create(array $data): bool
+    public function whereNotNull(array $column): static
     {
-        $this->fill($data);
-        return $this->save();
+        $this->modelWhere->setWhereNotNull($column);
+        return $this;
     }
 
-    public function update(array $data): bool
+    public function orWhereNull(array $column): static
     {
-        $this->fill($data);
-        return $this->save(true);
+        $this->modelWhere->setOrWhereNull($column);
+        return $this;
     }
 
-    public function delete(): bool
+    public function orWhereNotNull(array $column): static
     {
-        $this->where(['id' => $this->id]);
-        $this->modelWhere->resolve();
-        $query = $this->queryBuilder->getDeleteQuery($this->table,$this->modelWhere->getWhereQuery());
-        if ($this->query($query,$this->modelWhere->getWhereData())) {
-            return true;
-        }
-        return false;
+        $this->modelWhere->setOrWhereNotNull($column);
+        return $this;
+    }
+    public function whereNotEqual(array $data): static
+    {
+        $this->modelWhere->setNotEquals($data);
+        return $this;
     }
 
+    public function orWhereNotEqual(array $data):static
+    {
+        $this->modelWhere->setOrNotEquals($data);
+        return $this;
+    }
+
+    public function whereIn(array $data): static
+    {
+        $this->modelWhere->setWhereIn($data);
+        return $this;
+    }
+
+    public function whereNotIn(array $data): static
+    {
+        $this->modelWhere->setWhereNotIn($data);
+        return $this;
+    }
+
+    public function orWhereIn(array $data): static
+    {
+        $this->modelWhere->setOrWhereIn($data);
+        return $this;
+    }
+
+    public function orWhereNotIn(array $data): static
+    {
+        $this->modelWhere->setOrWhereNotIn($data);
+        return $this;
+    }
     public function __get(string $name)
     {
         if (!isset($this->data[$name])) {

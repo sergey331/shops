@@ -12,14 +12,16 @@ class CategoryController extends BaseController
     public function index(): void
     {
         $this->view()->load('Admin.Category.Index', [
-            'categories' => $this->model('Category')->all(),
+            'categories' => $this->model('category')->all(),
         ], 'admin');
     }
 
     public function create(): void
     {
+        $categories = $this->model('category')->whereNull(['category_id'])->get();
+
         $this->view()->load('Admin.Category.Create', [
-            'categories' => $this->model('Category')->all(),
+            'categories' => $categories,
         ], 'admin');
     }
 
@@ -38,7 +40,7 @@ class CategoryController extends BaseController
         $data = $this->handleAvatarUpload($data);
         $this->cleanCategoryId($data);
 
-        $this->model('Category')->create($data);
+        $this->model('category')->create($data);
 
         $this->session()->set('success', 'created');
         $this->redirect()->to('/admin/categories');
@@ -46,10 +48,14 @@ class CategoryController extends BaseController
 
     public function edit(Category $category) 
     {
-      
+        $categories = $this->model('category')
+            ->whereNull(['category_id'])
+            ->whereNotEqual(['id' => $category->id])
+            ->get();
+
         $this->view()->load('Admin.Category.Edit', [
             'category' => $category, 
-            'categories' => $this->model('Category')->all(),
+            'categories' => $categories,
         ], 'admin');
      }
 
