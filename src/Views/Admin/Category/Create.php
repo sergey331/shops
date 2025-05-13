@@ -57,7 +57,7 @@
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn">Create Category</button>
+            <button type="submit" class="btn btn-add btn-sm">Create Category</button>
         </div>
     </form>
 </div>

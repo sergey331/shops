@@ -14,8 +14,9 @@ interface FileInterface
 
     public function upload();
 
-    public function getName(); 
-    
+    public function getName();
+
+    public function delete($file): bool;
     public function getError();
     
 }

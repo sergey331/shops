@@ -15,7 +15,7 @@ class AdminMiddleware extends Middleware implements MiddlewareInterface
     public function handle()
     {
         if (!$this->auth()->check() || !$this->auth()->isAdmin()) {
-            $this->redirect()->back();
+            $this->redirect()->to('/');
         }
         return true;
     }

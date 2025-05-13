@@ -3,6 +3,7 @@
 use Kernel\Route\Route;
 use Shop\controllers\admin\AdminController;
 use Shop\controllers\admin\CategoryController;
+use Shop\controllers\admin\ProductController;
 use Shop\controllers\HomeController;
 use Shop\controllers\AuthController;
 use Shop\controllers\RegisterController;
@@ -33,6 +34,16 @@ return [
             $route->get('/category/{Category}', [CategoryController::class, 'edit']),
             $route->post('/category/{Category}', [CategoryController::class, 'update']),
             $route->get('/category/delete/{Category}', [CategoryController::class, 'delete']),
+            $route->group(['prefix' => '/products'],function($route){
+                return [
+                    $route->get('/', [ProductController::class, 'index']),
+                    $route->get('/create', [ProductController::class, 'create']),
+                    $route->post('/store', [ProductController::class, 'store']),
+                    $route->get('/{Product}', [ProductController::class, 'edit']),
+                    $route->post('/{Product}', [ProductController::class, 'update']),
+                    $route->get('/delete/{Product}', [ProductController::class, 'delete']),
+                ];
+            })
         ];
     }),
     Route::get('/', [HomeController::class, 'index']),

@@ -44,9 +44,11 @@ class File implements FileInterface
             return false;
         }
 
-        if (!is_dir($path) && !mkdir($path, 0777, true)) {
-            $this->error = 'Failed to create upload directory.';
-            return false;
+        if (!is_dir($path)) {
+            if (!mkdir($path, 0777, true)) {
+                $this->error = 'Failed to create upload directory.';
+                return false;
+            }
         }
         $safeName = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', basename($file['name']));
         $targetPath = $path . $safeName;
@@ -59,6 +61,19 @@ class File implements FileInterface
         $this->fileName = $safeName;
         return true;
 
+    }
+
+    public function delete($file): bool
+    {
+        $path = $this->getPath() . $file;
+
+        if (file_exists($path)) {
+            unlink($path);
+            return true;
+        } else {
+            $this->error = 'File not found.';
+            return false;
+        }
     }
 
     public function getName() 

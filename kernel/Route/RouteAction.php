@@ -24,6 +24,7 @@ class RouteAction implements RouteActionInterface
         $id = end($segments);
         $flatRouters = $this->flattenRoutes($routers);
         $newRouters = [];
+        dd($flatRouters);;
         foreach ($flatRouters as $router) {
             if ($router['method'] !== $method) {
                 continue;
