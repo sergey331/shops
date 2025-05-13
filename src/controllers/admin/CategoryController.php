@@ -82,11 +82,11 @@ class CategoryController extends BaseController
 
      public function delete(Category $category)
      {
-      if ($category->avatar) {
-          $file = new File();
-          $file->setPath(APP_PATH . '/public/uploads/category/');
-          $file->delete($category->avatar);
-      }
+        if ($category->avatar) {
+            $file = new File();
+            $file->setPath(APP_PATH . '/public/uploads/category/');
+            $file->delete($category->avatar);
+        }
          $category->delete();
 
         $this->session()->set('success', 'created');

@@ -5,7 +5,7 @@
         <a href="#" class="dropdown-toggle">Catalog</a>
         <ul class="dropdown-menu">
             <li><a href="/admin/categories">Categories</a></li>
-            <li><a href="#">Products</a></li>
+            <li><a href="/admin/products">Products</a></li>
         </ul>
     </li>
 

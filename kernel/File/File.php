@@ -19,7 +19,7 @@ class File implements FileInterface
         $this->path = $path;
     }
 
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -29,7 +29,7 @@ class File implements FileInterface
         $this->file = $file;
     }
 
-    public function getFile()
+    public function getFile():mixed   
     {
         return $this->file;
     }
@@ -39,10 +39,7 @@ class File implements FileInterface
         $file = $this->getFile();
 
         $path = $this->getPath();
-        if ($file['size'] > $this->size) {
-            $this->errors = 'File size connot be more then ' . $this->size;
-            return false;
-        }
+    
 
         if (!is_dir($path)) {
             if (!mkdir($path, 0777, true)) {

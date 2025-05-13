@@ -43,7 +43,7 @@ class Validator
             if ($rule === 'nullable') {
                 continue;
             }
-
+    
             $this->applyRule($field, $rule);
         }
     }
@@ -54,15 +54,15 @@ class Validator
     protected function applyRule(string $field, string $rule): bool
     {
         [$ruleName, $param] = array_pad(explode(':', $rule, 2), 2, null);
-
         if (!in_array($ruleName, $this->allowedRules)) {
-            $this->addError($field, "The {$field} field has an invalid rule: {$ruleName}.",$rule);
+            $this->addError($field, "The {$field} field has an invalid rule: {$ruleName}.",$ruleName);
             return false;
         }
 
         $method = "validate" . ucfirst($ruleName);
+       
         if (method_exists($this, $method)) {
-            return $this->$method($field, $param,$ruleName);
+            return $this->$method($field, $param, $ruleName);
         }
 
         return true;
@@ -70,13 +70,14 @@ class Validator
 
     protected function addError(string $field, string $default, $rule): void
     {
+       
         $key = $rule ? "{$field}.{$rule}" : $field;
         $this->errors[$field][] = $this->messages[$key] ?? $default;
     }
 
     // === Individual Rule Methods ===
 
-    protected function validateRequired(string $field,$rule): bool
+    protected function validateRequired(string $field, $param = null,  $rule): bool
     {
         $value = $this->data[$field] ?? null;
         if (empty($value) && $value !== '0') {
@@ -86,7 +87,7 @@ class Validator
         return true;
     }
 
-    protected function validateEmail(string $field,$rule): bool
+    protected function validateEmail(string $field, $param = null,$rule): bool
     {
         $value = $this->data[$field] ?? '';
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
@@ -96,7 +97,7 @@ class Validator
         return true;
     }
 
-    protected function validateUrl(string $field,$rule): bool
+    protected function validateUrl(string $field, $param = null,$rule): bool
     {
         $value = $this->data[$field] ?? '';
         if (!filter_var($value, FILTER_VALIDATE_URL)) {
@@ -106,7 +107,7 @@ class Validator
         return true;
     }
 
-    protected function validateInteger(string $field,$rule): bool
+    protected function validateInteger(string $field, $param = null,$rule): bool
     {
         $value = $this->data[$field] ?? null;
         if (!filter_var($value, FILTER_VALIDATE_INT)) {
@@ -116,7 +117,7 @@ class Validator
         return true;
     }
 
-    protected function validateString(string $field,$rule): bool
+    protected function validateString(string $field, $param = null,$rule): bool
     {
         $value = $this->data[$field] ?? '';
         if (!is_string($value)) {
@@ -168,7 +169,7 @@ class Validator
         return true;
     }
 
-    protected function validateConfirmed(string $field,$rule): bool
+    protected function validateConfirmed(string $field, $param = null,$rule): bool
     {
         $value = $this->data[$field] ?? null;
         $confirm = $this->data[$field . '_confirmation'] ?? null;

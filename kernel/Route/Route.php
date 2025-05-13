@@ -53,15 +53,19 @@ class Route implements RouteInterface
     {
         $prefix = $params['prefix'] ?? '';
         unset($params['prefix']);
-        $router = new static(); 
-
+        $router = new static();
         $groupRoutes = $callback($router);
         $result = [];
         foreach ($groupRoutes as $route) {
-            $route['uri'] =rtrim($prefix . $route['uri'], '/');
-            $route['group'] = $params;
-            $result[] = $route;
+            $routes = isset($route['uri']) ? [$route] : $route;
+            foreach ($routes as &$r) {
+                $r['uri'] = rtrim($prefix . $r['uri'], '/');
+                $r['group'] = $params;
+                $result[] = $r;
+            }
         }
+    
         return $result;
     }
+    
 }

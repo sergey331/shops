@@ -11,10 +11,12 @@ class Model extends Connection implements ModelInterface
     protected array $data = [];
     protected array $fillable = [];
     protected array $hidden = [];
+    protected array $with = [];
     protected array $casts = [];
     protected array $relations = [];
     private ModelWhere $modelWhere;
     private QueryBuilder $queryBuilder;
+
 
     public function __construct()
     {
@@ -199,14 +201,28 @@ class Model extends Connection implements ModelInterface
         return $this->data[$name] ;
     }
 
+    public function belongsTo($model, string $foreignKey = null, string $localKey = null)
+    {
+        $model = new $model;
+
+        if (!$foreignKey) {
+            $foreignKey = lcfirst((new \ReflectionClass($model))->getShortName()) . '_id';
+        }
+        return $model->where(['id' => $this->$foreignKey]);
+    }
+
+    public function with($with)
+    {
+        $this->with = $with;
+        return $this;
+    } 
+
     private function fetchArrayData($data): array
     {
         $result = [];
         foreach ($data as $row) {
-            $model = new  static();
-            $model->data = $row;
-
-            $result[] = $model;
+          
+            $result[] = $this->fetchData($row);
         }
         return $result;
     }
@@ -214,6 +230,13 @@ class Model extends Connection implements ModelInterface
     private function fetchData($data): static
     {
         $model = new  static();
+        if (!empty($this->with)) {
+            foreach ($this->with as  $value) {
+                $a = $this->$value()->get();
+                $model->relations[$value] = $a;
+                $data[$value] = $a;
+            }
+        }
         $model->data = $data;
         return $model;
     }
