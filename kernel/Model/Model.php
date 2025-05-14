@@ -208,12 +208,22 @@ class Model extends Connection implements ModelInterface
         if (!$foreignKey) {
             $foreignKey = lcfirst((new \ReflectionClass($model))->getShortName()) . '_id';
         }
-        return $model->where(['id' => $this->$foreignKey]);
+        return $model->where(['id' => $this->$foreignKey])->first();
+    }
+
+    public function hasMany($model, string $localKey = null, string $foreignKey = null)
+    {
+        return $this->getHasRelation($model,$localKey,$foreignKey)->get();
+    }
+
+    public function hasOne($model, string $localKey = null, string $foreignKey = null)
+    {
+        return $this->getHasRelation($model,$localKey,$foreignKey)->first();
     }
 
     public function with($with)
     {
-        $this->with = $with;
+        $this->with = array_merge($this->with,$with);
         return $this;
     } 
 
@@ -221,7 +231,6 @@ class Model extends Connection implements ModelInterface
     {
         $result = [];
         foreach ($data as $row) {
-          
             $result[] = $this->fetchData($row);
         }
         return $result;
@@ -230,14 +239,26 @@ class Model extends Connection implements ModelInterface
     private function fetchData($data): static
     {
         $model = new  static();
+        $model->data = $data;
         if (!empty($this->with)) {
             foreach ($this->with as  $value) {
-                $a = $this->$value()->get();
-                $model->relations[$value] = $a;
-                $data[$value] = $a;
+                $related = $model->$value();
+                
+                $model->relations[$value] = $related;
+                $model->data[$value] = $related;
             }
         }
-        $model->data = $data;
         return $model;
+    }
+
+    private function getHasRelation($model, string $localKey = null, string $foreignKey = null) {
+        $model = new $model;
+
+        if (!$foreignKey) {
+            $foreignKey = lcfirst((new \ReflectionClass($this))->getShortName()) . '_id';
+        }
+
+        $localKey = $localKey ?: 'id';
+        return $model->where([$foreignKey => $this->$localKey]);
     }
 }

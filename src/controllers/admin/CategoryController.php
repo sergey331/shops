@@ -12,7 +12,7 @@ class CategoryController extends BaseController
     public function index(): void
     {
         $this->view()->load('Admin.Category.Index', [
-            'categories' => $this->model('category')->all(),
+            'categories' => $this->model('category')->whereNull(['category_id'])->get(),
         ], 'admin');
     }
 

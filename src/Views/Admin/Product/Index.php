@@ -4,7 +4,6 @@
     <div class="category-header">
         <a href="/admin/products/create" class="btn btn-add">Add New Product</a>
     </div>
-
     <div class="category-table">
         <table>
             <thead>
@@ -13,6 +12,7 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>Price</th>
+                <th>Category</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -23,6 +23,7 @@
                     <td>{{ $product->name }}</td>
                     <td>{{ $product->description }}</td>
                     <td>{{ $product->price }}</td>
+                    <td>{{ $product->category->name }}</td>
                     <td>
                         <a href="/admin/products/{{ $product->id }}" class="btn btn-sm btn-edit">Edit</a>
                         <a href="/admin/products/delete/{{ $product->id }}" class="btn btn-sm btn-delete">Delete</a>

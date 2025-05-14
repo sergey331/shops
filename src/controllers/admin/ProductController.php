@@ -12,7 +12,7 @@ class ProductController extends BaseController
     public function index()
     {
         $this->view()->load('Admin.Product.Index', [
-            'products' => $this->model('product')->get(),
+            'products' => $this->model('product')->with(['category'])->get(),
         ], 'admin');
     }
 
@@ -58,7 +58,6 @@ class ProductController extends BaseController
     {
         $data = $this->request()->all();
         $validator = Validator::make($data, $this->rules(), $this->messages());
-
         if (!$validator->validate()) {
             $this->session()->set('errors', $validator->errors());
             $this->redirect()->back();
