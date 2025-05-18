@@ -1,5 +1,6 @@
 <?php
 
+use Kernel\App\App;
 use Kernel\Auth\Auth;
 use Kernel\Container\Container;
 use Kernel\Databases\Db;
@@ -7,53 +8,28 @@ use Kernel\Redirect\Redirect;
 use Kernel\Request\Request;
 use Kernel\Route\RouteAction;
 use Kernel\Route\Routers;
-use Kernel\App\App;
 use Kernel\Session\Session;
 use Kernel\View\View;
 
 $container = new Container();
 
-$container->set('request', function () {
-    return new Request($_GET, $_POST, $_FILES, $_SERVER);
-});
+// Core services
+$container->set('request', fn() => new Request($_GET, $_POST, $_FILES, $_SERVER));
+$container->set('session', fn() => new Session());
+$container->set('redirect', fn() => new Redirect());
+$container->set('db', fn() => new Db());
 
-$container->set('session', function () {
-    return new Session();
-});
+// Services that need the container
+$container->set('auth', fn() => new Auth($container));
+$container->set('views', fn() => new View($container));
+$container->set('routeAction', fn() => new RouteAction($container));
+$container->set('router', fn() => new Routers($container));
 
-$container->set('redirect', function() {
-    return new Redirect();
-});
-
-$container->set('db', function () {
-    return new Db();
-});
-
-$container->set('auth', function () use($container) {
-    return new Auth($container);
-});
-
-$container->set('views', function () use ($container) {
-    return new View($container);
-});
-
-
-
-$container->set('routeAction', function ($container) {
-    return new RouteAction($container);
-});
-
-$container->set('router', function ($container) {
-    return new Routers($container);
-});
-
-
+// Run the application
 $app = new App($container);
 
 try {
     $app->run();
 } catch (Exception $e) {
-    dd($e);
     echo "Error: " . $e->getMessage();
-    die();
 }

@@ -9,14 +9,15 @@ class Model extends Connection implements ModelInterface
 {
     protected string $table;
     protected array $data = [];
+    protected array $newData = [];
     protected array $fillable = [];
     protected array $hidden = [];
     protected array $with = [];
     protected array $casts = [];
     protected array $relations = [];
+
     private ModelWhere $modelWhere;
     private QueryBuilder $queryBuilder;
-
 
     public function __construct()
     {
@@ -25,47 +26,41 @@ class Model extends Connection implements ModelInterface
         $this->queryBuilder = new QueryBuilder();
     }
 
-    public function all():array
+    public function all(): array
     {
         $query = $this->queryBuilder->getSelectQuery($this->table);
         $result = $this->query($query, $this->modelWhere->getWhereData());
         return $result->fetchAll(\PDO::ATTR_CASE);
     }
+
     public function get(): array
     {
         $this->modelWhere->resolve();
-        
         $query = $this->queryBuilder->getSelectQuery($this->table, $this->modelWhere->getWhereQuery());
-        
         $result = $this->query($query, $this->modelWhere->getWhereData());
-        $result = $result->fetchAll(\PDO::FETCH_ASSOC);
-        return $this->fetchArrayData($result);
+        return $this->fetchArrayData($result->fetchAll(\PDO::FETCH_ASSOC));
     }
 
-    public function first() 
+    public function first()
     {
         $this->modelWhere->resolve();
-
-        $whereClause = $this->modelWhere->getWhereQuery();
-        $whereData = $this->modelWhere->getWhereData();
-
-        $query = $this->queryBuilder->getSelectQuery($this->table, $whereClause);
-        $result = $this->query($query, $whereData);
-
+        $query = $this->queryBuilder->getSelectQuery($this->table, $this->modelWhere->getWhereQuery());
+        $result = $this->query($query, $this->modelWhere->getWhereData());
         $rows = $result->fetchAll(\PDO::FETCH_ASSOC);
         return !empty($rows) ? $this->fetchData($rows[0]) : null;
     }
 
     public function find($id)
     {
-        $this->where(['id' => $id]);
-        return $this->first();
+        return $this->where(['id' => $id])->first();
     }
+
     public function create(array $data): bool
     {
         $this->fill($data);
         return $this->save();
     }
+
     public function update(array $data): bool
     {
         $this->fill($data);
@@ -76,189 +71,111 @@ class Model extends Connection implements ModelInterface
     {
         $this->where(['id' => $this->id]);
         $this->modelWhere->resolve();
-        $query = $this->queryBuilder->getDeleteQuery($this->table,$this->modelWhere->getWhereQuery());
-        if ($this->query($query,$this->modelWhere->getWhereData())) {
-            return true;
-        }
-        return false;
+        $query = $this->queryBuilder->getDeleteQuery($this->table, $this->modelWhere->getWhereQuery());
+        return (bool) $this->query($query, $this->modelWhere->getWhereData());
     }
+
     public function fill(array $data): void
     {
+
         foreach ($data as $key => $value) {
-            if (in_array($key, $this->fillable)) {
-                $this->data[$key] = $value;
-            } else {
+            if (!in_array($key, $this->fillable)) {
                 throw new \Exception("Field '{$key}' not found");
             }
+            $this->newData[$key] = ($this->table === 'users' && $key === 'password')
+                ? password_hash($value, PASSWORD_DEFAULT)
+                : $value;
         }
-
     }
 
-    public function save($update = false)
+    public function save(bool $update = false): bool
     {
-        if (empty($this->data)) {
+        if (empty($this->newData)) {
             return false;
         }
-        $values = array_values($this->data);
+
+        $values = array_values($this->newData);
         if ($update) {
             $this->where(['id' => $this->id]);
             $this->modelWhere->resolve();
-            $query = $this->queryBuilder->getUpdateQuery($this->table,$this->data,$this->modelWhere->getWhereQuery());
+            $query = $this->queryBuilder->getUpdateQuery($this->table, $this->newData, $this->modelWhere->getWhereQuery());
+
             $values = array_merge($values, $this->modelWhere->getWhereData());
         } else {
-            $query = $this->queryBuilder->getInsertQuery($this->table,$this->data);    
+            $query = $this->queryBuilder->getInsertQuery($this->table, $this->newData);
         }
 
-        if ($this->table === 'users') {
-            if (isset($this->data['password'])) {
-                $this->data['password'] = password_hash($this->data['password'],PASSWORD_DEFAULT);
-            }
-        }
-        
-        if ($this->query($query,$values)) {
-            return true;
-        }
-
-        return false;
+        return (bool) $this->query($query, $values);
     }
 
-    public function where(array $wheres): static
-    {
-        $this->modelWhere->setWhere($wheres);
-        return $this;
-    }
+    // Query condition methods
+    public function where(array $wheres): static { $this->modelWhere->setWhere($wheres); return $this; }
+    public function orWhere(array $wheres): static { $this->modelWhere->setOrWhere($wheres); return $this; }
+    public function whereNull(array $columns): static { $this->modelWhere->setWhereNull($columns); return $this; }
+    public function whereNotNull(array $columns): static { $this->modelWhere->setWhereNotNull($columns); return $this; }
+    public function orWhereNull(array $columns): static { $this->modelWhere->setOrWhereNull($columns); return $this; }
+    public function orWhereNotNull(array $columns): static { $this->modelWhere->setOrWhereNotNull($columns); return $this; }
+    public function whereNotEqual(array $conditions): static { $this->modelWhere->setNotEquals($conditions); return $this; }
+    public function orWhereNotEqual(array $conditions): static { $this->modelWhere->setOrNotEquals($conditions); return $this; }
+    public function whereIn(array $conditions): static { $this->modelWhere->setWhereIn($conditions); return $this; }
+    public function whereNotIn(array $conditions): static { $this->modelWhere->setWhereNotIn($conditions); return $this; }
+    public function orWhereIn(array $conditions): static { $this->modelWhere->setOrWhereIn($conditions); return $this; }
+    public function orWhereNotIn(array $conditions): static { $this->modelWhere->setOrWhereNotIn($conditions); return $this; }
 
-    public function orWhere(array $orWheres): static
-    {
-        $this->modelWhere->setOrWhere($orWheres);
-        return $this;
-    }
-
-    public function whereNull(array $column): static
-    {
-        $this->modelWhere->setWhereNull($column);
-        return $this;
-    }
-
-    public function whereNotNull(array $column): static
-    {
-        $this->modelWhere->setWhereNotNull($column);
-        return $this;
-    }
-
-    public function orWhereNull(array $column): static
-    {
-        $this->modelWhere->setOrWhereNull($column);
-        return $this;
-    }
-
-    public function orWhereNotNull(array $column): static
-    {
-        $this->modelWhere->setOrWhereNotNull($column);
-        return $this;
-    }
-    public function whereNotEqual(array $data): static
-    {
-        $this->modelWhere->setNotEquals($data);
-        return $this;
-    }
-
-    public function orWhereNotEqual(array $data):static
-    {
-        $this->modelWhere->setOrNotEquals($data);
-        return $this;
-    }
-
-    public function whereIn(array $data): static
-    {
-        $this->modelWhere->setWhereIn($data);
-        return $this;
-    }
-
-    public function whereNotIn(array $data): static
-    {
-        $this->modelWhere->setWhereNotIn($data);
-        return $this;
-    }
-
-    public function orWhereIn(array $data): static
-    {
-        $this->modelWhere->setOrWhereIn($data);
-        return $this;
-    }
-
-    public function orWhereNotIn(array $data): static
-    {
-        $this->modelWhere->setOrWhereNotIn($data);
-        return $this;
-    }
     public function __get(string $name)
     {
-        if (!isset($this->data[$name])) {
-            return null;
-        }
-
-        return $this->data[$name] ;
+        return $this->data[$name] ?? null;
     }
 
+    // Relationships
     public function belongsTo($model, string $foreignKey = null, string $localKey = null)
     {
-        $model = new $model;
-
-        if (!$foreignKey) {
-            $foreignKey = lcfirst((new \ReflectionClass($model))->getShortName()) . '_id';
-        }
-        return $model->where(['id' => $this->$foreignKey])->first();
+        $instance = new $model;
+        $foreignKey = $foreignKey ?: lcfirst((new \ReflectionClass($instance))->getShortName()) . '_id';
+        return $instance->where(['id' => $this->$foreignKey])->first();
     }
 
     public function hasMany($model, string $localKey = null, string $foreignKey = null)
     {
-        return $this->getHasRelation($model,$localKey,$foreignKey)->get();
+        return $this->getHasRelation($model, $localKey, $foreignKey)->get();
     }
 
     public function hasOne($model, string $localKey = null, string $foreignKey = null)
     {
-        return $this->getHasRelation($model,$localKey,$foreignKey)->first();
+        return $this->getHasRelation($model, $localKey, $foreignKey)->first();
     }
 
-    public function with($with)
+    public function with($relations): static
     {
-        $this->with = array_merge($this->with,$with);
+        $this->with = array_merge($this->with, $relations);
         return $this;
-    } 
-
-    private function fetchArrayData($data): array
-    {
-        $result = [];
-        foreach ($data as $row) {
-            $result[] = $this->fetchData($row);
-        }
-        return $result;
     }
 
-    private function fetchData($data): static
+    private function fetchArrayData(array $data): array
     {
-        $model = new  static();
-        $model->data = $data;
-        if (!empty($this->with)) {
-            foreach ($this->with as  $value) {
-                $related = $model->$value();
-                
-                $model->relations[$value] = $related;
-                $model->data[$value] = $related;
-            }
+        return array_map(fn($row) => $this->fetchData($row), $data);
+    }
+
+    private function fetchData(array $row): static
+    {
+        $model = new static();
+        $model->data = $row;
+
+        foreach ($this->with as $relation) {
+            $related = $model->$relation();
+            $model->relations[$relation] = $related;
+            $model->data[$relation] = $related;
         }
+
         return $model;
     }
 
-    private function getHasRelation($model, string $localKey = null, string $foreignKey = null) {
-        $model = new $model;
-
-        if (!$foreignKey) {
-            $foreignKey = lcfirst((new \ReflectionClass($this))->getShortName()) . '_id';
-        }
-
+    private function getHasRelation($model, string $localKey = null, string $foreignKey = null)
+    {
+        $instance = new $model;
+        $foreignKey = $foreignKey ?: lcfirst((new \ReflectionClass($this))->getShortName()) . '_id';
         $localKey = $localKey ?: 'id';
-        return $model->where([$foreignKey => $this->$localKey]);
+
+        return $instance->where([$foreignKey => $this->$localKey]);
     }
 }

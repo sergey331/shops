@@ -6,6 +6,7 @@ use Kernel\Controller\BaseController;
 use Kernel\File\File;
 use Kernel\Validator\Validator;
 use Shop\model\Category;
+use Shop\rules\CategoryRules;
 
 class CategoryController extends BaseController
 {
@@ -29,7 +30,7 @@ class CategoryController extends BaseController
     {
         $data = $this->request()->all();
 
-        $validator = Validator::make($data, $this->rules(), $this->messages());
+        $validator = Validator::make($data, CategoryRules::rules(), CategoryRules::messages());
 
         if (!$validator->validate()) {
             $this->session()->set('errors', $validator->errors());
@@ -63,7 +64,7 @@ class CategoryController extends BaseController
      {
         
         $data = $this->request()->all();
-        $validator = Validator::make($data, $this->rules(), $this->messages());
+        $validator = Validator::make($data, CategoryRules::rules(), CategoryRules::messages());
 
         if (!$validator->validate()) {
             $this->session()->set('errors', $validator->errors());
@@ -73,9 +74,7 @@ class CategoryController extends BaseController
 
         $data = $this->handleAvatarUpload($data);
         $this->cleanCategoryId($data);
-
         $category->update($data);
-
         $this->session()->set('success', 'created');
         $this->redirect()->to('/admin/categories');
      }
@@ -93,26 +92,6 @@ class CategoryController extends BaseController
         $this->redirect()->to('/admin/categories');
      }
 
-    private function rules(): array
-    {
-        return [
-            'name'        => 'required',
-            'description' => 'required|min:3',
-            'avatar'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ];
-    }
-
-    private function messages(): array
-    {
-        return [
-            'name.required'        => 'Category name is required',
-            'description.required' => 'Description is required',
-            'avatar.image'         => 'Avatar must be an image',
-            'avatar.mimes'         => 'Avatar must be a file of type: jpeg, png, jpg, gif',
-            'avatar.max'           => 'Avatar must not exceed 2MB',
-        ];
-    }
-
     private function handleAvatarUpload(array $data): array
     {
         if ($this->request()->hasFile('avatar')) {
@@ -122,6 +101,10 @@ class CategoryController extends BaseController
 
             if ($uploader->upload()) {
                 $data['avatar'] = $uploader->getName();
+            }
+        } else {
+            if (isset($data['avatar'])) {
+                unset($data['avatar']);
             }
         }
 

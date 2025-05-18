@@ -44,7 +44,7 @@ class Template implements TemplateInterface
             '/@elseif\s*\((.*?)\)/'  => '<?php elseif ($1): ?>',
             '/@foreach\s*\((.*?)\)/' => '<?php foreach ($1): ?>',
             '/{{\s*(.*?)\s*}}/'      => '<?php echo $1; ?>',
-            '/{!! s*(.*?)\s* !!}/'      => '<?php $1 ?>',
+            '/{!!\s*(.*?)\s*!!}/s' => '<?php $1 ?>'
         ];
 
         $template = preg_replace(array_keys($replacements), array_values($replacements), $template);
