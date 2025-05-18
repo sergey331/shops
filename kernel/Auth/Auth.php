@@ -6,7 +6,7 @@ use Kernel\Container\Container;
 
 class Auth 
 {
-    public function __construct(private Container $container)
+    public function __construct(private readonly Container $container)
     {   
     }
     public function attempt(string $email, string $password): bool 
@@ -14,17 +14,17 @@ class Auth
         $user = $this->model()->where(["email" => $email])->first();
 
         if (!$user) {
-            $this->session()->set('login_error',"'Email is incorect'");
+            $this->session()->set('login_error',"'Email is incorrect'");
             return false;
         }
 
         if (!password_verify($password, $user->password)) {
-            $this->session()->set('login_error',"'Password is incorect'");
+            $this->session()->set('login_error',"'Password is incorrect'");
             return  false;
         }
 
         $this->session()->set('user_id', $user->id);
-        $this->session()->set('login_success',"'Password is incorect'");
+        $this->session()->set('login_success',"'Password is incorrect'");
         return true;
     }
 
@@ -40,19 +40,18 @@ class Auth
 
     public function id() 
     {
-        $this->session()->get('user_id');
+        return $this->session()->get('user_id');
     }
 
     public function user() 
     {
         if (!$this->check())
             return null;
-        $id = $this->session()->get('user_id');
 
-        return $this->model()->find($id);
+        return $this->model()->find($this->id());
     }
 
-    public function logout() 
+    public function logout(): void
     {
         $this->session()->remove('user_id');
     }
