@@ -9,10 +9,15 @@ class Product extends Model
     protected string $table = 'products';
     protected array $fillable = [
         "name",
-        'category_id',
-        'description',
-        'avatar',
-        'price',
+        "description",
+        "sku",
+        "price",
+        "sale_price",
+        "quantity",
+        "status",
+        "category_id",
+        "brand_id",
+        "image_url"
     ];
 
     public function category() 
