@@ -29,13 +29,19 @@ CREATE TABLE product_images (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
+CREATE TABLE options (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    variant_name VARCHAR(100) NOT NULL,
+    value VARCHAR(100) NOT NULL,
+    price DECIMAL(10, 2) DEFAULT NULL
+);
+
 CREATE TABLE product_options (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT NOT NULL,
-    variant_name VARCHAR(100) NOT NULL,
-    value VARCHAR(100) NOT NULL,
-    price DECIMAL(10, 2) DEFAULT NULL,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    option_id INT NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (option_id) REFERENCES options(id) ON DELETE CASCADE
 );
 
 CREATE TABLE product_discounts (

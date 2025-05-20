@@ -55,10 +55,11 @@ class Model extends Connection implements ModelInterface
         return $this->where(['id' => $id])->first();
     }
 
-    public function create(array $data): bool
+    public function create(array $data): static
     {
         $this->fill($data);
-        return $this->save();
+         $last_id = $this->save();
+         return $this->find($last_id);
     }
 
     public function update(array $data): bool
@@ -88,7 +89,7 @@ class Model extends Connection implements ModelInterface
         }
     }
 
-    public function save(bool $update = false): bool
+    public function save(bool $update = false): bool|int
     {
         if (empty($this->newData)) {
             return false;
@@ -105,7 +106,10 @@ class Model extends Connection implements ModelInterface
             $query = $this->queryBuilder->getInsertQuery($this->table, $this->newData);
         }
 
-        return (bool) $this->query($query, $values);
+        if (! $this->query($query, $values)) {
+            return false;
+        }
+        return $this->getLastId();
     }
 
     // Query condition methods

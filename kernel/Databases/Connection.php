@@ -35,4 +35,9 @@ class Connection
             echo $exception->getMessage();
         }
     }
+
+    public function getLastId(): false|string
+    {
+        return $this->connection->lastInsertId();
+    }
 }

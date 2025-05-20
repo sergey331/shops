@@ -6,17 +6,18 @@ use Kernel\Container\Container;
 
 class Template implements TemplateInterface
 {
+    protected array $data = [];
+
     public function __construct(protected Container $container)
     {}
-    
     public function load($path, $data = [], $layout = 'app'): void
     {
         $viewPath = $this->resolvePath($path);
         if (!file_exists($viewPath)) {
             throw new \RuntimeException("View not found: {$viewPath}");
         }
-        $data = $this->prepareData($data);
-        extract($data);
+        $this->data = $this->prepareData($data);
+        extract($this->data);
 
         ob_start();
         $content = file_get_contents($viewPath);
@@ -66,7 +67,7 @@ class Template implements TemplateInterface
             throw new \RuntimeException("Layout not found: {$layoutPath}");
         }
 
-        $data['content'] = $content; // make $content available in layout
+        $data['content'] = $content;
         extract($data);
 
         $layoutContent = file_get_contents($layoutPath);
@@ -93,7 +94,7 @@ class Template implements TemplateInterface
 
     private function renderInclude(string $view): string
     {
-        $auth = $this->container->get('auth');
+        extract($this->data);
         $includePath = $this->resolvePath($view);
         if (!file_exists($includePath)) {
             throw new \RuntimeException("Included view not found: {$includePath}");

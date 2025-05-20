@@ -6,6 +6,8 @@
         <ul class="dropdown-menu">
             <li><a href="/admin/categories">Categories</a></li>
             <li><a href="/admin/products">Products</a></li>
+            <li><a href="/admin/brand">Brand</a></li>
+            <li><a href="/admin/option">Option</a></li>
         </ul>
     </li>
 

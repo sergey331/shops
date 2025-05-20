@@ -7,6 +7,12 @@ use Kernel\Model\Model;
 class Product extends Model
 {
     protected string $table = 'products';
+
+    public static $satatus = [
+        'active',
+        'inactive',
+        'draft'
+    ];
     protected array $fillable = [
         "name",
         "description",

@@ -9,8 +9,6 @@ class ProductOption extends Model
     protected string $table = 'product_options';
     protected array $fillable = [
         "product_id",
-        "variant_name",
-        "value",
-        "price"
+        "option_id",
     ];
 }

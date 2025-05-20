@@ -8,7 +8,7 @@ class ProductImage extends Model
 {
     protected string $table = "product_images";
 
-    protected $fillable = [
+    protected array $fillable = [
         "product_id",
         "url",
         "is_main"
