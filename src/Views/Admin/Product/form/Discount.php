@@ -1,4 +1,5 @@
 {!!
+    $errors = $session->getCLean('errors') ?? [];
     $discount_type = $product->discount->discount_type ?? '';
     $discount_value = $product->discount->discount_value ?? '';
     $start_date = $product->discount->start_date ?? '';

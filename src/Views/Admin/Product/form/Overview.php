@@ -1,5 +1,5 @@
 {!!
-
+$errors = $session->getCLean('errors') ?? [];
     $name = $product->name ?? '';
     $price = $product->price ?? '';
     $sku = $product->sku ?? '';
@@ -7,9 +7,9 @@
     $status = $product->status ?? '';
     $category_id = $product->category_id ?? '';
     $brand_id = $product->brand_id ?? '';
+    $description = $product->description ?? '';
 
 !!}
-
 <div class="form-row">
     <label for="name">Product Name</label>
     <input type="text" name="name" id="name" value="{{ $name }}" >
@@ -60,7 +60,7 @@
 
 <div class="form-row">
     <label for="description">Description</label>
-    <textarea name="description" id="description" rows="3" placeholder="Short description..."></textarea>
+    <textarea name="description" id="description" rows="3" placeholder="Short description...">{{ $description }}</textarea>
     @isset($errors['description'])
     <ul class="errors">
         @foreach ($errors['description'] as $error)

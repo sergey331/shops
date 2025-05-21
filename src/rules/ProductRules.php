@@ -11,7 +11,7 @@ class ProductRules implements interface\RulesInterface
             "name" => "required|string|max:255",
             "description" => "required|string|max:255",
             "sku" => "required|string|max:255",
-            "price" => "required|integer",
+            "price" => "required|decimal",
             "quantity" => "required|integer",
             "status" => "required",
             "category_id" => "required|integer",

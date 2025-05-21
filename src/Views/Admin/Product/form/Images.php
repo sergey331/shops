@@ -1,3 +1,4 @@
+{!! $errors = $session->getCLean('errors') ?? []; !!}
 <div class="form-row">
     <label for="image_url">Image</label>
     <input type="file" name="image_url" id="image_url" accept="image/*">

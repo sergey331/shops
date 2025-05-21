@@ -7,7 +7,7 @@ class Validator
     protected array $allowedRules = [
         'required', 'email', 'url', 'integer', 'string',
         'max', 'min', 'between', 'confirmed', 'unique',
-        'image', 'mimes', 'nullable'
+        'image', 'mimes', 'nullable', 'decimal'
     ];
 
 
@@ -111,6 +111,15 @@ class Validator
     {
         $value = $this->data[$field] ?? null;
         if (!filter_var($value, FILTER_VALIDATE_INT)) {
+            $this->addError($field, "The {$field} must be an integer.",$rule);
+            return false;
+        }
+        return true;
+    }
+    protected function validateDecimal(string $field, $param = null,$rule): bool
+    {
+        $value = $this->data[$field] ?? null;
+        if (!filter_var($value,FILTER_VALIDATE_FLOAT) ) {
             $this->addError($field, "The {$field} must be an integer.",$rule);
             return false;
         }

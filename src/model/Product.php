@@ -8,6 +8,7 @@ class Product extends Model
 {
     protected string $table = 'products';
 
+    protected array $with = ['discount', 'options', 'images'];
     public static $satatus = [
         'active',
         'inactive',
@@ -29,5 +30,18 @@ class Product extends Model
     public function category() 
     {
         return $this->belongsTo(Category::class);
+    }
+    public function discount()
+    {
+        return $this->hasOne(ProductDiscount::class);
+    }
+
+    public function options()
+    {
+        return $this->hasMany(ProductOption::class);
+    }
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
     }
 }

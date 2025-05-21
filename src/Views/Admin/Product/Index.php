@@ -10,9 +10,13 @@
             <tr>
                 <th>#</th>
                 <th>Name</th>
-                <th>Description</th>
+                <th>Sku</th>
                 <th>Price</th>
+                <th>Quantity</th>
+                <th>Discount</th>
                 <th>Category</th>
+                <th>Status</th>
+                <th>Description</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -21,9 +25,13 @@
                 <tr>
                     <td>{{ $product->id }}</td>
                     <td>{{ $product->name }}</td>
-                    <td>{{ $product->description }}</td>
+                    <td>{{ $product->sku }}</td>
                     <td>{{ $product->price }}</td>
+                    <td>{{ $product->quantity }}</td>
+                    <td>{{ $product->discount->discount_value ?? '' }}</td>
                     <td>{{ $product->category->name }}</td>
+                    <td>{{ $product->status }}</td>
+                    <td>{{ $product->description }}</td>
                     <td>
                         <a href="/admin/products/{{ $product->id }}" class="btn btn-sm btn-edit">Edit</a>
                         <a href="/admin/products/delete/{{ $product->id }}" class="btn btn-sm btn-delete">Delete</a>
