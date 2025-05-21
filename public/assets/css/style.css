@@ -33,18 +33,34 @@ header {
         & .authentication {
             display: flex;
             gap: 20px;
+            align-items: center;
+            & .authentication-dropdown {
+                list-style: none;
+                & .authentication-dropdown-item {
+                    padding: 10px 20px;
+                    position: relative;
+                    z-index: 9999;
+                    & .authentication-dropdown-item-block {
+                        list-style: none;
+                        position: absolute;
+                        top: 100%;
+                        left: 0;
+                        background-color: #f8f3f3;
+                        & li {
 
-            & a {
-                text-decoration: none;
-                color: white;
-                font-size: 18px;
-                padding: 10px 20px;
-                border-radius: 5px;
-                transition: 0.3s ease;
+                            & a {
+                                padding: 10px 40px;
+                                display: block;
+                                text-decoration: none;
+                                color: #333;
 
-                &:hover {
-                    background-color: #6f8b6f;
-                    color: #f1f1f1;
+                            } &:first-child a {
+                                  border-bottom: 1px;
+                                  border-bottom-style: solid;
+                                  border-bottom-color: #333;
+                              }
+                        }
+                    }
                 }
             }
         }

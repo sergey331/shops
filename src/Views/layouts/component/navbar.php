@@ -7,8 +7,20 @@
     <div class="menu"></div>
     <div class="authentication">
         @auth
-            <span> {{ $auth->user()->username }}</span>
-            <a href="/logout" class="btn btn-secondary">logout</a>
+        <ul class="authentication-dropdown">
+            <li class="authentication-dropdown-item">
+                <span> {{ $auth->user()->username }}</span>
+                <ul class="authentication-dropdown-item-block">
+                    <li>
+                        <a href="/profile" class="nav-link">Profile</a>
+                    </li>
+                    <li>
+                        <a href="/logout" class="btn btn-secondary">logout</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
         @else
             <a href="/login" class="btn btn-primary">Login</a>
             <a href="/register" class="btn btn-secondary">Register</a>
