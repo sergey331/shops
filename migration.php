@@ -20,12 +20,7 @@ try {
     // Connect without selecting database
     $pdo = connectPDO($host, $user, $pass);
 
-    // Check if the database exists
-    $stmt = $pdo->prepare("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = :dbname");
-    $stmt->execute(['dbname' => $dbName]);
 
-    // Create the database if it doesn't exist
-    if (!$stmt->fetch()) {
         if (file_exists($initialSqlFile)) {
             $sql = file_get_contents($initialSqlFile);
             $pdo->exec($sql);
@@ -33,7 +28,7 @@ try {
         } else {
             throw new Exception("Initial SQL file not found: $initialSqlFile");
         }
-    }
+
 
     // Connect to the actual database
     $pdo = connectPDO($host, $user, $pass, $dbName);
@@ -45,7 +40,21 @@ try {
 
     $files = array_diff(scandir($migrationDir), ['.', '..', 'database.sql']);
 
+    $filesWithTime = [];
+
     foreach ($files as $file) {
+        $filePath = $migrationDir . DIRECTORY_SEPARATOR . $file;
+        if (is_file($filePath)) {
+            $filesWithTime[$file] = filemtime($filePath);
+        }
+    }
+
+    asort($filesWithTime);
+
+    $sortedFiles = array_keys($filesWithTime);
+
+
+    foreach ($sortedFiles as $file) {
         $filePath = $migrationDir . DIRECTORY_SEPARATOR . $file;
 
         if (!is_file($filePath)) continue;

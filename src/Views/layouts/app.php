@@ -5,20 +5,22 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+
     <title>Document</title>
 
 </head>
-<body>
+<body class="bg-gray-50 dark:bg-gray-900 ">
 <header>
     @include('layouts.component.navbar')
 </header>
-<main>
+<main id="app">
     <?= $content ?>
 </main>
 
 <footer>
    
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 </body>
 </html>
