@@ -22,6 +22,7 @@ class Product extends Model
         "sale_price",
         "quantity",
         "status",
+        "featured".
         "category_id",
         "brand_id",
         "image_url"
