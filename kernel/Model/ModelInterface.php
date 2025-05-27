@@ -7,14 +7,14 @@ interface ModelInterface
     // Retrieval methods
     public function all(): array;
     public function get(): array;
-    public function first();
-    public function find($id);
+    public function first(): null|static;
+    public function find($id): null|static;
 
     // Data manipulation methods
-    public function create(array $data);
-    public function update(array $data);
-    public function delete();
-    public function fill(array $data);
+    public function create(array $data): static;
+    public function update(array $data): bool;
+    public function delete(): bool;
+    public function fill(array $data): void;
     public function save(bool $update = false);
 
     // Where clause methods

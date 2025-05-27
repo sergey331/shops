@@ -48,7 +48,7 @@ class Model extends Connection implements ModelInterface
         return $this->fetchArrayData($result->fetchAll(\PDO::FETCH_ASSOC));
     }
 
-    public function first()
+    public function first(): null|static
     {
         $this->modelWhere->resolve();
         $query = $this->queryBuilder->getSelectQuery($this->table, $this->modelWhere->getWhereQuery());
@@ -57,7 +57,7 @@ class Model extends Connection implements ModelInterface
         return !empty($rows) ? $this->fetchData($rows[0]) : null;
     }
 
-    public function find($id)
+    public function find($id): null|static
     {
         return $this->where(['id' => $id])->first();
     }
