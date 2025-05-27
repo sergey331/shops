@@ -297,4 +297,28 @@ class Model extends Connection implements ModelInterface
 
         return $instance->where([$foreignKey => $this->$localKey]);
     }
+
+    public function whereDateNotBeetwen(array $conditions): static
+    {
+       $this->modelWhere->setWhereDateNotBetweens($conditions);
+        return $this;
+    }
+
+    public function orWhereDateNotBeetwen(array $conditions): static
+    {
+        $this->modelWhere->setOrWhereDateNotBetweens($conditions);
+        return $this;
+    }
+
+    public function whereDateOperators(array $conditions): static
+    {
+        $this->modelWhere->setWhereDateOperators($conditions);
+        return $this;
+    }
+
+    public function orWhereDateOperators(array $conditions): static
+    {
+        $this->modelWhere->setOrWhereDateOperators($conditions);
+        return $this;
+    }
 }

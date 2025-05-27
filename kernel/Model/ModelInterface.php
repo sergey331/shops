@@ -41,6 +41,10 @@ interface ModelInterface
     public function orWhereDate(array $conditions): static;
     public function whereDateBeetwen(array $conditions): static;
     public function orWhereDateBeetwen(array $conditions): static;
+    public function whereDateNotBeetwen(array $conditions): static;
+    public function orWhereDateNotBeetwen(array $conditions): static;
+    public function whereDateOperators(array $conditions): static;
+    public function orWhereDateOperators(array $conditions): static;
 
     public function orderBy(string|array $column, string $direction = 'ASC'): static;
 
