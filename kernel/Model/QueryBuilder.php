@@ -12,7 +12,7 @@ class QueryBuilder
         $sql = "SELECT * FROM {$table}";
 
         if (!empty($where)) {
-            $sql .= " WHERE {$where}";
+            $sql .= " {$where}";
         }
 
         if (!empty($this->groupBy)) {
