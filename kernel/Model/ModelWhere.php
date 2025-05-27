@@ -23,6 +23,11 @@ class ModelWhere
     public array $orWhereNotIn = [];
     protected array $data = [];
 
+    protected array $whereDates = [];
+    protected array $whereDateBetweens = [];
+    protected array $orWhereDates = [];
+    protected array $orWhereDateBetweens = [];
+
     public function setWhere($wheres): static
     {
         $this->wheres = array_merge($this->wheres ?? [],$wheres);
@@ -93,6 +98,30 @@ class ModelWhere
         $this->orWhereNotIn = array_merge($this->orWhereNotIn ?? [],$wheres);
         return $this;
     }
+
+    public function setWhereDates(array $wheres): static
+    {
+        $this->whereDates = array_merge($this->whereDates ?? [], $wheres);
+        return $this;
+    }
+
+    public function setWhereDateBetweens(array $wheres): static
+    {
+        $this->whereDateBetweens = array_merge($this->whereDateBetweens ?? [], $wheres);
+        return $this;
+    }
+
+    public function setOrWhereDates(array $wheres): static
+    {
+        $this->orWhereDates = array_merge($this->orWhereDates ?? [], $wheres);
+        return $this;
+    }
+
+    public function setOrWhereDateBetweens(array $wheres): static
+    {
+        $this->orWhereDateBetweens = array_merge($this->orWhereDateBetweens ?? [], $wheres);
+        return $this;
+    }
     public function resolve(): static
     {
         $clauses = [];
@@ -149,6 +178,7 @@ class ModelWhere
                 $data = array_merge($data, $values);
             }
         }
+
         if (!empty($this->whereNotIn)) {
             foreach ($this->whereNotIn as $field => $values) {
                 $placeholders = implode(', ', array_fill(0, count($values), '?'));
@@ -156,6 +186,7 @@ class ModelWhere
                 $data = array_merge($data, $values);
             }
         }
+
         if (!empty($this->orWhereIn)) {
             $orParts = [];
             foreach ($this->orWhereIn as $field => $values) {
@@ -175,6 +206,46 @@ class ModelWhere
             $clauses[] = '(' . implode(' OR ', $orParts) . ')';
         }
 
+        if (!empty($this->whereDates)) {
+            foreach ($this->whereDates as $field => $date) {
+                $clauses[] = "$field = ?";
+                $data[] = $date;
+            }
+        }
+
+        if (!empty($this->whereDateBetweens)) {
+            foreach ($this->whereDateBetweens as $field => $range) {
+                if (count($range) === 2) {
+                    $clauses[] = "$field BETWEEN ? AND ?";
+                    $data[] = $range[0];
+                    $data[] = $range[1];
+                }
+            }
+        }
+
+        if (!empty($this->orWhereDates)) {
+            $orParts = [];
+            foreach ($this->orWhereDates as $field => $date) {
+                $orParts[] = "$field = ?";
+                $data[] = $date;
+            }
+            $clauses[] = '(' . implode(' OR ', $orParts) . ')';
+        }
+
+        if (!empty($this->orWhereDateBetweens)) {
+            $orParts = [];
+            foreach ($this->orWhereDateBetweens as $field => $range) {
+                if (count($range) === 2) {
+                    $orParts[] = "$field BETWEEN ? AND ?";
+                    $data[] = $range[0];
+                    $data[] = $range[1];
+                }
+            }
+            if (!empty($orParts)) {
+                $clauses[] = '(' . implode(' OR ', $orParts) . ')';
+            }
+        }
+
         if (!empty($clauses)) {
             $this->whereQuery = 'WHERE ' . implode(' AND ', $clauses);
             $this->data = array_merge($this->data, $data);
@@ -192,7 +263,4 @@ class ModelWhere
     {
         return $this->data;
     }
-
-
-
 }

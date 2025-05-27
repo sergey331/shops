@@ -36,4 +36,16 @@ interface ModelInterface
     public function whereNotIn(array $conditions): static;
     public function orWhereIn(array $conditions): static;
     public function orWhereNotIn(array $conditions): static;
+
+    public function whereDate(array $conditions): static;
+    public function orWhereDate(array $conditions): static;
+    public function whereDateBeetwen(array $conditions): static;
+    public function orWhereDateBeetwen(array $conditions): static;
+
+    public function orderBy(string|array $column, string $direction = 'ASC'): static;
+
+
+    public function groupBy(string|array $column): static;
+
+    public function limit(int $limit): static;
 }

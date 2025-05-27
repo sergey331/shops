@@ -2,6 +2,7 @@
 
 namespace Kernel\Model;
 
+use Exception;
 use Kernel\Databases\Connection;
 
 #[\AllowDynamicProperties]
@@ -26,11 +27,17 @@ class Model extends Connection implements ModelInterface
         $this->queryBuilder = new QueryBuilder();
     }
 
+    /**
+     * @throws Exception
+     */
     public function all(): array
     {
+        if (!empty($this->modelWhere->getWhereData())) {
+            throw new Exception("You cannot use 'all' method with where conditions. Use 'get' or 'first' instead.");
+        }
         $query = $this->queryBuilder->getSelectQuery($this->table);
-        $result = $this->query($query, $this->modelWhere->getWhereData());
-        return $result->fetchAll(\PDO::ATTR_CASE);
+        $result = $this->query($query);
+        return $this->fetchArrayData($result->fetchAll(\PDO::FETCH_ASSOC));
     }
 
     public function get(): array
@@ -58,8 +65,8 @@ class Model extends Connection implements ModelInterface
     public function create(array $data): static
     {
         $this->fill($data);
-         $last_id = $this->save();
-         return $this->find($last_id);
+        $last_id = $this->save();
+        return $this->find($last_id);
     }
 
     public function update(array $data): bool
@@ -73,7 +80,7 @@ class Model extends Connection implements ModelInterface
         $this->where(['id' => $this->id]);
         $this->modelWhere->resolve();
         $query = $this->queryBuilder->getDeleteQuery($this->table, $this->modelWhere->getWhereQuery());
-        return (bool) $this->query($query, $this->modelWhere->getWhereData());
+        return (bool)$this->query($query, $this->modelWhere->getWhereData());
     }
 
     public function fill(array $data): void
@@ -81,7 +88,7 @@ class Model extends Connection implements ModelInterface
 
         foreach ($data as $key => $value) {
             if (!in_array($key, $this->fillable)) {
-                throw new \Exception("Field '{$key}' not found");
+                throw new Exception("Field '{$key}' not found");
             }
             $this->newData[$key] = ($this->table === 'users' && $key === 'password')
                 ? password_hash($value, PASSWORD_DEFAULT)
@@ -106,25 +113,133 @@ class Model extends Connection implements ModelInterface
             $query = $this->queryBuilder->getInsertQuery($this->table, $this->newData);
         }
 
-        if (! $this->query($query, $values)) {
+        if (!$this->query($query, $values)) {
             return false;
         }
         return $this->getLastId();
     }
 
     // Query condition methods
-    public function where(array $wheres): static { $this->modelWhere->setWhere($wheres); return $this; }
-    public function orWhere(array $wheres): static { $this->modelWhere->setOrWhere($wheres); return $this; }
-    public function whereNull(array $columns): static { $this->modelWhere->setWhereNull($columns); return $this; }
-    public function whereNotNull(array $columns): static { $this->modelWhere->setWhereNotNull($columns); return $this; }
-    public function orWhereNull(array $columns): static { $this->modelWhere->setOrWhereNull($columns); return $this; }
-    public function orWhereNotNull(array $columns): static { $this->modelWhere->setOrWhereNotNull($columns); return $this; }
-    public function whereNotEqual(array $conditions): static { $this->modelWhere->setNotEquals($conditions); return $this; }
-    public function orWhereNotEqual(array $conditions): static { $this->modelWhere->setOrNotEquals($conditions); return $this; }
-    public function whereIn(array $conditions): static { $this->modelWhere->setWhereIn($conditions); return $this; }
-    public function whereNotIn(array $conditions): static { $this->modelWhere->setWhereNotIn($conditions); return $this; }
-    public function orWhereIn(array $conditions): static { $this->modelWhere->setOrWhereIn($conditions); return $this; }
-    public function orWhereNotIn(array $conditions): static { $this->modelWhere->setOrWhereNotIn($conditions); return $this; }
+    public function where(array $wheres): static
+    {
+        $this->modelWhere->setWhere($wheres);
+        return $this;
+    }
+
+    public function orWhere(array $wheres): static
+    {
+        $this->modelWhere->setOrWhere($wheres);
+        return $this;
+    }
+
+    public function whereNull(array $columns): static
+    {
+        $this->modelWhere->setWhereNull($columns);
+        return $this;
+    }
+
+    public function whereNotNull(array $columns): static
+    {
+        $this->modelWhere->setWhereNotNull($columns);
+        return $this;
+    }
+
+    public function orWhereNull(array $columns): static
+    {
+        $this->modelWhere->setOrWhereNull($columns);
+        return $this;
+    }
+
+    public function orWhereNotNull(array $columns): static
+    {
+        $this->modelWhere->setOrWhereNotNull($columns);
+        return $this;
+    }
+
+    public function whereNotEqual(array $conditions): static
+    {
+        $this->modelWhere->setNotEquals($conditions);
+        return $this;
+    }
+
+    public function orWhereNotEqual(array $conditions): static
+    {
+        $this->modelWhere->setOrNotEquals($conditions);
+        return $this;
+    }
+
+    public function whereIn(array $conditions): static
+    {
+        $this->modelWhere->setWhereIn($conditions);
+        return $this;
+    }
+
+    public function whereNotIn(array $conditions): static
+    {
+        $this->modelWhere->setWhereNotIn($conditions);
+        return $this;
+    }
+
+    public function orWhereIn(array $conditions): static
+    {
+        $this->modelWhere->setOrWhereIn($conditions);
+        return $this;
+    }
+
+    public function orWhereNotIn(array $conditions): static
+    {
+        $this->modelWhere->setOrWhereNotIn($conditions);
+        return $this;
+    }
+
+    public function whereDate(array $conditions): static
+    {
+        $this->modelWhere->setWhereDates($conditions);
+        return $this;
+    }
+
+    public function orWhereDate(array $conditions): static
+    {
+        $this->modelWhere->setOrWhereDates($conditions);
+        return $this;
+    }
+
+    public function whereDateBeetwen(array $conditions): static
+    {
+        $this->modelWhere->setWhereDateBetweens($conditions);
+        return $this;
+    }
+
+    public function orWhereDateBeetwen(array $conditions): static
+    {
+        $this->modelWhere->setOrWhereDateBetweens($conditions);
+        return $this;
+    }
+
+    public function orderBy(string|array $column, string $direction = 'ASC'): static
+    {
+        if (is_array($column)) {
+            $orderBy = $column;
+        } else {
+            $orderBy = [$column => $direction];
+        }
+        $this->queryBuilder->setOrderBy($orderBy);
+        return $this;
+    }
+
+
+    public function groupBy(string|array $column): static
+    {
+        $groupBy = is_array($column) ? $column : [$column];
+        $this->queryBuilder->setGroupBy($groupBy);
+        return $this;
+    }
+
+    public function limit(int $limit): static
+    {
+        $this->queryBuilder->setLimit($limit);
+        return $this;
+    }
 
     public function __get(string $name)
     {

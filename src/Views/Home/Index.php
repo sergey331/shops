@@ -1,8 +1,1 @@
-<?php
-/**
- * @var string $title
- */
-?>
-
-
-<h2><?php echo $title ?></h2>
+@include('Component.Product.FeaturedProducts');
