@@ -21,6 +21,13 @@ document.addEventListener('DOMContentLoaded', function () {
         dateFormat: "Y-m-d H:i", // Format compatible with PHP
         time_24hr: true
     });
+
+    flatpickr("#published_at", {
+        enableTime: true,
+        minDate: new Date(new Date().setHours(24, 0, 0, 0)),
+        dateFormat: "Y-m-d H:i:s", // Format compatible with PHP
+        time_24hr: true
+    });
 });
 
 $(document).ready(function() {

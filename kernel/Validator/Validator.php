@@ -29,38 +29,38 @@ class Validator
     }
 
     public function validate(): bool
-{
-    foreach ($this->rules as $field => $ruleSet) {
-        $rules = explode('|', $ruleSet);
-        $isNullable = in_array('nullable', $rules);
-        $value = $this->data[$field] ?? null;
+    {
+        foreach ($this->rules as $field => $ruleSet) {
+            $rules = explode('|', $ruleSet);
+            $isNullable = in_array('nullable', $rules);
+            $value = $this->data[$field] ?? null;
 
-        if ($isNullable && ($value === null || $value === '' || (!isset($value['size']) || $value['size'] === 0 ))) {
-            continue;
-        }
-
-        foreach ($rules as $rule) {
-            if ($rule === 'nullable') {
+            if ($isNullable && ($value === null || $value === '' || (!isset($value['size']) || $value['size'] === 0))) {
                 continue;
             }
-    
-            $this->applyRule($field, $rule);
-        }
-    }
 
-    return empty($this->errors);
-}
+            foreach ($rules as $rule) {
+                if ($rule === 'nullable') {
+                    continue;
+                }
+
+                $this->applyRule($field, $rule);
+            }
+        }
+
+        return empty($this->errors);
+    }
 
     protected function applyRule(string $field, string $rule): bool
     {
         [$ruleName, $param] = array_pad(explode(':', $rule, 2), 2, null);
         if (!in_array($ruleName, $this->allowedRules)) {
-            $this->addError($field, "The {$field} field has an invalid rule: {$ruleName}.",$ruleName);
+            $this->addError($field, "The {$field} field has an invalid rule: {$ruleName}.", $ruleName);
             return false;
         }
 
         $method = "validate" . ucfirst($ruleName);
-       
+
         if (method_exists($this, $method)) {
             return $this->$method($field, $param, $ruleName);
         }
@@ -70,77 +70,78 @@ class Validator
 
     protected function addError(string $field, string $default, $rule): void
     {
-       
+
         $key = $rule ? "{$field}.{$rule}" : $field;
         $this->errors[$field][] = $this->messages[$key] ?? $default;
     }
 
     // === Individual Rule Methods ===
 
-    protected function validateRequired(string $field, $param = null,  $rule): bool
+    protected function validateRequired(string $field, $param = null, $rule): bool
     {
         $value = $this->data[$field] ?? null;
         if (empty($value) && $value !== '0') {
-            $this->addError($field, "The {$field} field is required.",$rule);
+            $this->addError($field, "The {$field} field is required.", $rule);
             return false;
         }
         return true;
     }
 
-    protected function validateEmail(string $field, $param = null,$rule): bool
+    protected function validateEmail(string $field, $param = null, $rule): bool
     {
         $value = $this->data[$field] ?? '';
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            $this->addError($field, "The {$field} must be a valid email address.",$rule);
+            $this->addError($field, "The {$field} must be a valid email address.", $rule);
             return false;
         }
         return true;
     }
 
-    protected function validateUrl(string $field, $param = null,$rule): bool
+    protected function validateUrl(string $field, $param = null, $rule): bool
     {
         $value = $this->data[$field] ?? '';
         if (!filter_var($value, FILTER_VALIDATE_URL)) {
-            $this->addError($field, "The {$field} must be a valid URL.",$rule);
+            $this->addError($field, "The {$field} must be a valid URL.", $rule);
             return false;
         }
         return true;
     }
 
-    protected function validateInteger(string $field, $param = null,$rule): bool
+    protected function validateInteger(string $field, $param = null, $rule): bool
     {
         $value = $this->data[$field] ?? null;
         if (!filter_var($value, FILTER_VALIDATE_INT)) {
-            $this->addError($field, "The {$field} must be an integer.",$rule);
-            return false;
-        }
-        return true;
-    }
-    protected function validateDecimal(string $field, $param = null,$rule): bool
-    {
-        $value = $this->data[$field] ?? null;
-        if (!filter_var($value,FILTER_VALIDATE_FLOAT) ) {
-            $this->addError($field, "The {$field} must be an integer.",$rule);
+            $this->addError($field, "The {$field} must be an integer.", $rule);
             return false;
         }
         return true;
     }
 
-    protected function validateString(string $field, $param = null,$rule): bool
+    protected function validateDecimal(string $field, $param = null, $rule): bool
+    {
+        $value = $this->data[$field] ?? null;
+        if (!filter_var($value, FILTER_VALIDATE_FLOAT)) {
+            $this->addError($field, "The {$field} must be an integer.", $rule);
+            return false;
+        }
+        return true;
+    }
+
+    protected function validateString(string $field, $param = null, $rule): bool
     {
         $value = $this->data[$field] ?? '';
         if (!is_string($value)) {
-            $this->addError($field, "The {$field} must be a string.",$rule);
+            $this->addError($field, "The {$field} must be a string.", $rule);
             return false;
         }
         return true;
     }
 
-    protected function validateMin(string $field, ?string $param,$rule): bool
+    protected function validateMin(string $field, ?string $param, $rule): bool
     {
         $value = $this->data[$field] ?? '';
         if (strlen($value) < (int)$param) {
-            $this->addError($field, "The {$field} must be at least {$param} characters.",$rule);
+            $this->addError($field, "The {$field} must be at least {$param} characters.", $rule);
             return false;
         }
         return true;
@@ -165,25 +166,34 @@ class Validator
         return true;
     }
 
-
-    protected function validateBetween(string $field, ?string $param,$rule): bool
+    protected function validateUnique(string $field, ?string $param, $rule): bool
     {
         $value = $this->data[$field] ?? '';
-        [$min, $max] = array_map('intval', explode(',', $param));
-        $len = strlen($value);
-        if ($len < $min || $len > $max) {
-            $this->addError($field, "The {$field} must be between {$min} and {$max} characters.",$rule);
+        if (strlen($value) < (int)$param) {
+            $this->addError($field, "The {$field} must be at least {$param} characters.", $rule);
             return false;
         }
         return true;
     }
 
-    protected function validateConfirmed(string $field, $param = null,$rule): bool
+    protected function validateBetween(string $field, ?string $param, $rule): bool
+    {
+        $value = $this->data[$field] ?? '';
+        [$min, $max] = array_map('intval', explode(',', $param));
+        $len = strlen($value);
+        if ($len < $min || $len > $max) {
+            $this->addError($field, "The {$field} must be between {$min} and {$max} characters.", $rule);
+            return false;
+        }
+        return true;
+    }
+
+    protected function validateConfirmed(string $field, $param = null, $rule): bool
     {
         $value = $this->data[$field] ?? null;
         $confirm = $this->data[$field . '_confirmation'] ?? null;
         if ($value !== $confirm) {
-            $this->addError($field, "The {$field} confirmation does not match.",$rule);
+            $this->addError($field, "The {$field} confirmation does not match.", $rule);
             return false;
         }
         return true;
@@ -206,6 +216,7 @@ class Validator
 
         return true;
     }
+
     protected function validateMimes(string $field, ?string $param, $rule): bool
     {
         $file = $this->data[$field] ?? null;
@@ -220,9 +231,9 @@ class Validator
 
         $map = [
             'jpeg' => 'image/jpeg',
-            'jpg'  => 'image/jpeg',
-            'png'  => 'image/png',
-            'gif'  => 'image/gif',
+            'jpg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
             // Add more as needed
         ];
 

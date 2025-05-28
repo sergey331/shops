@@ -39,13 +39,15 @@ class File implements FileInterface
         $file = $this->getFile();
 
         $path = $this->getPath();
-    
+
 
         if (!is_dir($path)) {
+
             if (!mkdir($path, 0777, true)) {
                 $this->error = 'Failed to create upload directory.';
                 return false;
             }
+
         }
         $safeName = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', basename($file['name']));
         $targetPath = $path . $safeName;

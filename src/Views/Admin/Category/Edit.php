@@ -2,7 +2,7 @@
 <div class="form-wrapper">
     <h2>Edit Category</h2>
 
-    <form action="/admin/category/{{$category->id}}" method="POST" enctype="multipart/form-data" class="form-grid">
+    <form action="/admin/categories/{{$category->id}}" method="POST" enctype="multipart/form-data" class="form-grid">
         <div class="form-row">
             <label for="name">Category Name</label>
             <input type="text" name="name" id="name"  placeholder="e.g. Electronics" value="{{$category->name}}">

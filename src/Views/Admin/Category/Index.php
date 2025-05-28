@@ -8,7 +8,7 @@
     <h1>Categories</h1>
 
     <div class="category-header">
-        <a href="/admin/category/create" class="btn btn-add">Add New Category</a>
+        <a href="/admin/categories/create" class="btn btn-add">Add New Category</a>
     </div>
     <div class="category-table">
         <table>
@@ -33,8 +33,8 @@
                     </button>
                 </td>
                 <td>
-                    <a href="/admin/category/{{ $category->id }}" class="btn btn-sm btn-edit">Edit</a>
-                    <a href="/admin/category/delete/{{ $category->id }}" class="btn btn-sm btn-delete">Delete</a>
+                    <a href="/admin/categories/{{ $category->id }}" class="btn btn-sm btn-edit">Edit</a>
+                    <a href="/admin/categories/delete/{{ $category->id }}" class="btn btn-sm btn-delete">Delete</a>
                 </td>
             </tr>
             <tr id="children-{{ $category->id }}" class="children-row" style="display: none;">

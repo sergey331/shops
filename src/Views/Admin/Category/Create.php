@@ -2,7 +2,7 @@
 <div class="form-wrapper">
     <h2>Create New Category</h2>
 
-    <form action="/admin/category/store" method="POST" enctype="multipart/form-data" class="form-grid">
+    <form action="/admin/categories/store" method="POST" enctype="multipart/form-data" class="form-grid">
         <div class="form-row">
             <label for="name">Category Name</label>
             <input type="text" name="name" id="name"  placeholder="e.g. Electronics">
