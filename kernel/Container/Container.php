@@ -12,6 +12,12 @@ class Container
     private array $services = [];
     private array $shared = [];
 
+    public static Container $application;
+
+    public function __construct()
+    {
+        self::$application = $this;
+    }
     // Register a service, with an optional shared flag
     public function set($name, $service, $shared = false): void
     {

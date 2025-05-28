@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 
 define("APP_PATH",dirname(__DIR__));
 
+require APP_PATH . '/kernel/Helper/Helpers.php';
 require APP_PATH . '/vendor/autoload.php';
 require APP_PATH . '/config/env.php';
 require APP_PATH . '/kernel/App.php';
