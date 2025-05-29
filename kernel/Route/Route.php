@@ -6,66 +6,93 @@ use Closure;
 
 class Route implements RouteInterface
 {
+    private static array $routers = [];
+    private static string $currentPrefix = '';
+    private static bool $is_prefix = false;
+    private static bool $is_group = false;
+    private static array $currentMiddleware = [];
 
-    public function __construct()
+    private static function formatUri(string $uri): string
     {
+        $uriPath = self::$is_prefix ? self::$currentPrefix . $uri : $uri;
+        return strlen($uriPath) > 1 ? rtrim($uriPath, '/') : $uriPath;
     }
 
-    public static function get(string $uri, $action, array $params = []): array
+    private static function addRoute(string $method, string $uri, $action, array $params): void
     {
-        return [
-            'method' => 'GET',
-            'uri' => $uri,
+        self::$routers[] = [
+            'method' => strtoupper($method),
+            'uri' => self::formatUri($uri),
             'action' => $action,
             'params' => $params,
+            'group' => self::$is_group ? ['middleware' => self::$currentMiddleware] : [],
         ];
     }
 
-    public static function post(string $uri, $action, array $params = []): array
+    public static function get(string $uri, $action, array $params = []): void
     {
-        return [
-            'method' => 'POST',
-            'uri' => $uri,
-            'action' => $action,
-            'params' => $params,
-        ];
-    }
-    public static function put(string $uri, $action, array $params = []): array
-    {
-        return [
-            'method' => 'PUT',
-            'uri' => $uri,
-            'action' => $action,
-            'params' => $params,
-        ];
-    }
-    public static function delete(string $uri, $action, array $params = []): array
-    {
-        return [
-            'method' => 'PUT',
-            'uri' => $uri,
-            'action' => $action,
-            'params' => $params,
-        ];
+        self::addRoute('GET', $uri, $action, $params);
     }
 
-    public static function group(array $params, Closure $callback): array
+    public static function post(string $uri, $action, array $params = []): void
     {
-        $prefix = $params['prefix'] ?? '';
-        unset($params['prefix']);
-        $router = new static();
-        $groupRoutes = $callback($router);
-        $result = [];
-        foreach ($groupRoutes as $route) {
-            $routes = isset($route['uri']) ? [$route] : $route;
-            foreach ($routes as &$r) {
-                $r['uri'] = rtrim($prefix . $r['uri'], '/');
-                $r['group'] = $params;
-                $result[] = $r;
+        self::addRoute('POST', $uri, $action, $params);
+    }
+
+    public static function put(string $uri, $action, array $params = []): void
+    {
+        self::addRoute('PUT', $uri, $action, $params);
+    }
+
+    public static function delete(string $uri, $action, array $params = []): void
+    {
+        self::addRoute('DELETE', $uri, $action, $params);
+    }
+
+    public static function group(array|Closure $params, Closure $callback = null): void
+    {
+        if (is_array($params)) {
+            $previousPrefix = self::$currentPrefix;
+            $previousMiddleware = self::$currentMiddleware;
+
+            if (isset($params['prefix'])) {
+                self::$is_prefix = true;
+                self::$currentPrefix .= rtrim($params['prefix'], '/');
             }
+
+            if (isset($params['middleware']) || !empty( self::$currentMiddleware)) {
+                self::$is_group = true;
+                self::$currentMiddleware = array_merge(self::$currentMiddleware, $params['middleware'] ?? []);
+            }
+
+            $callback();
+
+            self::$currentPrefix = $previousPrefix;
+            self::$currentMiddleware = $previousMiddleware;
+        } elseif ($params instanceof Closure) {
+            $params();
         }
-    
-        return $result;
+
+        self::$is_prefix = false;
+        self::$is_group = false;
     }
-    
+
+    public static function middleware(array $middleware): self
+    {
+        self::$is_group = true;
+        self::$currentMiddleware = array_merge(self::$currentMiddleware, $middleware);
+        return new self();
+    }
+
+    public static function prefix(string $prefix): self
+    {
+        self::$is_prefix = true;
+        self::$currentPrefix .= rtrim($prefix, '/');
+        return new self();
+    }
+
+    public static function getRoutes(): array
+    {
+        return self::$routers;
+    }
 }

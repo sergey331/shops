@@ -29,7 +29,7 @@ class Routers
 
     private function getRoutes(): void
     {
-        $this->routes = require APP_PATH . '/config/router.php';
+        $this->routes = Route::getRoutes();
     }
 
     /**
@@ -41,6 +41,7 @@ class Routers
         $route = $this->container->get('routeAction')->getAction($this->routes);
 
         if (!empty($route['group']['middleware'])) {
+            
             $middlewares = (array) $route['group']['middleware'];
             foreach ($middlewares as $middlewareClass) {
                 $resolver = new RouteMiddleware();
@@ -62,9 +63,14 @@ class Routers
             if (is_array($action)) {
                 [$controller, $method] = $action;
                 $controller = new $controller();
-
+                $newParams = [];
+                foreach ($params as $key => $value) {
+                    if ($key !== 'middleware') {
+                        $newParams[] = $value;
+                    }
+                }
                 call_user_func([$controller, 'setContainer'], $this->container);
-                call_user_func([$controller, $method],...$params);
+                call_user_func([$controller, $method],...$newParams);
             } else if (is_callable($action)) {
                 call_user_func($action);
             } else {

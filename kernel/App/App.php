@@ -13,6 +13,11 @@ class App
         $this->container = $container;
     }
 
+    public function setRouter($file): void
+    {
+        require_once $file;
+    }
+
     /**
      * @throws Exception
      */

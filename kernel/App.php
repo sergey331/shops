@@ -6,6 +6,7 @@ use Kernel\Container\Container;
 use Kernel\Databases\Db;
 use Kernel\Redirect\Redirect;
 use Kernel\Request\Request;
+use Kernel\Route\ResolveRouter;
 use Kernel\Route\RouteAction;
 use Kernel\Route\Routers;
 use Kernel\Session\Session;
@@ -27,6 +28,8 @@ $container->set('router', fn() => new Routers($container));
 
 // Run the application
 $app = new App($container);
+
+$app->setRouter(APP_PATH . '/config/router.php');
 
 try {
     $app->run();

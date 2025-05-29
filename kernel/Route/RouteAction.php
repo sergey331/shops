@@ -19,6 +19,7 @@ class RouteAction implements RouteActionInterface
         /* @var RequestInterface $request */
         $request = $this->container->get('request');
         $url = $request->getUri();
+        $url = strlen($url) > 1 ? rtrim($url, '/') : $url;
         $method = $request->getMethod();
         $segments = explode('/', trim($url, '/'));
         $id = end($segments);

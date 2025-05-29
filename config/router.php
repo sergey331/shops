@@ -2,90 +2,72 @@
 
 use Kernel\Route\Route;
 use Shop\controllers\admin\AdminController;
+use Shop\controllers\admin\BrandController;
 use Shop\controllers\admin\CategoryController;
 use Shop\controllers\admin\NewsController;
 use Shop\controllers\admin\OptionController;
 use Shop\controllers\admin\ProductController;
-use Shop\controllers\HomeController;
 use Shop\controllers\AuthController;
+use Shop\controllers\HomeController;
 use Shop\controllers\RegisterController;
-use Shop\controllers\admin\BrandController;
 
-return [
-    Route::group(["middleware" => ["guest"]], function ($route) {
-        return [
-            $route->get('/register', [RegisterController::class, 'index']),
-            $route->post('/register', [RegisterController::class, 'register']),
-            $route->get('/login', [AuthController::class, 'index']),
-            $route->post('/login', [AuthController::class, 'login']),
 
-        ];
-    }),
-    Route::group(["middleware" => ["auth"]], function ($route) {
-        return [
-            $route->get('/logout', [AuthController::class, 'logout']),
+Route::group(["middleware" => ["guest"]], function () {
+    Route::get('/register', [RegisterController::class, 'index']);
+    Route::post('/register', [RegisterController::class, 'register']);
+    Route::get('/login', [AuthController::class, 'index']);
+    Route::post('/login', [AuthController::class, 'login']);
+});
+Route::group(["middleware" => ["auth"]], function () {
+    Route::get('/logout', [AuthController::class, 'logout']);
+});
 
-        ];
-    }),
+Route::middleware(["admin"])->group(function () {
+    Route::prefix("/admin")->group(function () {
+        Route::get('/', [AdminController::class, 'index']);
+        Route::group(['prefix' => '/categories'], function () {
+            Route::get('/', [CategoryController::class, 'index']);
+            Route::get('/create', [CategoryController::class, 'create']);
+            Route::post('/store', [CategoryController::class, 'store']);
+            Route::get('/{Category}', [CategoryController::class, 'edit']);
+            Route::post('/{Category}', [CategoryController::class, 'update']);
+            Route::get('/delete/{Category}', [CategoryController::class, 'delete']);
+        });
+        Route::group(['prefix' => '/products'], function () {
+            Route::get('/', [ProductController::class, 'index']);
+            Route::get('/create', [ProductController::class, 'create']);
+            Route::post('/store', [ProductController::class, 'store']);
+            Route::get('/{Product}', [ProductController::class, 'edit']);
+            Route::post('/{Product}', [ProductController::class, 'update']);
+            Route::get('/delete/{Product}', [ProductController::class, 'delete']);
+        });
 
-    Route::group(["middleware" => ["admin"], 'prefix' => '/admin'], function ($route) {
-        return [
-            $route->get('/', [AdminController::class, 'index']),
-            $route->group(['prefix' => '/categories'], function ($route) {
-                return [
-                    $route->get('/', [CategoryController::class, 'index']),
-                    $route->get('/create', [CategoryController::class, 'create']),
-                    $route->post('/store', [CategoryController::class, 'store']),
-                    $route->get('/{Category}', [CategoryController::class, 'edit']),
-                    $route->post('/{Category}', [CategoryController::class, 'update']),
-                    $route->get('/delete/{Category}', [CategoryController::class, 'delete']),
-                ];
-            }),
-            $route->group(['prefix' => '/products'], function ($route) {
-                return [
-                    $route->get('/', [ProductController::class, 'index']),
-                    $route->get('/create', [ProductController::class, 'create']),
-                    $route->post('/store', [ProductController::class, 'store']),
-                    $route->get('/{Product}', [ProductController::class, 'edit']),
-                    $route->post('/{Product}', [ProductController::class, 'update']),
-                    $route->get('/delete/{Product}', [ProductController::class, 'delete']),
-                ];
-            }),
+        Route::group(['prefix' => '/brand'], function () {
+            Route::get('/', [BrandController::class, 'index']);
+            Route::get('/create', [BrandController::class, 'create']);
+            Route::post('/store', [BrandController::class, 'store']);
+            Route::get('/{brand}', [BrandController::class, 'edit']);
+            Route::post('/{brand}', [BrandController::class, 'update']);
+            Route::get('/delete/{brand}', [BrandController::class, 'delete']);
+        });
 
-            $route->group(['prefix' => '/brand'], function ($route) {
-                return [
-                    $route->get('/', [BrandController::class, 'index']),
-                    $route->get('/create', [BrandController::class, 'create']),
-                    $route->post('/store', [BrandController::class, 'store']),
-                    $route->get('/{brand}', [BrandController::class, 'edit']),
-                    $route->post('/{brand}', [BrandController::class, 'update']),
-                    $route->get('/delete/{brand}', [BrandController::class, 'delete']),
-                ];
-            }),
+        Route::group(['prefix' => '/option'], function () {
+            Route::get('/', [OptionController::class, 'index']);
+            Route::get('/create', [OptionController::class, 'create']);
+            Route::post('/store', [OptionController::class, 'store']);
+            Route::get('/{option}', [OptionController::class, 'edit']);
+            Route::post('/{option}', [OptionController::class, 'update']);
+            Route::get('/delete/{option}', [OptionController::class, 'delete']);
+        });
 
-            $route->group(['prefix' => '/option'], function ($route) {
-                return [
-                    $route->get('/', [OptionController::class, 'index']),
-                    $route->get('/create', [OptionController::class, 'create']),
-                    $route->post('/store', [OptionController::class, 'store']),
-                    $route->get('/{option}', [OptionController::class, 'edit']),
-                    $route->post('/{option}', [OptionController::class, 'update']),
-                    $route->get('/delete/{option}', [OptionController::class, 'delete']),
-                ];
-            }),
-
-            $route->group(['prefix' => '/news'], function ($route) {
-                return [
-                    $route->get('/', [NewsController::class, 'index']),
-                    $route->get('/create', [NewsController::class, 'create']),
-                    $route->post('/store', [NewsController::class, 'store']),
-                    $route->get('/{News}', [NewsController::class, 'edit']),
-                    $route->post('/{News}', [NewsController::class, 'update']),
-                    $route->get('/delete/{News}', [NewsController::class, 'delete']),
-                ];
-            }),
-
-        ];
-    }),
-    Route::get('/', [HomeController::class, 'index']),
-];
+        Route::group(['prefix' => '/news'], function () {
+            Route::get('/', [NewsController::class, 'index']);
+            Route::get('/create', [NewsController::class, 'create']);
+            Route::post('/store', [NewsController::class, 'store']);
+            Route::get('/{News}', [NewsController::class, 'edit']);
+            Route::post('/{News}', [NewsController::class, 'update']);
+            Route::get('/delete/{News}', [NewsController::class, 'delete']);
+        });
+    });
+});
+Route::get('/', [HomeController::class, 'index']);
