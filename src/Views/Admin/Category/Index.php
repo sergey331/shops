@@ -55,8 +55,8 @@
                             <td>{{ $child->name }}</td>
                             <td>{{ $child->description }}</td>
                             <td>
-                                <a href="/admin/category/{{ $child->id }}" class="btn btn-sm btn-edit">Edit</a>
-                                <a href="/admin/category/delete/{{ $child->id }}"
+                                <a href="/admin/categories/{{ $child->id }}" class="btn btn-sm btn-edit">Edit</a>
+                                <a href="/admin/categories/delete/{{ $child->id }}"
                                    class="btn btn-sm btn-delete">Delete</a>
                             </td>
                         </tr>

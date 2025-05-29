@@ -9,7 +9,7 @@ class Product extends Model
     protected string $table = 'products';
 
     protected array $with = ['discount', 'options', 'images'];
-    public static $satatus = [
+    public static $status = [
         'active',
         'inactive',
         'draft'
@@ -22,7 +22,7 @@ class Product extends Model
         "sale_price",
         "quantity",
         "status",
-        "featured".
+        "featured",
         "category_id",
         "brand_id",
         "image_url"
@@ -31,6 +31,10 @@ class Product extends Model
     public function category() 
     {
         return $this->belongsTo(Category::class);
+    }
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
     }
     public function discount()
     {

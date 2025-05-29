@@ -4,6 +4,9 @@ namespace Kernel\Model;
 
 use Exception;
 use Kernel\Databases\Connection;
+use Kernel\Model\Relations\BelongsTo;
+use Kernel\Model\Relations\HasMany;
+use Kernel\Model\Relations\HasOne;
 
 #[\AllowDynamicProperties]
 class Model extends Connection implements ModelInterface
@@ -249,19 +252,17 @@ class Model extends Connection implements ModelInterface
     // Relationships
     public function belongsTo($model, string $foreignKey = null, string $localKey = null)
     {
-        $instance = new $model;
-        $foreignKey = $foreignKey ?: lcfirst((new \ReflectionClass($instance))->getShortName()) . '_id';
-        return $instance->where(['id' => $this->$foreignKey])->first();
+        return new BelongsTo($this,$model);
     }
 
     public function hasMany($model, string $localKey = null, string $foreignKey = null)
     {
-        return $this->getHasRelation($model, $localKey, $foreignKey)->get();
+        return new HasMany($this,$model);
     }
 
     public function hasOne($model, string $localKey = null, string $foreignKey = null)
     {
-        return $this->getHasRelation($model, $localKey, $foreignKey)->first();
+        return new HasOne($this, $model);
     }
 
     public function with($relations): static
@@ -281,7 +282,7 @@ class Model extends Connection implements ModelInterface
         $model->data = $row;
 
         foreach ($this->with as $relation) {
-            $related = $model->$relation();
+            $related = $model->$relation()->get();
             $model->relations[$relation] = $related;
             $model->data[$relation] = $related;
         }
@@ -320,5 +321,15 @@ class Model extends Connection implements ModelInterface
     {
         $this->modelWhere->setOrWhereDateOperators($conditions);
         return $this;
+    }
+
+    public function getTableName()
+    {
+        return $this->table;
+    }
+
+    public function setData($data): void
+    {
+        $this->data = $data;
     }
 }
