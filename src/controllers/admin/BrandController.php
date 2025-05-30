@@ -6,13 +6,21 @@ use Kernel\Controller\BaseController;
 use Kernel\Validator\Validator;
 use Shop\model\Brand;
 use Shop\rules\BrandRule;
+use Shop\service\BrandService;
 
 class BrandController extends BaseController
 {
+
+    private BrandService $brandService;
+
+    public function __construct()
+    {
+        $this->brandService = new BrandService();
+    }
     public function index()
     {
         $this->view()->load('Admin.Brand.Index', [
-            'brands' => $this->model('brand')->get(),
+            'brands' => $this->brandService->getBrands(),
         ], 'admin');
     }
 
@@ -23,38 +31,25 @@ class BrandController extends BaseController
 
     public function store()
     {
-        $data = $this->request()->all();
-        $validator = Validator::make($data, BrandRule::rules(), BrandRule::messages());
-        if (!$validator->validate()) {
-            $this->session()->set('errors', $validator->errors());
+        if (!$this->brandService->store()) {
             $this->redirect()->back();
             return;
         }
-
-        $this->model('brand')->create($data);
-
-        $this->session()->set('success', 'created');
         $this->redirect()->to('/admin/brand');
     }
 
-    public function edit(Brand $brand)
+    public function edit(Brand $brand): void
     {
         $this->view()->load('Admin.Brand.Edit', [
             'brand' => $brand
         ], 'admin');
     }
-    public function update(Brand $brand)
+    public function update(Brand $brand): void
     {
-        $data = $this->request()->all();
-        $validator = Validator::make($data, BrandRule::rules(), BrandRule::messages());
-        if (!$validator->validate()) {
-            $this->session()->set('errors', $validator->errors());
+        if (!$this->brandService->update($brand)) {
             $this->redirect()->back();
             return;
         }
-        $brand->update($data);
-
-        $this->session()->set('success', 'created');
         $this->redirect()->to('/admin/brand');
     }
 

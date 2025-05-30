@@ -4,17 +4,22 @@ namespace Shop\controllers\admin;
 
 use Kernel\Controller\BaseController;
 use Kernel\Validator\Validator;
-use Shop\model\Brand;
 use Shop\model\Option;
-use Shop\rules\BrandRule;
 use Shop\rules\OptionRule;
+use Shop\service\OptionService;
 
 class OptionController extends BaseController
 {
+    private OptionService $optionService;
+
+    public function __construct()
+    {
+        $this->optionService = new OptionService();
+    }
     public function index()
     {
         $this->view()->load('Admin.Option.Index', [
-            'options' => $this->model('option')->get(),
+            'options' => $this->optionService->getNews(),
         ], 'admin');
     }
 
@@ -25,17 +30,10 @@ class OptionController extends BaseController
 
     public function store()
     {
-        $data = $this->request()->all();
-        $validator = Validator::make($data, OptionRule::rules(), OptionRule::messages());
-        if (!$validator->validate()) {
-            $this->session()->set('errors', $validator->errors());
+        if (!$this->optionService->store()) {
             $this->redirect()->back();
             return;
         }
-        $data['price'] = $data['price'] !== '' ? $data['price'] : null;
-        $this->model('option')->create($data);
-
-        $this->session()->set('success', 'created');
         $this->redirect()->to('/admin/option');
     }
 
@@ -47,17 +45,10 @@ class OptionController extends BaseController
     }
     public function update(Option $option)
     {
-        $data = $this->request()->all();
-        $validator = Validator::make($data, OptionRule::rules(), OptionRule::messages());
-        if (!$validator->validate()) {
-            $this->session()->set('errors', $validator->errors());
+        if (!$this->optionService->update($option)) {
             $this->redirect()->back();
             return;
         }
-        $data['price'] = $data['price'] !== '' ? $data['price'] : null;
-        $option->update($data);
-
-        $this->session()->set('success', 'created');
         $this->redirect()->to('/admin/option');
     }
 

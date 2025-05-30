@@ -31,7 +31,13 @@
                 <td>{{ $new->title }}</td>
                 <td>{{ $new->slug }}</td>
                 <td>{{ $new->content }}</td>
-                <td>{{ $new->is_published }}</td>
+                <td>
+                    @if ($new->is_published)
+                        <span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300">Yes</span>
+                    @else
+                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-yellow-900 dark:text-yellow-300">No</span>
+                    @endif
+                </td>
                 <td>{{ $new->published_at }}</td>
                 <td>
                     @if ($new->image_url)
