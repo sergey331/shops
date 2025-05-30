@@ -12,9 +12,10 @@ class HomeController extends BaseController
      */
     public function index(): void
     {
+        $featuredProduct = model('product')->where(['featured' => 1])->get();
+
         $this->view()->load('Home.Index', [
-            'title' => 'Home',
-            'content' => 'Welcome to the home page!'
+            'featuredProducts' => $featuredProduct
         ]);
 
     }

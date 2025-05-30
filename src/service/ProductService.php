@@ -77,7 +77,7 @@ class ProductService
         }
 
         $data = $this->handleAvatarUpload($data);
-        $data['image_url'] = is_array($data['image_url']) ? $product->image_url : $data['image_url'];
+        $data['image_url'] = !isset($data['image_url']) ? $product->image_url : $data['image_url'];
         $data['featured'] = isset($data['featured']) ? 1 : 0;
         $product->update([
             "name" => $data['name'],
@@ -113,10 +113,10 @@ class ProductService
 
     public function delete(Product $product)
     {
-        if ($product->avatar) {
+        if ($product->image_url) {
             $file = new File();
             $file->setPath(APP_PATH . '/public/uploads/product/');
-            $file->delete($product->avatar);
+            $file->delete($product->image_url);
         }
         $product->delete();
 
@@ -132,6 +132,10 @@ class ProductService
 
             if ($uploader->upload()) {
                 $data['image_url'] = $uploader->getName();
+            }
+        } else {
+            if (isset($data['image_url'])) {
+                unset($data['image_url']);
             }
         }
 
