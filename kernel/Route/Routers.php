@@ -74,10 +74,10 @@ class Routers
             } else if (is_callable($action)) {
                 call_user_func($action);
             } else {
-                echo "404 | not found";
+                $this->container->get('views')->load("404.404");
             }
         } else {
-            echo "404 | not found";
+            $this->container->get('views')->load("404.404");
         }
     }
 }

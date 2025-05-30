@@ -11,7 +11,7 @@ use Kernel\Request\RequestInterface;
 use Kernel\Session\SessionInterface;
 use Kernel\View\ViewInterface;
 
-abstract class BaseController
+abstract class BaseController implements BaseControllerInterface
 {
     /**
      * @return RequestInterface
@@ -28,13 +28,13 @@ abstract class BaseController
         return $this->container->get("request");
     }
 
-    protected function session(): SessionInterface
+    public function session(): SessionInterface
     {
         return $this->container->get('session');
     }
 
 
-    protected function redirect(): RedirectInterface
+    public function redirect(): RedirectInterface
     {
         return $this->container->get('redirect');
     }
