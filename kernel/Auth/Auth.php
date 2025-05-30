@@ -3,6 +3,7 @@
 namespace Kernel\Auth;
 
 use Kernel\Container\Container;
+use Kernel\Hash\Hash;
 
 class Auth implements AuthInterface
 {
@@ -11,20 +12,20 @@ class Auth implements AuthInterface
     }
     public function attempt(string $email, string $password): bool 
     {
-        $user = $this->model()->where(["email" => $email])->first();
+        $user = model("user")->where(["email" => $email])->first();
 
         if (!$user) {
-            session()->set('login_error',"'Email is incorrect'");
+            session()->set('login_error',"Email is incorrect");
             return false;
         }
 
-        if (!password_verify($password, $user->password)) {
-            session()->set('login_error',"'Password is incorrect'");
+        if (!Hash::verify($password, $user->password)) {
+            session()->set('login_error',"Password is incorrect");
             return  false;
         }
 
         session()->set('user_id', $user->id);
-        session()->set('login_success',"'Password is incorrect'");
+        session()->set('login_success',"Login successfully");
         return true;
     }
 
@@ -48,16 +49,11 @@ class Auth implements AuthInterface
         if (!$this->check())
             return null;
 
-        return $this->model()->find($this->id());
+        return model("user")->find($this->id());
     }
 
     public function logout(): void
     {
         session()->remove('user_id');
-    }
-    
-    private function model()
-    {
-        return model("user");
     }
 }
