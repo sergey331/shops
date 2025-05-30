@@ -3,11 +3,8 @@
 namespace Shop\controllers\admin;
 
 use Kernel\Controller\BaseController;
-use Kernel\File\File;
-use Kernel\Validator\Validator;
 use Shop\model\Product;
 use Shop\model\ProductDiscount;
-use Shop\rules\ProductRules;
 use Shop\service\ProductService;
 
 class ProductController extends BaseController

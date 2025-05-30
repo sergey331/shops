@@ -3,8 +3,12 @@
 namespace Kernel\Controller;
 
 use Exception;
+use Kernel\Auth\AuthInterface;
 use Kernel\Container\Container;
+use Kernel\Databases\DbInterface;
+use Kernel\Redirect\RedirectInterface;
 use Kernel\Request\RequestInterface;
+use Kernel\Session\SessionInterface;
 use Kernel\View\ViewInterface;
 
 abstract class BaseController
@@ -24,13 +28,13 @@ abstract class BaseController
         return $this->container->get("request");
     }
 
-    protected function session()
+    protected function session(): SessionInterface
     {
         return $this->container->get('session');
     }
 
 
-    protected function redirect()
+    protected function redirect(): RedirectInterface
     {
         return $this->container->get('redirect');
     }
@@ -38,17 +42,17 @@ abstract class BaseController
     /**
      * @throws Exception
      */
-    public function view()
+    public function view(): ViewInterface
     {
         return $this->container->get('views');
     }
 
-    public function auth()
+    public function auth(): AuthInterface
     {
         return $this->container->get('auth');
     }
 
-    public function model($name)
+    public function model($name): DbInterface
     {
         return $this->container->get('db')->model($name);
     }

@@ -3,9 +3,7 @@
 namespace Shop\controllers\admin;
 
 use Kernel\Controller\BaseController;
-use Kernel\Validator\Validator;
 use Shop\model\Option;
-use Shop\rules\OptionRule;
 use Shop\service\OptionService;
 
 class OptionController extends BaseController
@@ -18,6 +16,7 @@ class OptionController extends BaseController
     }
     public function index()
     {
+        $this->session()->get('success');
         $this->view()->load('Admin.Option.Index', [
             'options' => $this->optionService->getNews(),
         ], 'admin');

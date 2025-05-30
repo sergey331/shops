@@ -3,9 +3,7 @@
 namespace Shop\controllers\admin;
 
 use Kernel\Controller\BaseController;
-use Kernel\Validator\Validator;
 use Shop\model\Brand;
-use Shop\rules\BrandRule;
 use Shop\service\BrandService;
 
 class BrandController extends BaseController

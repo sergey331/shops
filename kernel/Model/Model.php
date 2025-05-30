@@ -4,6 +4,7 @@ namespace Kernel\Model;
 
 use Exception;
 use Kernel\Databases\Connection;
+use Kernel\Hash\Hash;
 use Kernel\Model\Relations\BelongsTo;
 use Kernel\Model\Relations\HasMany;
 use Kernel\Model\Relations\HasOne;
@@ -96,7 +97,7 @@ class Model extends Connection implements ModelInterface
                 throw new Exception("Field '{$key}' not found");
             }
             $this->newData[$key] = ($this->table === 'users' && $key === 'password')
-                ? password_hash($value, PASSWORD_DEFAULT)
+                ? Hash::make($value)
                 : $value;
         }
     }

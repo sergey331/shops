@@ -1,7 +1,6 @@
 <?php 
 namespace Shop\controllers\admin;
 
-use Kernel\Validator\Validator;
 use Kernel\Controller\BaseController;
 
 

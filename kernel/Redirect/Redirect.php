@@ -2,9 +2,7 @@
 
 namespace Kernel\Redirect;
 
-use JetBrains\PhpStorm\NoReturn;
-
-class Redirect
+class Redirect implements RedirectInterface
 {
     public function to($url): void
     {

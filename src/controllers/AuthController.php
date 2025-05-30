@@ -1,8 +1,9 @@
 <?php 
 namespace Shop\controllers;
 
-use Kernel\Validator\Validator;
 use Kernel\Controller\BaseController;
+use Kernel\Validator\Validator;
+use Shop\rules\AuthRule;
 
 
 class AuthController extends BaseController 
@@ -15,17 +16,10 @@ class AuthController extends BaseController
     public function login()  
     {
 
-        $rules = [
-            'email' => 'required',
-            'password' => 'required',
-        ];
-        $messages = [
-            'email.required' => 'Email is required',
-            'password.required' => 'Password is required',
-        ];
         $validator = Validator::make(
             $this->request()->all(),
-             $rules,$messages
+            AuthRule::rules(),
+            AuthRule::messages()
             );
 
         if (!$validator->validate()) {

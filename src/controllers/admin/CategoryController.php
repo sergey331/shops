@@ -3,10 +3,7 @@
 namespace Shop\controllers\admin;
 
 use Kernel\Controller\BaseController;
-use Kernel\File\File;
-use Kernel\Validator\Validator;
 use Shop\model\Category;
-use Shop\rules\CategoryRules;
 use Shop\service\CategoryService;
 
 class CategoryController extends BaseController
