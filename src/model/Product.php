@@ -7,8 +7,6 @@ use Kernel\Model\Model;
 class Product extends Model
 {
     protected string $table = 'products';
-
-    protected array $with = ['discount', 'options', 'images'];
     public static $status = [
         'active',
         'inactive',

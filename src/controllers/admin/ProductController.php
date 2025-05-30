@@ -49,6 +49,7 @@ class ProductController extends BaseController
 
     public function edit(Product $product)
     {
+        $product = $product->with(['discount', 'options', 'images', 'category', 'brand']);
         $this->view()->load('Admin.Product.Edit', [
             'product' => $product,
             'categories' => $this->productService->getCategories(),

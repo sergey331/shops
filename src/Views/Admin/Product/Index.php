@@ -16,6 +16,7 @@
                 <th>Discount</th>
                 <th>Category</th>
                 <th>Status</th>
+                <th>Featured</th>
                 <th>Description</th>
                 <th>Actions</th>
             </tr>
@@ -31,6 +32,12 @@
                     <td>{{ $product->discount->discount_value ?? '' }}</td>
                     <td>{{ $product->category->name }}</td>
                     <td>{{ $product->status }}</td>
+                    <td>
+                        @if ($product->featured)
+                        <span class="badge badge-success">Yes</span>
+                        @else
+                            <span class="badge badge-secondary">No</span>
+                        @endif
                     <td>{{ $product->description }}</td>
                     <td>
                         <a href="/admin/products/{{ $product->id }}" class="btn btn-sm btn-edit">Edit</a>

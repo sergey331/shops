@@ -7,10 +7,12 @@ use Kernel\Databases\Connection;
 use Kernel\Model\Relations\BelongsTo;
 use Kernel\Model\Relations\HasMany;
 use Kernel\Model\Relations\HasOne;
+use Kernel\Model\Trait\ConditionsTrait;
 
 #[\AllowDynamicProperties]
 class Model extends Connection implements ModelInterface
 {
+    use ConditionsTrait;
     protected string $table;
     protected array $data = [];
     protected array $newData = [];
@@ -123,101 +125,6 @@ class Model extends Connection implements ModelInterface
     }
 
     // Query condition methods
-    public function where(array $wheres): static
-    {
-        $this->modelWhere->setWhere($wheres);
-        return $this;
-    }
-
-    public function orWhere(array $wheres): static
-    {
-        $this->modelWhere->setOrWhere($wheres);
-        return $this;
-    }
-
-    public function whereNull(array $columns): static
-    {
-        $this->modelWhere->setWhereNull($columns);
-        return $this;
-    }
-
-    public function whereNotNull(array $columns): static
-    {
-        $this->modelWhere->setWhereNotNull($columns);
-        return $this;
-    }
-
-    public function orWhereNull(array $columns): static
-    {
-        $this->modelWhere->setOrWhereNull($columns);
-        return $this;
-    }
-
-    public function orWhereNotNull(array $columns): static
-    {
-        $this->modelWhere->setOrWhereNotNull($columns);
-        return $this;
-    }
-
-    public function whereNotEqual(array $conditions): static
-    {
-        $this->modelWhere->setNotEquals($conditions);
-        return $this;
-    }
-
-    public function orWhereNotEqual(array $conditions): static
-    {
-        $this->modelWhere->setOrNotEquals($conditions);
-        return $this;
-    }
-
-    public function whereIn(array $conditions): static
-    {
-        $this->modelWhere->setWhereIn($conditions);
-        return $this;
-    }
-
-    public function whereNotIn(array $conditions): static
-    {
-        $this->modelWhere->setWhereNotIn($conditions);
-        return $this;
-    }
-
-    public function orWhereIn(array $conditions): static
-    {
-        $this->modelWhere->setOrWhereIn($conditions);
-        return $this;
-    }
-
-    public function orWhereNotIn(array $conditions): static
-    {
-        $this->modelWhere->setOrWhereNotIn($conditions);
-        return $this;
-    }
-
-    public function whereDate(array $conditions): static
-    {
-        $this->modelWhere->setWhereDates($conditions);
-        return $this;
-    }
-
-    public function orWhereDate(array $conditions): static
-    {
-        $this->modelWhere->setOrWhereDates($conditions);
-        return $this;
-    }
-
-    public function whereDateBeetwen(array $conditions): static
-    {
-        $this->modelWhere->setWhereDateBetweens($conditions);
-        return $this;
-    }
-
-    public function orWhereDateBeetwen(array $conditions): static
-    {
-        $this->modelWhere->setOrWhereDateBetweens($conditions);
-        return $this;
-    }
 
     public function orderBy(string|array $column, string $direction = 'ASC'): static
     {
@@ -268,6 +175,13 @@ class Model extends Connection implements ModelInterface
     public function with($relations): static
     {
         $this->with = array_merge($this->with, $relations);
+        if ($this->id) {
+            foreach ($relations as $relation) {
+                $related = $this->$relation()->get();
+                $this->relations[$relation] = $related;
+                $this->data[$relation] = $related;
+            }
+        }
         return $this;
     }
 
@@ -288,39 +202,6 @@ class Model extends Connection implements ModelInterface
         }
 
         return $model;
-    }
-
-    private function getHasRelation($model, string $localKey = null, string $foreignKey = null)
-    {
-        $instance = new $model;
-        $foreignKey = $foreignKey ?: lcfirst((new \ReflectionClass($this))->getShortName()) . '_id';
-        $localKey = $localKey ?: 'id';
-
-        return $instance->where([$foreignKey => $this->$localKey]);
-    }
-
-    public function whereDateNotBeetwen(array $conditions): static
-    {
-       $this->modelWhere->setWhereDateNotBetweens($conditions);
-        return $this;
-    }
-
-    public function orWhereDateNotBeetwen(array $conditions): static
-    {
-        $this->modelWhere->setOrWhereDateNotBetweens($conditions);
-        return $this;
-    }
-
-    public function whereDateOperators(array $conditions): static
-    {
-        $this->modelWhere->setWhereDateOperators($conditions);
-        return $this;
-    }
-
-    public function orWhereDateOperators(array $conditions): static
-    {
-        $this->modelWhere->setOrWhereDateOperators($conditions);
-        return $this;
     }
 
     public function getTableName()

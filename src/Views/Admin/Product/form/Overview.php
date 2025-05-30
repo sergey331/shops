@@ -8,6 +8,7 @@ $errors = $session->getCLean('errors') ?? [];
     $category_id = $product->category_id ?? '';
     $brand_id = $product->brand_id ?? '';
     $description = $product->description ?? '';
+    $featured = $product->featured ?? false;
 
 !!}
 <div class="form-row">
@@ -57,6 +58,17 @@ $errors = $session->getCLean('errors') ?? [];
     @endisset
 </div>
 
+<div class="form-row">
+    <label for="featured">Featured</label>
+    <input type="checkbox" name="featured" id="featured" {{ $featured  ? 'checked' : '' }} value="1" >
+    @isset($errors['quantity'])
+    <ul class="errors">
+        @foreach ($errors['quantity'] as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+    @endisset
+</div>
 
 <div class="form-row">
     <label for="description">Description</label>

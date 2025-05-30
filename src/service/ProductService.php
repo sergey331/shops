@@ -38,7 +38,7 @@ class ProductService
         }
 
         $data = $this->handleAvatarUpload($data);
-
+        $data['featured'] = isset($data['featured']) ? 1 : 0;
         $product = model('product')->create([
             "name" => $data['name'],
             "description" => $data['description'],
@@ -49,6 +49,7 @@ class ProductService
             "category_id" => $data['category_id'],
             "brand_id" => $data['brand_id'],
             "image_url" => $data['image_url'],
+            "featured" => $data['featured'],
         ]);
 
         if (isset($data['discount']) && !empty($data['discount']['discount_type'])) {
@@ -77,6 +78,7 @@ class ProductService
 
         $data = $this->handleAvatarUpload($data);
         $data['image_url'] = is_array($data['image_url']) ? $product->image_url : $data['image_url'];
+        $data['featured'] = isset($data['featured']) ? 1 : 0;
         $product->update([
             "name" => $data['name'],
             "description" => $data['description'],
@@ -87,6 +89,7 @@ class ProductService
             "category_id" => $data['category_id'],
             "brand_id" => $data['brand_id'],
             "image_url" => $data['image_url'],
+            "featured" => $data['featured'],
         ]);
 
         if (isset($data['discount']) && !empty($data['discount']['discount_type'])) {

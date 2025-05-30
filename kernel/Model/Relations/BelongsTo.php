@@ -2,31 +2,28 @@
 
 namespace Kernel\Model\Relations;
 
-use Kernel\Databases\Connection;
 use Kernel\Model\Model;
 use ReflectionClass;
 
-class BelongsTo extends Connection
+class BelongsTo extends Relation
 {
     protected Model $parent;
-    protected $relatedClass;
+    protected mixed $relatedClass;
     protected string $foreignKey;
 
     public function __construct(Model $parent, string $relatedClass)
     {
-        parent::__construct();
+        parent::__construct($parent,$relatedClass);
         $this->parent = $parent;
         $this->relatedClass = new $relatedClass();
         $this->foreignKey = strtolower((new ReflectionClass($this->relatedClass))->getShortName()) . '_id';    }
 
     public function get()
     {
-        $table = $this->relatedClass->getTableName();
-
-        $query = "SELECT * FROM $table WHERE id = ?";
-
-        $result = $this->query($query, [$this->parent->{$this->foreignKey}]);
-
+        $this->where(["id" => $this->parent->{$this->foreignKey}]);
+        $this->modelWhere->resolve();
+        $query = $this->queryBuilder->getSelectQuery($this->relatedClass->getTableName(), $this->modelWhere->getWhereQuery());
+        $result = $this->query($query, $this->modelWhere->getWhereData());
         $rows = $result->fetchAll(\PDO::FETCH_ASSOC);
         return !empty($rows) ? $this->fetchData($rows[0]) : null;
     }
@@ -34,7 +31,6 @@ class BelongsTo extends Connection
     private function fetchData(array $row)
     {
         $model = new  $this->relatedClass();
-
         $model->setData($row);
         return $model;
     }
