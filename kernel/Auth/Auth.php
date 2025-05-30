@@ -4,9 +4,9 @@ namespace Kernel\Auth;
 
 use Kernel\Container\Container;
 
-class Auth 
+class Auth implements AuthInterface
 {
-    public function __construct(private readonly Container $container)
+    public function __construct()
     {   
     }
     public function attempt(string $email, string $password): bool 
@@ -14,17 +14,17 @@ class Auth
         $user = $this->model()->where(["email" => $email])->first();
 
         if (!$user) {
-            $this->session()->set('login_error',"'Email is incorrect'");
+            session()->set('login_error',"'Email is incorrect'");
             return false;
         }
 
         if (!password_verify($password, $user->password)) {
-            $this->session()->set('login_error',"'Password is incorrect'");
+            session()->set('login_error',"'Password is incorrect'");
             return  false;
         }
 
-        $this->session()->set('user_id', $user->id);
-        $this->session()->set('login_success',"'Password is incorrect'");
+        session()->set('user_id', $user->id);
+        session()->set('login_success',"'Password is incorrect'");
         return true;
     }
 
@@ -35,12 +35,12 @@ class Auth
 
     public function check() 
     {
-        return $this->session()->has('user_id');
+        return session()->has('user_id');
     }
 
     public function id() 
     {
-        return $this->session()->get('user_id');
+        return session()->get('user_id');
     }
 
     public function user() 
@@ -53,16 +53,11 @@ class Auth
 
     public function logout(): void
     {
-        $this->session()->remove('user_id');
+        session()->remove('user_id');
     }
     
     private function model()
     {
-        return $this->container->get('db')->model("user");
-    }
-
-    private function session()
-    {
-        return $this->container->get("session");
+        return model("user");
     }
 }

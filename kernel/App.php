@@ -21,7 +21,7 @@ $container->set('redirect', fn() => new Redirect());
 $container->set('db', fn() => new Db());
 
 // Services that need the container
-$container->set('auth', fn() => new Auth($container));
+$container->set('auth', fn() => new Auth());
 $container->set('views', fn() => new View($container));
 $container->set('routeAction', fn() => new RouteAction($container));
 $container->set('router', fn() => new Routers($container));
