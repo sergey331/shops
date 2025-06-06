@@ -37,7 +37,7 @@
 
                 <!-- Account Dropdown -->
                 <button id="userDropdownButton" data-dropdown-toggle="userDropdown"
-                        class="flex items-center text-gray-700 hover:text-blue-600">
+                        class="flex items-center text-gray-700 hover:text-blue-600 cursor-pointer">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 12a5 5 0 100-10 5 5 0 000 10zm-7 8a7 7 0 1114 0H3z" />
                     </svg>

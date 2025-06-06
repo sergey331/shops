@@ -10,6 +10,7 @@ use Shop\controllers\admin\ProductController;
 use Shop\controllers\AuthController;
 use Shop\controllers\HomeController;
 use Shop\controllers\RegisterController;
+use Shop\controllers\admin\SlidersController;
 
 
 Route::group(["middleware" => ["guest"]], function () {
@@ -67,6 +68,15 @@ Route::middleware(["admin"])->group(function () {
             Route::get('/{News}', [NewsController::class, 'edit']);
             Route::post('/{News}', [NewsController::class, 'update']);
             Route::get('/delete/{News}', [NewsController::class, 'delete']);
+        });
+
+        Route::group(['prefix' => '/sliders'], function () {
+            Route::get('/', [SlidersController::class, 'index']);
+            Route::get('/create', [SlidersController::class, 'create']);
+            Route::post('/store', [SlidersController::class, 'store']);
+            Route::get('/{Slider}', [SlidersController::class, 'edit']);
+            Route::post('/{Slider}', [SlidersController::class, 'update']);
+            Route::get('/delete/{Slider}', [SlidersController::class, 'delete']);
         });
     });
 });

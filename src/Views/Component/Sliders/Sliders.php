@@ -15,7 +15,7 @@
         position: absolute;
         top: 40%;
         left: 10%;
-        color: white;
+        color: black;
     }
 </style>
 <div class="max-w-7xl mx-auto px-4 py-10">
@@ -24,103 +24,34 @@
     <div class="swiper sliders bg-white rounded-lg shadow p-3">
         <div class="swiper-wrapper ">
 
-            <div class="swiper-slide">
-                <div class="relative p-4 w-[250px] mx-auto">
-                    <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/new-year-background-736885_1280.jpg" class="w-full h-40 object-cover rounded" />
-                    <div class="sliders-inform">
-                        <h3 class="text-lg">Product 2</h3>
-                        <p>$39.99</p>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide">
-                <div class="relative p-4 w-[250px] mx-auto">
-                    <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/new-year-background-736885_1280.jpg" class="w-full h-40 object-cover rounded" />
-                    <div class="sliders-inform">
-                        <h3 class="text-lg">Product 2</h3>
-                        <p>$39.99</p>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide">
-                <div class="relative p-4 w-[250px] mx-auto">
-                    <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/new-year-background-736885_1280.jpg" class="w-full h-40 object-cover rounded" />
-                    <div class="sliders-inform">
-                        <h3 class="text-lg">Product 2</h3>
-                        <p>$39.99</p>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide">
-                <div class="relative p-4 w-[250px] mx-auto">
-                    <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/new-year-background-736885_1280.jpg" class="w-full h-40 object-cover rounded" />
-                    <div class="sliders-inform">
-                        <h3 class="text-lg">Product 2</h3>
-                        <p>$39.99</p>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide">
-                <div class="relative p-4 w-[250px] mx-auto">
-                    <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/new-year-background-736885_1280.jpg" class="w-full h-40 object-cover rounded" />
-                    <div class="sliders-inform">
-                        <h3 class="text-lg">Product 2</h3>
-                        <p>$39.99</p>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide">
-                <div class="relative p-4 w-[250px] mx-auto">
-                    <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/new-year-background-736885_1280.jpg" class="w-full h-40 object-cover rounded" />
-                    <div class="sliders-inform">
-                        <h3 class="text-lg">Product 2</h3>
-                        <p>$39.99</p>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide">
-                <div class="relative p-4 w-[250px] mx-auto">
-                    <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/new-year-background-736885_1280.jpg" class="w-full h-40 object-cover rounded" />
-                    <div class="sliders-inform">
-                        <h3 class="text-lg">Product 2</h3>
-                        <p>$39.99</p>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide">
-                <div class="relative p-4 w-[250px] mx-auto">
-                    <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/new-year-background-736885_1280.jpg" class="w-full h-40 object-cover rounded" />
-                    <div class="sliders-inform">
-                        <h3 class="text-lg">Product 2</h3>
-                        <p>$39.99</p>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide">
-                <div class="relative p-4 w-[250px] mx-auto">
-                    <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/new-year-background-736885_1280.jpg" class="w-full h-40 object-cover rounded" />
-                    <div class="sliders-inform">
-                        <h3 class="text-lg">Product 2</h3>
-                        <p>$39.99</p>
-                    </div>
-                </div>
-            </div>
+            @foreach ($sliders as $slider)
 
-            <!-- Add more .swiper-slide as needed -->
+            <div class="swiper-slide">
+                <div class="relative p-4 w-[250px] mx-auto">
+                    @if ($slider->image_url)
+                    <img src="/uploads/sliders/{{ $slider->image_url }}" class="w-full h-40 object-cover rounded" alt=""/>
+                    @else
+                    No Image
+                    @endif
+
+                    <div class="sliders-inform">
+                        <h3 class="text-lg">{{ $slider->title }}</h3>
+                        <p>{{ $slider->content }}</p>
+                    </div>
+                </div>
+            </div>
+            @endforeach
         </div>
-
-
-
     </div>
-</div><script>
+</div>
+<script>
     new Swiper(".sliders", {
         slidesPerView: 1,
         spaceBetween: 20,
         loop: true,
-        // autoplay: {
-        //     delay: 5000,
-        // },
-
+        autoplay: {
+            delay: 5000,
+        },
     })
 </script>
 

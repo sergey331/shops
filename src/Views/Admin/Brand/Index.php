@@ -4,7 +4,7 @@
      */
 !!}
 
-<div class="container">
+<div>
     <h1>Brands</h1>
 
     <div class="category-header">

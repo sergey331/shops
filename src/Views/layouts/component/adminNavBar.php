@@ -30,5 +30,6 @@
     </li>
 
     <li><a href="/admin/news">News</a></li>
+    <li><a href="/admin/sliders">Sliders</a></li>
     <li><a href="/logout">Logout</a></li>
 </ul>

@@ -1,4 +1,4 @@
-<div class="container">
+<div>
     <h1>Products</h1>
 
     <div class="category-header">
