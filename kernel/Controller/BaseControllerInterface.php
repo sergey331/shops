@@ -4,7 +4,6 @@ namespace Kernel\Controller;
 
 use Kernel\Auth\AuthInterface;
 use Kernel\Container\Container;
-use Kernel\Databases\DbInterface;
 use Kernel\Redirect\RedirectInterface;
 use Kernel\Request\RequestInterface;
 use Kernel\Session\SessionInterface;
@@ -27,5 +26,5 @@ interface BaseControllerInterface
 
     public function auth(): AuthInterface;
 
-    public function model(string $name): DbInterface;
+    public function model(string $name);
 }

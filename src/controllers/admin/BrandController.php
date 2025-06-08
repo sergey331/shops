@@ -53,7 +53,7 @@ class BrandController extends BaseController
 
     public function delete(Brand $brand)
     {
-         $brand->delete();
+         $this->brandService->delete($brand);
 
         $this->session()->set('success', 'created');
         $this->redirect()->to('/admin/brand');

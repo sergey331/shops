@@ -8,25 +8,25 @@ use PDO;
 class Migration
 {
     private string $host;
-    private $user;
-    private $pass;
-    private $dbName;
-    private $charset;
-    private $migrationDir;
+    private mixed $user;
+    private mixed $pass;
+    private mixed $dbName;
+    private string $migrationDir;
+
+    private Database $db;
     public function __construct()
     {
         $this->host = env('DB_HOST', 'localhost');
         $this->user = env('DB_USERNAME', 'root');
         $this->pass = env('DB_PASSWORD', '');
         $this->dbName = env('DB_DATABASE', '');
-        $this->charset = 'utf8mb4';
         $this->migrationDir = __DIR__  . '/../../migration';
-
+        $this->db = new Database();
     }
     public function migrate()
     {
-        $pdo = $this->connectPDO($this->host, $this->user, $this->pass, $this->dbName);
         $this->checkMigrationTable();
+        $pdo = $this->db->connectPDO($this->host, $this->user, $this->pass, $this->dbName);
 
         if (!is_dir($this->migrationDir)) {
             echo "Migration directory not found: $this->migrationDir" . PHP_EOL;
@@ -72,18 +72,10 @@ class Migration
         }
     }
 
-    private function connectPDO($host, $user, $pass, $dbname = null): PDO
-    {
-        $dsn = "mysql:host=$host" . ($dbname ? ";dbname=$dbname" : "") . ";charset=utf8mb4";
-        $pdo = new PDO($dsn, $user, $pass);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $pdo;
-    }
-
     private function checkMigrationTable(): void
     {
         $initialSqlFile = "$this->migrationDir/database.sql";
-        $pdo = $this->connectPDO($this->host, $this->user, $this->pass);
+        $pdo = $this->db->connectPDO($this->host, $this->user, $this->pass);
 
         if (!file_exists($initialSqlFile)) {
             throw new Exception("Initial SQL file not found: $initialSqlFile");

@@ -41,6 +41,7 @@
                     @else
                         No Image
                     @endif
+                </td>
                 <td>
                     <a href="/admin/sliders/{{ $slider->id }}" class="btn btn-sm btn-edit">Edit</a>
                     <a href="/admin/sliders/delete/{{ $slider->id }}" class="btn btn-sm btn-delete">Delete</a>

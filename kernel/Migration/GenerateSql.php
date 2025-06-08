@@ -8,13 +8,25 @@ class GenerateSql
 
     protected string $tableName = '';
     protected array $fields = [];
+
+    private string $host;
+    private mixed $user;
+    private mixed $pass;
+    private mixed $dbName;
+
+    private  Database $database;
     protected array $droppedFields = [];
 
     public function __construct(string $tableName, array $fields, array $droppedFields)
     {
         $this->tableName = $tableName;
         $this->fields = $fields;
-
+        $this->host = env('DB_HOST', 'localhost');
+        $this->user = env('DB_USERNAME', 'root');
+        $this->pass = env('DB_PASSWORD', '');
+        $this->dbName = env('DB_DATABASE', '');
+        $this->droppedFields = $droppedFields;
+        $this->database = new Database();
     }
 
     public function generateCreateTableSql(): string
@@ -24,10 +36,11 @@ class GenerateSql
         $fieldDefinitions = [];
 
         foreach ($this->fields as $field) {
-            $name     = $field['name'];
-            $type     = $field['type'];
-            $length   = $this->normalizeLength($type, $field['length']);
+            $name = $field['name'];
+            $type = $field['type'];
+            $length = $this->normalizeLength($type, $field['length']);
             $nullable = $field['nullable'] ? 'NULL' : 'NOT NULL';
+            $unique = $field['unique'] ? 'UNIQUE' : '';
             $default = '';
             if ($field['default'] !== null) {
                 $upper = strtoupper($field['default']);
@@ -37,10 +50,10 @@ class GenerateSql
                     ? "DEFAULT {$field['default']}"
                     : "DEFAULT '{$field['default']}'";
             }
-            $autoInc  = !empty($field['autoIncrement']) ? 'AUTO_INCREMENT' : '';
-            $primary  = !empty($field['primary']) ? 'PRIMARY KEY' : '';
+            $autoInc = !empty($field['autoIncrement']) ? 'AUTO_INCREMENT' : '';
+            $primary = !empty($field['primary']) ? 'PRIMARY KEY' : '';
             $onUpdate = !empty($field['onUpdate']) ? "ON UPDATE {$field['onUpdate']}" : '';
-            $fieldDef = "`$name` $type$length $nullable $default $autoInc $primary $onUpdate";
+            $fieldDef = "`$name` $type$length $nullable $unique $default $autoInc $primary $onUpdate";
             $fieldDefinitions[] = trim($fieldDef);
 
 
@@ -62,46 +75,71 @@ class GenerateSql
         return $this->sql;
     }
 
-    public function generateAlterTableSql(): array
+    public function generateAlterTableSql(): string
     {
         $sqlStatements = [];
 
+        foreach ($this->droppedFields as $field) {
+            $sqlStatements[] = "ALTER TABLE `{$this->tableName}` DROP COLUMN `{$field}`";
+        }
+
         foreach ($this->fields as $field) {
-            if (!empty($field['drop']) && $field['drop'] === true) {
-                $sqlStatements[] = "ALTER TABLE `{$this->tableName}` DROP COLUMN `{$field['name']}`";
-                continue;
+            $name = $field['name'];
+
+            // Build column definition
+            $type = $field['type'];
+            $length = $this->normalizeLength($type, $field['length']);
+            $nullable = !empty($field['nullable']) ? 'NULL' : 'NOT NULL';
+            $default = isset($field['default']) ? "DEFAULT '{$field['default']}'" : '';
+            $autoInc = !empty($field['autoIncrement']) ? 'AUTO_INCREMENT' : '';
+            $primary = !empty($field['primary']) ? 'PRIMARY KEY' : '';
+            $unique = $field['unique'] ? 'UNIQUE' : '';
+            $definition = "`$name` $type$length $nullable $unique $default $autoInc $primary";
+            $columnExists = $this->columnExists($this->tableName, $field['name']);
+
+            // Determine ALTER action
+            if (!empty($field['changed']) && is_string($field['changed'])) {
+                $newName = $field['changed'];
+                $sqlStatements[] = "ALTER TABLE `{$this->tableName}` CHANGE `$name` `$newName` $type$length $nullable $unique $default $autoInc $primary";
+            } elseif ($columnExists) {
+                $sqlStatements[] = "ALTER TABLE `{$this->tableName}` MODIFY COLUMN $definition";
+            } else {
+                $sqlStatements[] = "ALTER TABLE `{$this->tableName}` ADD COLUMN $definition";
             }
 
-            $name     = $field['name'];
-            $type     = $field['type'];
-            $length   = $this->normalizeLength($type, $field['length']);
-            $nullable = $field['nullable'] ? 'NULL' : 'NOT NULL';
-            $default  = $field['default'] !== null ? "DEFAULT '{$field['default']}'" : '';
-            $autoInc  = !empty($field['autoIncrement']) ? 'AUTO_INCREMENT' : '';
-            $primary  = !empty($field['primary']) ? 'PRIMARY KEY' : '';
-
-
-            $definition = "`$name` $type$length $nullable $default $autoInc $primary";
-            $sqlStatements[] = "ALTER TABLE `{$this->tableName}` ADD COLUMN $definition";
 
             if (!empty($field['relation'])) {
                 $relation = $field['relation'];
                 $fk = "ALTER TABLE `{$this->tableName}` ADD FOREIGN KEY (`$name`) " .
                     "REFERENCES `{$relation['on']}`(`{$relation['references']}`)";
-
                 if (!empty($relation['onDelete'])) {
                     $fk .= " ON DELETE {$relation['onDelete']}";
                 }
                 if (!empty($relation['onUpdate'])) {
                     $fk .= " ON UPDATE {$relation['onUpdate']}";
                 }
-
                 $sqlStatements[] = $fk;
             }
         }
+        return implode(";\n", $sqlStatements) . ";";
+    }
 
-
-        return $sqlStatements;
+    private function columnExists( string $table, string $column): bool
+    {
+        $pdo = $this->database->connectPDO($this->host, $this->user, $this->pass);
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*) 
+            FROM INFORMATION_SCHEMA.COLUMNS 
+            WHERE TABLE_SCHEMA = ?
+              AND TABLE_NAME = ? 
+              AND COLUMN_NAME = ?
+        ");
+        $stmt->execute([
+            $this->dbName,
+            $table,
+            $column
+        ]);
+        return $stmt->fetchColumn() > 0;
     }
 
     private function normalizeLength(string $type, mixed $length): string

@@ -27,7 +27,7 @@ class Table
         $this->tableName = $name;
         $callback($this->fields);
         $generateSql = new GenerateSql($this->tableName, $this->fields->getFields(), $this->fields->getDroppedFields());
-        dd($generateSql);
+        $this->sql = $generateSql->generateAlterTableSql();
     }
 
     public function dropTable($name): void

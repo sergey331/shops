@@ -16,6 +16,7 @@
             <tr>
                 <th>#</th>
                 <th>Name</th>
+                <th>Image</th>
                 <th>Options</th>
             </tr>
             </thead>
@@ -24,7 +25,13 @@
             <tr>
                 <td>{{ $brand->id }}</td>
                 <td>{{ $brand->name }}</td>
-
+                <td>
+                    @if ($brand->image_url)
+                    <img src="/uploads/brands/{{ $brand->image_url }}" alt="News Image" style="width: 50px; height: 50px;">
+                    @else
+                    No Image
+                    @endif
+                </td>
                 <td>
                     <a href="/admin/brand/{{ $brand->id }}" class="btn btn-sm btn-edit">Edit</a>
                     <a href="/admin/brand/delete/{{ $brand->id }}" class="btn btn-sm btn-delete">Delete</a>

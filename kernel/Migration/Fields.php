@@ -328,6 +328,15 @@ class Fields
         return $this;
     }
 
+    public function change($column = true): static
+    {
+        if (!empty($this->fields)) {
+            $lastIndex = count($this->fields) - 1;
+            $this->fields[$lastIndex]['changed'] = $column;
+        }
+        return $this;
+    }
+
     private function setField(string $name, string $type, mixed $length = null): static
     {
         $this->fields[] = [
@@ -342,6 +351,7 @@ class Fields
             'default' => null,
             'after' => '',
             'onUpdate' => '',
+            'changed' => false,
         ];
         return $this;
     }

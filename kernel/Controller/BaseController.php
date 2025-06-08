@@ -5,7 +5,6 @@ namespace Kernel\Controller;
 use Exception;
 use Kernel\Auth\AuthInterface;
 use Kernel\Container\Container;
-use Kernel\Databases\DbInterface;
 use Kernel\Redirect\RedirectInterface;
 use Kernel\Request\RequestInterface;
 use Kernel\Session\SessionInterface;
@@ -52,7 +51,7 @@ abstract class BaseController implements BaseControllerInterface
         return $this->container->get('auth');
     }
 
-    public function model($name): DbInterface
+    public function model($name)
     {
         return $this->container->get('db')->model($name);
     }
