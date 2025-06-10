@@ -8,8 +8,8 @@
 
             <!-- Desktop menu -->
             <div class="hidden md:flex items-center space-x-6">
-                <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Home</a>
-                <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Deals</a>
+                <a href="/" class="text-gray-700 hover:text-blue-600 font-medium">Home</a>
+                <a href="/news" class="text-gray-700 hover:text-blue-600 font-medium">News</a>
 
                 <!-- Mega menu -->
                 <button id="megaMenuButton" data-dropdown-toggle="megaMenuDropdown"

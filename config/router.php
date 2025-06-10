@@ -11,6 +11,7 @@ use Shop\controllers\AuthController;
 use Shop\controllers\HomeController;
 use Shop\controllers\RegisterController;
 use Shop\controllers\admin\SlidersController;
+use Shop\controllers\NewsController as News;
 
 
 Route::group(["middleware" => ["guest"]], function () {
@@ -81,3 +82,4 @@ Route::middleware(["admin"])->group(function () {
     });
 });
 Route::get('/', [HomeController::class, 'index']);
+Route::get('/news', [News::class,'index']);

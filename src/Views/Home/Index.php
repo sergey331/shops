@@ -1,6 +1,9 @@
 <div class="mt-10">
     @include('Component.Sliders.Sliders')
 </div>
-<div class="mt-10">
-    @include('Component.Product.FeaturedProducts')
-</div>
+
+@if($featuredProducts)
+    <div class="mt-10">
+        @include('Component.Product.FeaturedProducts')
+    </div>
+@endif
