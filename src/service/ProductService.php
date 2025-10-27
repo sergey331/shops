@@ -2,6 +2,7 @@
 
 namespace Shop\service;
 
+use Exception;
 use Kernel\File\File;
 use Kernel\Validator\Validator;
 use Shop\model\Product;
@@ -27,7 +28,10 @@ class ProductService
         return model('option')->get();
     }
 
-    public function store()
+    /**
+     * @throws Exception
+     */
+    public function store(): bool
     {
         $data = request()->all();
         $validator = Validator::make($data, ProductRules::rules(), ProductRules::messages());
@@ -111,7 +115,7 @@ class ProductService
         return true;
     }
 
-    public function delete(Product $product)
+    public function delete(Product $product): void
     {
         if ($product->image_url) {
             $file = new File();
@@ -123,6 +127,9 @@ class ProductService
     }
 
 
+    /**
+     * @throws Exception
+     */
     private function handleAvatarUpload(array $data): array
     {
         if (request()->file('image_url')['name']) {
@@ -142,7 +149,7 @@ class ProductService
         return $data;
     }
 
-    private function handleImageUpload($image)
+    private function handleImageUpload($image): null|string
     {
         if (!isset($image['error']) || $image['error'] !== UPLOAD_ERR_NO_FILE) {
             $uploader = new File();
@@ -157,7 +164,7 @@ class ProductService
         return null;
     }
 
-    private function saveImages($data, $product)
+    private function saveImages($data, $product): void
     {
         foreach ($data['images']['name'] as $index => $image) {
             if($image !== '') {

@@ -3,11 +3,18 @@
 namespace Shop\model;
 
 use Kernel\Model\Model;
+use Kernel\Model\Relations\BelongsTo;
+use Kernel\Model\Relations\HasMany;
+use Kernel\Model\Relations\HasOne;
 
 class Product extends Model
 {
+    /**
+     * @var mixed|null
+     */
+    public mixed $image_url;
     protected string $table = 'products';
-    public static $status = [
+    public static array $status = [
         'active',
         'inactive',
         'draft'
@@ -26,24 +33,24 @@ class Product extends Model
         "image_url"
     ];
 
-    public function category() 
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
-    public function brand()
+    public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
     }
-    public function discount()
+    public function discount(): HasOne
     {
         return $this->hasOne(ProductDiscount::class);
     }
 
-    public function options()
+    public function options(): HasMany
     {
         return $this->hasMany(ProductOption::class);
     }
-    public function images()
+    public function images(): HasMany
     {
         return $this->hasMany(ProductImage::class);
     }

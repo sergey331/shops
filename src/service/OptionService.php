@@ -2,6 +2,7 @@
 
 namespace Shop\service;
 
+use Exception;
 use Kernel\Validator\Validator;
 use Shop\model\Option;
 use Shop\rules\OptionRule;
@@ -13,7 +14,10 @@ class OptionService
         return model('option')->get();
     }
 
-    public function store()
+    /**
+     * @throws Exception
+     */
+    public function store(): bool
     {
         $data = request()->all();
         $validator = Validator::make($data, OptionRule::rules(), OptionRule::messages());
