@@ -18,4 +18,11 @@ class NewsController extends BaseController
             'news' => $this->newsService->getNews(),
         ]);
     }
+
+    public function show($slug) 
+    {
+        $this->view()->load("News.Show", [
+            'new' => $this->newsService->getNewBySlug($slug),
+        ]);
+    }
 }

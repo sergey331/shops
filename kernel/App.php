@@ -2,11 +2,11 @@
 
 use Kernel\App\App;
 use Kernel\Auth\Auth;
+use Kernel\Config\Config;
 use Kernel\Container\Container;
 use Kernel\Databases\Db;
 use Kernel\Redirect\Redirect;
 use Kernel\Request\Request;
-use Kernel\Route\ResolveRouter;
 use Kernel\Route\RouteAction;
 use Kernel\Route\Routers;
 use Kernel\Session\Session;
@@ -19,6 +19,7 @@ $container->set('request', fn() => new Request($_GET, $_POST, $_FILES, $_SERVER)
 $container->set('session', fn() => new Session());
 $container->set('redirect', fn() => new Redirect());
 $container->set('db', fn() => new Db());
+$container->set('config', fn() => new Config());
 
 // Services that need the container
 $container->set('auth', fn() => new Auth());

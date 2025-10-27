@@ -1,9 +1,11 @@
+
+{!! $user = $auth->user(); !!}
 <nav class="bg-white border-b border-gray-200 shadow-sm">
     <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center py-4">
             <!-- Logo -->
             <a href="/" class="flex items-center space-x-2">
-                <img src="assets/img/logo.png" class="h-10" alt="logo" />
+                <img src="{{ public_path('assets/img/logo.png') }}" class="h-10" alt="logo" />
             </a>
 
             <!-- Desktop menu -->
@@ -109,28 +111,39 @@
          class="z-50 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 text-sm text-gray-700">
         <ul class="py-2">
             @auth
-                <li>
-                    <a href="#" class="flex items-center px-4 py-2 hover:bg-gray-100">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5"
-                             viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 0115 0" />
-                        </svg>
-                        Profile
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center px-4 py-2 hover:bg-gray-100">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5"
-                             viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M3 7.5A1.5 1.5 0 014.5 6h15A1.5 1.5 0 0121 7.5v9a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 16.5v-9z" />
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M9 12h6" />
-                        </svg>
-                        Orders
-                    </a>
-                </li>
+                 @if($user->is_admin)
+                    <li>
+                        <a href="/admin" class="flex items-center px-4 py-2 hover:bg-gray-100">
+                            <svg class="w-5 h-5 mr-2 text-gray-500"  viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14.5 19.5V12.5M10.5 12.5V5.5M5.5 12.5H19.5M5.5 19.5H19.5V5.5H5.5V19.5Z" stroke="#121923" stroke-width="1.2"/>
+                            </svg>
+                            Dashboard
+                        </a>
+                    </li>
+                @else
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-2 hover:bg-gray-100">
+                            <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 0115 0" />
+                            </svg>
+                            Profile
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-2 hover:bg-gray-100">
+                            <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 7.5A1.5 1.5 0 014.5 6h15A1.5 1.5 0 0121 7.5v9a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 16.5v-9z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 12h6" />
+                            </svg>
+                            Orders
+                        </a>
+                    </li>
+                @endif
                 <li>
                     <a href="/logout" class="flex items-center px-4 py-2 hover:bg-gray-100">
                         <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" stroke-width="1.5"

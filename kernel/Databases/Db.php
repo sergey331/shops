@@ -4,6 +4,11 @@ namespace Kernel\Databases;
 
 class Db
 {
+
+    /**
+     * @param $name
+     * @return false|object
+     */
     public function model($name)
     {
         $name = ucfirst($name);

@@ -14,6 +14,11 @@ class NewsService
         return model('news')->get();
     }
 
+    public function getNewBySlug($slug) 
+    {
+        return model('news')->where(['slug' => $slug])->first();
+    }
+
     public function store()
     {
         $data = request()->all();

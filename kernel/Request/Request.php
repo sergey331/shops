@@ -14,14 +14,14 @@ class Request implements RequestInterface
     {
     }
 
-    public function get($name): string
+    public function get($name): null|string
     {
-        return $this->get[$name] ?? '';
+        return $this->get[$name] ?? null;
     }
 
-    public function post($name): string
+    public function post($name): null|string
     {
-        return $this->post[$name] ?? '';
+        return $this->post[$name] ?? null;
     }
 
     public function all(): array
@@ -38,24 +38,24 @@ class Request implements RequestInterface
         return $data;
     }
 
-    public function input($name): string
+    public function input($name): null|string
     {
-        return  $this->get[$name] ?? $this->post[$name] ?? '';
+        return  $this->get[$name] ?? $this->post[$name] ?? null;
     }
 
-    public function getUri(): string
+    public function getUri(): null|string
     {
-       return $_SERVER['REQUEST_URI'] ?? '';
+       return $_SERVER['REQUEST_URI'] ?? null;
     }
 
-    public function getMethod(): string
+    public function getMethod(): null|string
     {
-        return $_SERVER['REQUEST_METHOD'] ?? '';
+        return $_SERVER['REQUEST_METHOD'] ?? null;
     }
 
-    public function file($name): string|array
+    public function file($name): null|array
     {
-        return $this->files[$name] ?? '';
+        return $this->files[$name] ?? null;
     }
     public function hasFile($name): bool
     {

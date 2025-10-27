@@ -2,7 +2,7 @@
 
 namespace Kernel\Auth;
 
-use Kernel\Container\Container;
+use Exception;
 use Kernel\Hash\Hash;
 
 class Auth implements AuthInterface
@@ -10,21 +10,29 @@ class Auth implements AuthInterface
     public function __construct()
     {   
     }
-    public function attempt(string $email, string $password): bool 
-    {
-        $user = model("user")->where(["email" => $email])->first();
 
+    /**
+     * @throws Exception
+     */
+    public function attempt(string $email, string $password): bool
+    {
+        $model_name = $this->getModelName();
+        $user_name = $this->getUserName();
+        $user = model($model_name)->where([$user_name => $email])->first();
+
+        $error_key = $this->error_key();
         if (!$user) {
-            session()->set('login_error',"Email is incorrect");
+            session()->set($error_key,"Email is incorrect");
             return false;
         }
 
         if (!Hash::verify($password, $user->password)) {
-            session()->set('login_error',"Password is incorrect");
+            session()->set($error_key,"Password is incorrect");
             return  false;
         }
 
-        session()->set('user_id', $user->id);
+        $session_key = $this->session_key();
+        session()->set($session_key, $user->id);
         session()->set('login_success',"Login successfully");
         return true;
     }
@@ -36,12 +44,14 @@ class Auth implements AuthInterface
 
     public function check() 
     {
-        return session()->has('user_id');
+        $session_key = $this->session_key();
+        return session()->has($session_key);
     }
 
     public function id() 
     {
-        return session()->get('user_id');
+        $session_key = $this->session_key();
+        return session()->get($session_key);
     }
 
     public function user() 
@@ -49,11 +59,33 @@ class Auth implements AuthInterface
         if (!$this->check())
             return null;
 
-        return model("user")->find($this->id());
+        $user_model = $this->getModelName();
+        return model($user_model)->find($this->id());
     }
 
     public function logout(): void
     {
-        session()->remove('user_id');
+        $session_key = $this->session_key();
+        session()->remove($session_key);
     }
+
+    private function  getModelName()
+    {
+        return config('auth.model','user');
+    }
+
+    private function getUserName()
+    {
+        return config('auth.user_name','email');
+    }
+
+    private function session_key()
+    {
+        return config('auth.session_key','user_id');
+    }
+    private function error_key()
+    {
+        return config('auth.error_key','login_error');
+    }
+
 }

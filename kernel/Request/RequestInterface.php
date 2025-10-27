@@ -4,12 +4,12 @@ namespace Kernel\Request;
 
 interface RequestInterface
 {
-    public function get($name): string;
-    public function post($name): string;
+    public function get($name): null|string;
+    public function post($name): null|string;
     public function all(): array;
-    public function input($name): string;
-    public function getUri(): string;
-    public function getMethod(): string;
-    public function file($name): string|array;
+    public function input($name): null|string;
+    public function getUri(): null|string;
+    public function getMethod(): null|string;
+    public function file($name): null|array;
     public function hasFile($name): bool;
 }

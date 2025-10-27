@@ -83,3 +83,4 @@ Route::middleware(["admin"])->group(function () {
 });
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/news', [News::class,'index']);
+Route::get('/news/{slug}', [News::class,'show']);

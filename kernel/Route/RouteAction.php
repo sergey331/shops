@@ -14,33 +14,54 @@ class RouteAction implements RouteActionInterface
     }
 
 
-    public function getAction(array $routers)
-    {
-        /* @var RequestInterface $request */
-        $request = $this->container->get('request');
-        $url = $request->getUri();
-        $url = strlen($url) > 1 ? rtrim($url, '/') : $url;
-        $method = $request->getMethod();
-        $segments = explode('/', trim($url, '/'));
-        $id = end($segments);
-        $flatRouters = $this->flattenRoutes($routers);
-        $newRouters = [];
-        foreach ($flatRouters as $router) {
-            if ($router['method'] !== $method) {
-                continue;
-            }
-            preg_match($this->pattern, $router['uri'], $matches);
-            if (!empty($matches)) {
-                if (is_numeric($id)) {
-                    $router['uri'] = preg_replace($this->pattern, $id, $router['uri'],);
-                    $param = $this->getParams($matches[1] ,$id);
-                    $router['params'] = array_merge($router['params'], $param);
-                }
-            }
-            $newRouters[$router['uri']] = $router;
+   public function getAction(array $routers)
+{
+    /* @var RequestInterface $request */
+    $request = $this->container->get('request');
+    $url = $request->getUri();
+    $url = strlen($url) > 1 ? rtrim($url, '/') : $url;
+    $method = $request->getMethod();
+
+    $flatRouters = $this->flattenRoutes($routers);
+    $staticRoutes = [];
+    $dynamicRoutes = [];
+
+    foreach ($flatRouters as $router) {
+        if ($router['method'] !== $method) {
+            continue;
         }
-        return $newRouters[$url] ?? null;
+
+        if (strpos($router['uri'], '{') === false) {
+            $staticRoutes[$router['uri']] = $router;
+        } else {
+            $dynamicRoutes[] = $router;
+        }
     }
+
+    if (isset($staticRoutes[$url])) {
+        return $staticRoutes[$url];
+    }
+
+    $segments = explode('/', trim($url, '/'));
+    $id = end($segments);
+
+    foreach ($dynamicRoutes as $router) {
+        preg_match($this->pattern, $router['uri'], $matches);
+        if (!empty($matches)) {
+            // Optional: validate $id format here if needed
+            $router['uri'] = preg_replace($this->pattern, $id, $router['uri']);
+            $param = $this->getParams($matches[1], $id);
+            $router['params'] = array_merge($router['params'], $param);
+
+            if ($router['uri'] === $url) {
+                return $router;
+            }
+        }
+    }
+
+    return null;
+}
+
     protected function flattenRoutes(array $routers): array
     {
         $flat = [];

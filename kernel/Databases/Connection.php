@@ -9,12 +9,16 @@ class Connection
     protected PDO $connection;
     public function __construct()
     {
-        $config = require APP_PATH . '/config/db.php';
+        $host = config('db.host');
+        $database = config('db.database');
+        $user = config('db.user');
+        $password = config('db.password');
+        $driver = config('db.driver');
         try {
             $this->connection = new PDO(
-                $config['driver'] . ':host=' . $config['host'] . ';dbname=' . $config['database'],
-                $config['user'],
-                $config['password']
+                $driver . ':host=' . $host . ';dbname=' . $database,
+                $user,
+                $password
             );
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\PDOException $exception) {

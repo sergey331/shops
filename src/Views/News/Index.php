@@ -12,38 +12,23 @@
 </section>
 
 <!-- News Grid -->
-<section class="py-16">
+<section class="py-16 mt-5">
     <div class="max-w-7xl mx-auto px-4">
         <h3 class="text-2xl font-semibold mb-8">Latest News</h3>
         <div class="grid md:grid-cols-3 gap-8">
             <!-- News Card -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <img src="https://www.sample-videos.com/img/Sample-jpg-image-15mb.jpeg" alt="" class="w-full">
-                <div class="p-4">
-                    <h4 class="font-bold text-lg mb-2">New Arrivals Just In</h4>
-                    <p class="text-sm text-gray-600 mb-3">Check out the latest products added to our catalog — now in stock and ready to ship.</p>
-                    <a href="#" class="text-indigo-600 hover:underline text-sm font-medium">Read more →</a>
-                </div>
-            </div>
 
-            <!-- Repeat News Cards -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvS8XRlRIzQ_lvu0EZy88MrE-UkMYfDTPjYQ&s" alt="" class="w-full">
-                <div class="p-4">
-                    <h4 class="font-bold text-lg mb-2">Customer Favorites Restocked</h4>
-                    <p class="text-sm text-gray-600 mb-3">Due to high demand, we've restocked some of our most loved items.</p>
-                    <a href="#" class="text-indigo-600 hover:underline text-sm font-medium">Read more →</a>
+            @foreach($news as $new) 
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="{{ public_path('uploads/news/'.$new->image_url) }}" alt="" class="w-full">
+                    <div class="p-4">
+                        <h4 class="font-bold text-lg mb-2">{{ $new->title }}</h4>
+                        <p class="text-sm text-gray-600 mb-3 truncate">{{ $new->content }}.</p>
+                        <a href="/news/{{ $new->slug }}" class="text-indigo-600 hover:underline text-sm font-medium">Read more →</a>
+                    </div>
                 </div>
-            </div>
+            @endforeach
 
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkrEl7tIiV2nSsHUovCSZpVtterjWHDRuxog&s" alt="" class="w-full">
-                <div class="p-4">
-                    <h4 class="font-bold text-lg mb-2">Sustainability Update</h4>
-                    <p class="text-sm text-gray-600 mb-3">Learn how we’re working to make our packaging more eco-friendly and sustainable.</p>
-                    <a href="#" class="text-indigo-600 hover:underline text-sm font-medium">Read more →</a>
-                </div>
-            </div>
         </div>
     </div>
 </section>
