@@ -158,17 +158,17 @@ class Model extends Connection implements ModelInterface
     }
 
     // Relationships
-    public function belongsTo($model, string $foreignKey = null, string $localKey = null)
+    public function belongsTo($model)
     {
         return new BelongsTo($this,$model);
     }
 
-    public function hasMany($model, string $localKey = null, string $foreignKey = null)
+    public function hasMany($model)
     {
         return new HasMany($this,$model);
     }
 
-    public function hasOne($model, string $localKey = null, string $foreignKey = null)
+    public function hasOne($model)
     {
         return new HasOne($this, $model);
     }

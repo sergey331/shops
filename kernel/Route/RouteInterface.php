@@ -14,7 +14,7 @@ interface RouteInterface
 
     public static function delete(string $uri, $action, array $params = []): void;
 
-    public static function group(array|Closure $params, Closure $callback = null): void;
+    public static function group(array|Closure $params, ?Closure $callback = null): void;
 
     public static function middleware(array $middleware): self;
 

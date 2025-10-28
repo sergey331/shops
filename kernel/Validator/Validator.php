@@ -62,7 +62,7 @@ class Validator
         $method = "validate" . ucfirst($ruleName);
 
         if (method_exists($this, $method)) {
-            return $this->$method($field, $param, $ruleName);
+            return $this->$method($field, $ruleName, $param);
         }
 
         return true;
@@ -77,7 +77,7 @@ class Validator
 
     // === Individual Rule Methods ===
 
-    protected function validateRequired(string $field, $param = null, $rule): bool
+    protected function validateRequired(string $field,$rule): bool
     {
         $value = $this->data[$field] ?? null;
         if (empty($value) && $value !== '0') {
@@ -87,7 +87,7 @@ class Validator
         return true;
     }
 
-    protected function validateEmail(string $field, $param = null, $rule): bool
+    protected function validateEmail(string $field, $rule): bool
     {
         $value = $this->data[$field] ?? '';
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
@@ -97,7 +97,7 @@ class Validator
         return true;
     }
 
-    protected function validateUrl(string $field, $param = null, $rule): bool
+    protected function validateUrl(string $field, $rule): bool
     {
         $value = $this->data[$field] ?? '';
         if (!filter_var($value, FILTER_VALIDATE_URL)) {
@@ -107,7 +107,7 @@ class Validator
         return true;
     }
 
-    protected function validateInteger(string $field, $param = null, $rule): bool
+    protected function validateInteger(string $field, $rule): bool
     {
         $value = $this->data[$field] ?? null;
         if (!filter_var($value, FILTER_VALIDATE_INT)) {
@@ -117,7 +117,7 @@ class Validator
         return true;
     }
 
-    protected function validateDecimal(string $field, $param = null, $rule): bool
+    protected function validateDecimal(string $field, $rule): bool
     {
         $value = $this->data[$field] ?? null;
         if (!filter_var($value, FILTER_VALIDATE_FLOAT)) {
@@ -127,7 +127,7 @@ class Validator
         return true;
     }
 
-    protected function validateString(string $field, $param = null, $rule): bool
+    protected function validateString(string $field, $rule): bool
     {
         $value = $this->data[$field] ?? '';
         if (!is_string($value)) {
@@ -137,7 +137,7 @@ class Validator
         return true;
     }
 
-    protected function validateMin(string $field, ?string $param, $rule): bool
+    protected function validateMin(string $field, $rule, ?string $param): bool
     {
         $value = $this->data[$field] ?? '';
         if (strlen($value) < (int)$param) {
@@ -147,7 +147,7 @@ class Validator
         return true;
     }
 
-    protected function validateMax(string $field, ?string $param, $rule): bool
+    protected function validateMax(string $field, $rule, ?string $param): bool
     {
         $value = $this->data[$field] ?? null;
 
@@ -166,7 +166,7 @@ class Validator
         return true;
     }
 
-    protected function validateUnique(string $field, ?string $param, $rule): bool
+    protected function validateUnique(string $field, $rule, ?string $param): bool
     {
         $value = $this->data[$field] ?? '';
         if (strlen($value) < (int)$param) {
@@ -176,7 +176,7 @@ class Validator
         return true;
     }
 
-    protected function validateBetween(string $field, ?string $param, $rule): bool
+    protected function validateBetween(string $field, $rule, ?string $param): bool
     {
         $value = $this->data[$field] ?? '';
         [$min, $max] = array_map('intval', explode(',', $param));
@@ -188,7 +188,7 @@ class Validator
         return true;
     }
 
-    protected function validateConfirmed(string $field, $param = null, $rule): bool
+    protected function validateConfirmed(string $field, $rule, $param = null): bool
     {
         $value = $this->data[$field] ?? null;
         $confirm = $this->data[$field . '_confirmation'] ?? null;
@@ -199,7 +199,7 @@ class Validator
         return true;
     }
 
-    protected function validateImage(string $field, ?string $param, $rule): bool
+    protected function validateImage(string $field, $rule): bool
     {
         $file = $this->data[$field] ?? null;
 
@@ -217,7 +217,7 @@ class Validator
         return true;
     }
 
-    protected function validateMimes(string $field, ?string $param, $rule): bool
+    protected function validateMimes(string $field, $rule, ?string $param): bool
     {
         $file = $this->data[$field] ?? null;
 

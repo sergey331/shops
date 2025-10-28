@@ -49,7 +49,7 @@ class Route implements RouteInterface
         self::addRoute('DELETE', $uri, $action, $params);
     }
 
-    public static function group(array|Closure $params, Closure $callback = null): void
+    public static function group(array|Closure $params, ?Closure $callback = null): void
     {
         if (is_array($params)) {
             $previousPrefix = self::$currentPrefix;

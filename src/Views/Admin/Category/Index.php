@@ -3,7 +3,6 @@
      * @var \App\Models\Category[] $categories
      */
 !!}
-
 <div >
     <h1>Categories</h1>
 
@@ -28,9 +27,11 @@
                 <td>{{ $category->name }}</td>
                 <td>{{ $category->description }}</td>
                 <td>
-                    <button onclick="toggleChildren('{{ $category->id }}')" class="btn btn-sm btn-toggle">
-                        Show Children
-                    </button>
+                    @count($category->childrens)
+                        <button onclick="toggleChildren('{{ $category->id }}')" class="btn btn-sm btn-toggle " style="cursor: pointer">
+                            Children
+                        </button>
+                    @endcount
                 </td>
                 <td>
                     <a href="/admin/categories/{{ $category->id }}" class="btn btn-sm btn-edit">Edit</a>
@@ -73,7 +74,7 @@
 
 <script>
     function toggleChildren(id) {
-        console.log(id);
+
         const row = document.getElementById('children-' + id);
         row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
     }
