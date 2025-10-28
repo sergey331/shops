@@ -26,7 +26,7 @@ class Table
     {
         $this->tableName = $name;
         $callback($this->fields);
-        $generateSql = new GenerateSql($this->tableName, $this->fields->getFields(), $this->fields->getDroppedFields());
+        $generateSql = new GenerateSql($this->tableName, $this->fields->getFields(), $this->fields->getDroppedFields(), $this->fields->getDropRelations());
         $this->sql = $generateSql->generateAlterTableSql();
     }
 

@@ -17,6 +17,13 @@ switch ($command) {
         $name = $argv[2] ?? null;
         (new MigrationMakeComand($name))->make();
         break;
+    case 'reset':
+        $steps = $argv[2] ?? null;
+        (new Migration())->resetMigration($steps);
+        break;
+    case 'rollback':
+        (new Migration())->rollbackMigration();
+        break;
     default:
         showUsageAndExit();
 }
@@ -25,6 +32,6 @@ switch ($command) {
 
 function showUsageAndExit(): void
 {
-    echo "Usage: php migration.php [migrate|make]" . PHP_EOL;
+    echo "Usage: php migration.php [migrate|make|reset|rollback]" . PHP_EOL;
     exit(1);
 }

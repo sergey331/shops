@@ -30,6 +30,6 @@ class Products implements MigrationsInterface
 
     public static function down(Table $table): void
     {
-        // Your rollback logic here
+        $table->dropTable('products');
     }
 }

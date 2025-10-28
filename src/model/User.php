@@ -12,6 +12,7 @@ class User extends Model
         'username',
         'email',
         'password',
-        'avatar'
+        'avatar',
+        'is_admin'
     ];
 }

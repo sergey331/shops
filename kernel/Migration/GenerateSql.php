@@ -16,8 +16,9 @@ class GenerateSql
 
     private  Database $database;
     protected array $droppedFields = [];
+    protected array $droppedRelations = [];
 
-    public function __construct(string $tableName, array $fields, array $droppedFields)
+    public function __construct(string $tableName, array $fields, array $droppedFields, array $dropRelations = [])
     {
         $this->tableName = $tableName;
         $this->fields = $fields;
@@ -26,6 +27,7 @@ class GenerateSql
         $this->pass = env('DB_PASSWORD', '');
         $this->dbName = env('DB_DATABASE', '');
         $this->droppedFields = $droppedFields;
+        $this->droppedRelations = $dropRelations;
         $this->database = new Database();
     }
 
@@ -79,6 +81,10 @@ class GenerateSql
     {
         $sqlStatements = [];
 
+        foreach ($this->droppedRelations as $field) {
+            $sqlStatements[] = "ALTER TABLE `{$this->tableName}` DROP FOREIGN KEY `{$field}`";
+        }
+
         foreach ($this->droppedFields as $field) {
             $sqlStatements[] = "ALTER TABLE `{$this->tableName}` DROP COLUMN `{$field}`";
         }
@@ -108,8 +114,8 @@ class GenerateSql
             }
 
 
-            if (!empty($field['relation'])) {
-                $relation = $field['relation'];
+            if (!empty($field['relations'])) {
+                $relation = $field['relations'];
                 $fk = "ALTER TABLE `{$this->tableName}` ADD FOREIGN KEY (`$name`) " .
                     "REFERENCES `{$relation['on']}`(`{$relation['references']}`)";
                 if (!empty($relation['onDelete'])) {

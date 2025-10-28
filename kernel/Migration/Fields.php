@@ -6,6 +6,7 @@ class Fields
 {
     private array $fields = [];
     protected array $droppedFields = [];
+    protected array $dropRelations = [];
     private array $types = [
         // String types
         'string' => 'varchar',
@@ -52,6 +53,11 @@ class Fields
     public function dropColumn($column)
     {
         $this->droppedFields[] = $column;
+        return $this;
+    }
+    public function dropRelation($column)
+    {
+        $this->dropRelations[] = $column;
         return $this;
     }
 
@@ -317,6 +323,10 @@ class Fields
     public function getDroppedFields(): array
     {
         return $this->droppedFields;
+    }
+    public function getDropRelations(): array
+    {
+        return $this->dropRelations;
     }
 
     public function after($column): static
