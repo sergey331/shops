@@ -12,13 +12,9 @@ class HomeController extends BaseController
      */
     public function index(): void
     {
-        $featuredProduct = model('product')->where(['featured' => 1])->get();
-        $sliders = model('slider')->where(['is_show' => 1])->get();
-        $brands = model('brand')->select('name,image_url')->get();
         $this->view()->load('Home.Index', [
-            'featuredProducts' => $featuredProduct,
-            'sliders' => $sliders,
-            'brands' => $brands,
+            'sliders' => model('slider')->where(['is_show' => 1])->get(),
+            'categories' => model('category')->get(),
         ]);
 
     }

@@ -27,23 +27,6 @@
             @endisset
         </div>
         <div class="form-row">
-            <label for="product_id">Product</label>
-            <select name="product_id" id="product_id">
-                <option value="">-- None --</option>
-                @foreach ($products as $product)
-                <option value="{{ $product->id }}" >{{ $product->name }}</option>
-                @endforeach
-            </select>
-
-            @isset($errors['product_id'])
-            <ul class="errors">
-                @foreach ($errors['product_id'] as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-            @endisset
-        </div>
-        <div class="form-row">
             <label for="image_url">Image</label>
             <input type="file" name="image_url" id="image_url" accept="image/*">
             @isset($errors['image_url'])

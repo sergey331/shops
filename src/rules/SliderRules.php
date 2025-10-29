@@ -11,7 +11,6 @@ class SliderRules implements interface\RulesInterface
     {
         return [
             'title'        => 'required',
-            'product_id'        => 'required',
             'content' => 'required|min:3',
             'image_url'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];

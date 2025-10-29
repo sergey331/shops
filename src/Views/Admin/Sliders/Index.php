@@ -17,7 +17,6 @@
                 <th>#</th>
                 <th>Title</th>
                 <th>Content</th>
-                <th>Product</th>
                 <th>Is Show</th>
                 <th>Image</th>
                 <th>Actions</th>
@@ -29,7 +28,6 @@
                 <td>{{ $slider->id }}</td>
                 <td>{{ $slider->title }}</td>
                 <td>{{ $slider->content }}</td>
-                <td>{{ $slider->product->name }}</td>
                 <td>
                     @if ($slider->is_show)
                         <span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300">Yes</span>

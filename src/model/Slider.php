@@ -13,11 +13,5 @@ class Slider extends Model
         'content',
         'image_url',
         'is_show',
-        'product_id',
     ];
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
 }

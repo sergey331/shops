@@ -11,12 +11,7 @@ class SlidersService
 {
     public function getSliders()
     {
-        return model('slider')->with(['product'])->get();
-    }
-
-    public function getProducts()
-    {
-        return model('product')->get();
+        return model('slider')->get();
     }
 
     public function store()
