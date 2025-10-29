@@ -10,7 +10,6 @@ class ProductImage extends Model
 
     protected array $fillable = [
         "product_id",
-        "url",
-        "is_main"
+        "url"
     ];
 }

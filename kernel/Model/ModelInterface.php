@@ -6,6 +6,7 @@ interface ModelInterface
 {
     // Retrieval methods
     public function all(): array;
+    public function select(array|string $columns): static;
     public function get(): array;
     public function first(): null|static;
     public function find($id): null|static;

@@ -4,7 +4,7 @@ namespace Kernel\Seeder;
 
 use Kernel\Databases\Db;
 
-class Seeder
+abstract class Seeder
 {
     public function model($name)
     {

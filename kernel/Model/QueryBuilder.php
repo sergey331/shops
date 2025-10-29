@@ -7,9 +7,18 @@ class QueryBuilder
     protected int $limit = 0;
     protected array $orderBy = [];
     protected array $groupBy = [];
+
+    protected string $selectClause = "*";
+
+    public function select(array|string $columns): void
+    {
+        $this->selectClause = is_array($columns)
+            ? implode(', ', $columns)
+            : $columns;
+    }
     public function getSelectQuery($table,$where = ""): string
     {
-        $sql = "SELECT * FROM {$table}";
+        $sql = "SELECT {$this->selectClause} FROM {$table}";
 
         if (!empty($where)) {
             $sql .= " {$where}";

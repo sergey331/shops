@@ -1,6 +1,7 @@
 <?php
 
 namespace Seeder;
+use Kernel\Hash\Hash;
 use Kernel\Seeder\Seeder;
 
 class UserSeed extends Seeder
@@ -10,7 +11,7 @@ class UserSeed extends Seeder
         $this->model('User')->create([
             'username' => 'Admin User',
             'email' => 'admin@admin.de',
-            'password' => password_hash('admin123', PASSWORD_BCRYPT),
+            'password' => 'admin123',
             'is_admin' => 1
         ]);
     }

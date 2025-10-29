@@ -12,7 +12,12 @@ class Categories implements MigrationsInterface
         $table->createTable('categories', function ($field) {
             $field->id();
             $field->string('name', 100)->unique();
-            $field->relations('category_id')->references('id')->on('categories')->onDelete('cascade')->onUpdate('cascade');
+            $field->relations('category_id')
+                    ->nullable()
+                    ->references('id')
+                    ->on('categories')
+                    ->onDelete('cascade')
+                    ->onUpdate('cascade');
             $field->text('description')->nullable();
             $field->text('avatar')->nullable();
             $field->createdTimestamp();

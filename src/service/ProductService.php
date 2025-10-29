@@ -175,8 +175,7 @@ class ProductService
                     "size" => $data['images']['size'][$index],
                 ];
                 $product->images()->create([
-                    'url' => $this->handleImageUpload($file),
-                    'is_main' => 0
+                    'url' => $this->handleImageUpload($file)
                 ]);
             }
         }

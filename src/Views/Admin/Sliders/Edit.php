@@ -26,14 +26,18 @@
             </ul>
             @endisset
         </div>
-
-
         <div class="form-row">
-            <label for="is_show">Show</label>
-            <input type="checkbox" name="is_show" id="is_show"  value="1" {{ $slider->is_show ? 'checked' : '' }} >
-            @isset($errors['is_show'])
+            <label for="product_id">Product</label>
+            <select name="product_id" id="product_id">
+                <option value="">-- None --</option>
+                @foreach ($products as $product)
+                <option value="{{ $product->id }}" @if($product->id === $slider->product_id) selected @endif  >{{ $product->name }}</option>
+                @endforeach
+            </select>
+
+            @isset($errors['product_id'])
             <ul class="errors">
-                @foreach ($errors['is_show'] as $error)
+                @foreach ($errors['product_id'] as $error)
                 <li>{{ $error }}</li>
                 @endforeach
             </ul>
@@ -50,7 +54,17 @@
             </ul>
             @endisset
         </div>
-
+        <div class="form-row">
+            <label for="is_show">Show</label>
+            <input type="checkbox" name="is_show" id="is_show"  value="1" {{ $slider->is_show ? 'checked' : '' }} >
+            @isset($errors['is_show'])
+            <ul class="errors">
+                @foreach ($errors['is_show'] as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            @endisset
+        </div>
         <div class="form-actions">
             <button type="submit" class="btn btn-add btn-sm">Update</button>
         </div>

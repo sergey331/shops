@@ -9,10 +9,6 @@ use Kernel\Model\Relations\HasOne;
 
 class Product extends Model
 {
-    /**
-     * @var mixed|null
-     */
-    public mixed $image_url;
     protected string $table = 'products';
     public static array $status = [
         'active',

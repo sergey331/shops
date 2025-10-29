@@ -33,6 +33,12 @@ class Model extends Connection implements ModelInterface
         $this->queryBuilder = new QueryBuilder();
     }
 
+    public function select(array|string $columns): static
+    {
+        $this->queryBuilder->select($columns);
+        return $this;
+    }
+
     /**
      * @throws Exception
      */
