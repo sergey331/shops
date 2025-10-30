@@ -8,7 +8,7 @@ class CategorySeed extends Seeder
         $data =  [
             ['name' => 'Fiction', 'description' => 'Imaginative or made-up stories', 'logo' => 'fiction.png'],
             ['name' => 'Non-Fiction', 'description' => 'Real-world facts, biographies, and knowledge', 'logo' => 'non_fiction.webp'],
-            ['name' => 'Mystery & Thriller', 'description' => 'Suspenseful stories with crime or investigation', 'logo' => 'mystery_thriller.webp♂'],
+            ['name' => 'Mystery & Thriller', 'description' => 'Suspenseful stories with crime or investigation', 'logo' => 'mystery_thriller.webp'],
             ['name' => 'Romance', 'description' => 'Love stories and relationships', 'logo' => 'romance.jpeg'],
             ['name' => 'Science Fiction', 'description' => 'Futuristic, space, or technology-based stories', 'logo' => 'science_fiction.png'],
             ['name' => 'Fantasy', 'description' => 'Magic, mythical creatures, and other worlds', 'logo' => 'fantasy.jpg'],

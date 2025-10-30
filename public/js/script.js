@@ -155,6 +155,23 @@ document.querySelectorAll('[data-tab-target]').forEach(tab => {
         },
       });
 
+        var categorySwiper = new Swiper(".category-swiper", {
+            speed: 600,
+            autoplay: true,
+            spaceBetween: 20,
+            breakpoints: {
+                0: {
+                    slidesPerView: 1,
+                },
+                660: {
+                    slidesPerView: 3,
+                },
+                980: {
+                    slidesPerView: 4,
+                }
+            },
+        });
+
       var productSwiper = new Swiper(".product-swiper", {
         spaceBetween: 20,        
         navigation: {
