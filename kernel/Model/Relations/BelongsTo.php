@@ -16,7 +16,8 @@ class BelongsTo extends Relation
         parent::__construct($parent,$relatedClass);
         $this->parent = $parent;
         $this->relatedClass = new $relatedClass();
-        $this->foreignKey = strtolower((new ReflectionClass($this->relatedClass))->getShortName()) . '_id';    }
+        $this->foreignKey = strtolower((new ReflectionClass($this->relatedClass))->getShortName()) . '_id';
+    }
 
     public function get()
     {

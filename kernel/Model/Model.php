@@ -6,6 +6,7 @@ use Exception;
 use Kernel\Databases\Connection;
 use Kernel\Hash\Hash;
 use Kernel\Model\Relations\BelongsTo;
+use Kernel\Model\Relations\BelongsToMany;
 use Kernel\Model\Relations\HasMany;
 use Kernel\Model\Relations\HasOne;
 use Kernel\Model\Trait\ConditionsTrait;
@@ -167,6 +168,11 @@ class Model extends Connection implements ModelInterface
     public function belongsTo($model)
     {
         return new BelongsTo($this,$model);
+    }
+
+    public function belongsToMany($model,$relatedTable)
+    {
+        return new BelongsToMany($this,$model,$relatedTable);
     }
 
     public function hasMany($model)

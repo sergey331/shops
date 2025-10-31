@@ -38,6 +38,11 @@ class ModelWhere
         $this->wheres = array_merge($this->wheres ?? [],$wheres);
         return $this;
     }
+    public function clearWhere()
+    {
+        $this->wheres = [];
+        return $this;
+    }
     public function setOrWhere($orWheres): static
     {
         $this->orWheres = array_merge($this->orWheres ?? [],$orWheres);
