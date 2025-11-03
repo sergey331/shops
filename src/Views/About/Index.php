@@ -20,27 +20,8 @@
             <div class="w-full md:w-1/2">
                 <div class="detail md:pl-12 mt-12 lg:mt-0">
                     <div class="display-header">
-                        <h3 class="text-4xl font-semibold mb-4">Best Bookstore of all time</h3>
-                        <p class="pb-4">Risus augue curabitur diam senectus congue velit et. Sed vitae metus nibh sit
-                            era. Nulla
-                            adipiscing pharetra pellentesque maecenas odio eros at. Et libero vulputate amet duis erat
-                            volutpat
-                            vitae eget. Sed vitae metus nibh sit era. Nulla adipiscing pharetra eros at.</p>
-                        <p class="pb-4">Nulla adipiscing pharetra pellentesque maecenas odio eros at. Et libero
-                            vulputate amet
-                            duis erat volutpat vitae eget. Quam libero etiam et in ac at quis. Risus augue curabitur
-                            diam senectus
-                            congue velit et.</p>
-                        <p class="pb-4">Risus augue curabitur diam senectus congue velit et. Sed vitae metus nibh sit
-                            era. Nulla
-                            adipiscing pharetra pellentesque maecenas odio eros at. Et libero vulputate amet duis erat
-                            volutpat
-                            vitae eget. Sed vitae metus nibh sit era. Nulla adipiscing pharetra eros at.</p>
-                        <p class="pb-4">Nulla adipiscing pharetra pellentesque maecenas odio eros at. Et libero
-                            vulputate amet
-                            duis erat volutpat vitae eget. Quam libero etiam et in ac at quis. Risus augue curabitur
-                            diam senectus
-                            congue velit et.</p>
+
+                        <?php $about->content ?>
                         <a href="/shop"
                            class="btn mt-6 inline-block px-6 py-3 bg-primary text-white rounded-md transition">
                             Go to shop

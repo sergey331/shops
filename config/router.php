@@ -7,6 +7,7 @@ use Shop\controllers\HomeController;
 use Shop\controllers\RegisterController;
 use Shop\controllers\admin\SlidersController;
 use Shop\controllers\ShopController;
+use Shop\controllers\admin\AboutController as AdminAboutController;
 use Shop\controllers\AboutController;
 use Shop\controllers\BlogController;
 use Shop\controllers\ContactController;
@@ -36,6 +37,11 @@ Route::middleware(["admin"])->group(function () {
             Route::get('/{Slider}', [SlidersController::class, 'edit']);
             Route::post('/{Slider}', [SlidersController::class, 'update']);
             Route::get('/delete/{Slider}', [SlidersController::class, 'delete']);
+        });
+
+        Route::group(['prefix' => '/about'], function () {
+            Route::get('/', [AdminAboutController::class, 'index']);
+            Route::post('/modify', [AdminAboutController::class, 'modify']);
         });
     });
 });

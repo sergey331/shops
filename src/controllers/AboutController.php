@@ -14,6 +14,7 @@ class AboutController extends BaseController
     {
         $this->view()->load('About.Index', [
             'title' => 'About Us',
+            'about' => $this->model('about')->first()
         ]);
 
     }

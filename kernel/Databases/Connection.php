@@ -10,19 +10,21 @@ class Connection
     public function __construct()
     {
         $host = config('db.host');
+        $port = config('db.port');
         $database = config('db.database');
         $user = config('db.user');
         $password = config('db.password');
         $driver = config('db.driver');
+
         try {
             $this->connection = new PDO(
-                $driver . ':host=' . $host . ';dbname=' . $database,
+                "{$driver}:host={$host};port={$port};dbname={$database}",
                 $user,
                 $password
             );
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\PDOException $exception) {
-            echo $exception->getMessage();
+            echo "Database connection failed: " . $exception->getMessage();
         }
     }
 
