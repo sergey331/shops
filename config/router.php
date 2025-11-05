@@ -14,6 +14,7 @@ use Shop\controllers\ContactController;
 use Shop\controllers\CartController;
 use Shop\controllers\CheckoutController;
 use Shop\controllers\ProductController as FrontProductController;
+use Shop\controllers\admin\PostController;
 
 
 Route::group(["middleware" => ["guest"]], function () {
@@ -42,6 +43,15 @@ Route::middleware(["admin"])->group(function () {
         Route::group(['prefix' => '/about'], function () {
             Route::get('/', [AdminAboutController::class, 'index']);
             Route::post('/modify', [AdminAboutController::class, 'modify']);
+        });
+
+        Route::group(['prefix' => '/posts'], function () {
+            Route::get('/', [PostController::class, 'index']);
+            Route::get('/create', [PostController::class, 'create']);
+            Route::post('/store', [PostController::class, 'store']);
+            Route::get('/{Post}', [PostController::class, 'edit']);
+            Route::post('/{Post}', [PostController::class, 'update']);
+            Route::get('/delete/{Post}', [PostController::class, 'delete']);
         });
     });
 });

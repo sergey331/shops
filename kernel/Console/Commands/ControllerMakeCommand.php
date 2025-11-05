@@ -41,7 +41,7 @@ PHP;
             exit(1);
         }
 
-        $filename = __DIR__ . "/../../src/controllers/$this->name.php";
+        $filename = __DIR__ . "/../../../src/controllers/$this->name.php";
 
         if (file_exists($filename)) {
             echo "Controller file already exists: $filename" . PHP_EOL;

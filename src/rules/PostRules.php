@@ -1,0 +1,31 @@
+<?php
+
+namespace Shop\rules;
+
+use Shop\rules\interface\RulesInterface;
+
+class PostRules implements interface\RulesInterface
+{
+
+    public static function rules(): array
+    {
+        return [
+            'title'        => 'required',
+            'content' => 'required|min:3',
+            'image'      => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category_id' => 'required',
+            'slug' => 'required',
+            'excerpt' => 'required',
+            'meta_title' => 'nullable',
+            'meta_description' => 'nullable',
+            'views' =>  'integer'
+        ];
+    }
+
+    public static function messages(): array
+    {
+        return  [
+
+        ];
+    }
+}

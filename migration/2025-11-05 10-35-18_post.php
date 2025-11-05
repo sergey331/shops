@@ -1,0 +1,34 @@
+<?php
+
+namespace Migration;
+
+use Kernel\Migration\Fields;
+use Kernel\Migration\Table;
+use Kernel\Migration\MigrationsInterface;
+
+class Post implements MigrationsInterface
+{
+    public static function up(Table $table): void
+    {
+        $table->createTable('posts', function (Fields $field) {
+            $field->id();
+            $field->relations('category_id')->references('id')->on('categories')->onDelete('cascade')->onUpdate('cascade');
+            $field->string('title');
+            $field->string('slug')->unique();
+            $field->longText('excerpt');
+            $field->longText('content');
+            $field->string('image');
+            $field->enum('status', ['draft', 'published', 'archived'])->default('published');
+            $field->datetime('published_at')->nullable();
+            $field->string('meta_title')->nullable();
+            $field->string('meta_description')->nullable();
+            $field->integer('views')->default(0);
+            $field->createdTimestamp();
+        });
+    }
+
+    public static function down(Table $table): void
+    {
+        $table->dropTable('posts');
+    }
+}

@@ -34,7 +34,7 @@ PHP;
 
 
 
-        $filename = __DIR__ . "/../../src/model/$this->name.php";
+        $filename = __DIR__ . "/../../../src/model/$this->name.php";
 
         if (file_exists($filename)) {
             echo "Model file already exists: $filename" . PHP_EOL;

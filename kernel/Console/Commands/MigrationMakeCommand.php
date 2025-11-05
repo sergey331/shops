@@ -40,12 +40,19 @@ PHP;
             exit(1);
         }
         $timestamp = date('Y-m-d H-i-s');
-        $filename = __DIR__ . "/../../migration/{$timestamp}_" . lcfirst($this->name) . ".php";
+        $filename = __DIR__ . "/../../../migration/{$timestamp}_" . lcfirst($this->name) . ".php";
 
         if (file_exists($filename)) {
             echo "Migration file already exists: $filename" . PHP_EOL;
             exit(1);
         }
-        file_put_contents($filename, $this->content);
+        $result = file_put_contents($filename, $this->content);
+        if ($result === false) {
+            echo "Failed to write migration file!" . PHP_EOL;
+            exit(1);
+        } else {
+            echo "Migration created successfully: $filename" . PHP_EOL;
+        }
+
     }
 }
