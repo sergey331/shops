@@ -2,8 +2,8 @@
 
 namespace Shop\controllers;
 
-use Exception;
 use Kernel\Controller\BaseController;
+use Exception;
 
 class AboutController extends BaseController
 {

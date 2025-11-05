@@ -2,7 +2,7 @@
 
 namespace Kernel\Migration;
 
-class MigrationMakeComand
+class MigrationMakeCommand
 {
     protected string $content = '';
     protected string $name = '';

@@ -77,7 +77,7 @@ class Migration
 
     public function resetMigration(int $steps): void
     {
-        if ($steps <= 0) {
+        if ($steps <= 0 || empty($steps)) {
             $this->exitWithError("Invalid steps parameter. It should be a positive number.");
         }
 
