@@ -1,6 +1,6 @@
 <?php
 
-namespace Kernel\Controller;
+namespace Kernel\Console\Commands;
 
 class ControllerMakeCommand
 {

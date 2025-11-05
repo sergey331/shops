@@ -1,6 +1,6 @@
 <?php
 
-namespace Kernel\Seeder;
+namespace Kernel\Console\Commands;
 
 class SeederMakeCommand
 {

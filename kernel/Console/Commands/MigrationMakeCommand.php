@@ -1,6 +1,6 @@
 <?php
 
-namespace Kernel\Migration;
+namespace Kernel\Console\Commands;
 
 class MigrationMakeCommand
 {

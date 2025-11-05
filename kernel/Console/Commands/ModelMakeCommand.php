@@ -1,6 +1,6 @@
 <?php
 
-namespace Kernel\Model;
+namespace Kernel\Console\Commands;
 
 class ModelMakeCommand
 {

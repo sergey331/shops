@@ -2,10 +2,10 @@
 
 namespace Kernel\Console;
 
-use Kernel\Controller\ControllerMakeCommand;
-use Kernel\Migration\MigrationMakeCommand;
-use Kernel\Model\ModelMakeCommand;
-use Kernel\Seeder\SeederMakeCommand;
+use Kernel\Console\Commands\ControllerMakeCommand;
+use Kernel\Console\Commands\MigrationMakeCommand;
+use Kernel\Console\Commands\ModelMakeCommand;
+use Kernel\Console\Commands\SeederMakeCommand;
 
 class Make
 {
