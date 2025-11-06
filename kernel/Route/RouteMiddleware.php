@@ -2,7 +2,9 @@
 
 namespace Kernel\Route;
 
-class RouteMiddleware
+use Kernel\Route\interface\RouteMiddlewareInterface;
+
+class RouteMiddleware implements RouteMiddlewareInterface
 {
     private array $middlewares = [];
 

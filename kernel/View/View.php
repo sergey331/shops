@@ -3,6 +3,7 @@
 namespace Kernel\View;
 
 use Kernel\Container\Container;
+use Kernel\View\interface\ViewInterface;
 
 class View implements ViewInterface
 {

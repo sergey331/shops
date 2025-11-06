@@ -2,6 +2,8 @@
 
 namespace Kernel\Redirect;
 
+use Kernel\Redirect\interface\RedirectInterface;
+
 class Redirect implements RedirectInterface
 {
     public function to($url): void

@@ -6,8 +6,9 @@ use Kernel\Console\Commands\ControllerMakeCommand;
 use Kernel\Console\Commands\MigrationMakeCommand;
 use Kernel\Console\Commands\ModelMakeCommand;
 use Kernel\Console\Commands\SeederMakeCommand;
+use Kernel\Console\interface\MakeInterface;
 
-class Make
+class Make implements MakeInterface
 {
     public function __construct(
         protected string $type,

@@ -15,17 +15,16 @@ class MigrationMakeCommand
 
 namespace Migration;
 
-use Kernel\Migration\Table;
-use Kernel\Migration\MigrationsInterface;
+use Kernel\Migration\interface\TableInterface;
 
 class {$className} implements MigrationsInterface
 {
-    public static function up(Table \$table): void
+    public static function up(TableInterface \$table): void
     {
         // Your migration logic here
     }
 
-    public static function down(Table \$table): void
+    public static function down(TableInterface \$table): void
     {
         // Your rollback logic here
     }

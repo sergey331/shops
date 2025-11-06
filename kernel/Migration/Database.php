@@ -2,9 +2,10 @@
 
 namespace Kernel\Migration;
 
+use Kernel\Migration\interface\DatabaseInterface;
 use PDO;
 
-class Database
+class Database implements DatabaseInterface
 {
     private $charset;
 

@@ -3,6 +3,7 @@
 namespace Kernel\Auth;
 
 use Exception;
+use Kernel\Auth\interface\AuthInterface;
 use Kernel\Hash\Hash;
 
 class Auth implements AuthInterface

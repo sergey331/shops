@@ -2,7 +2,9 @@
 
 namespace Kernel\Hash;
 
-class Hash
+use Kernel\Hash\interface\HashInterface;
+
+class Hash implements HashInterface
 {
     /**
      * Hash a plain password using bcrypt.

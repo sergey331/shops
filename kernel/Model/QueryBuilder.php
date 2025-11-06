@@ -2,7 +2,9 @@
 
 namespace Kernel\Model;
 
-class QueryBuilder
+use Kernel\Model\interface\QueryBuilderInterface;
+
+class QueryBuilder implements QueryBuilderInterface
 {
     protected int $limit = 0;
     protected array $orderBy = [];
@@ -44,7 +46,7 @@ class QueryBuilder
         return $sql;
     }
 
-    public function getInsertQuery($table,$data)
+    public function getInsertQuery($table,$data): string
     {
         $keys = array_keys($data);
         $fields = "(" . implode(', ', array_map(fn($field) => "$field", $keys)) . ")";
@@ -53,7 +55,7 @@ class QueryBuilder
         return sprintf('INSERT INTO %s %s VALUES %s',$table,$fields,$values);
     }
 
-    public function getUpdateQuery($table,$data, $where)
+    public function getUpdateQuery($table,$data, $where): string
     {
         $keys = array_keys($data);
         $fields = implode(', ', array_map(fn($field) => "$field=?", $keys));
@@ -61,7 +63,7 @@ class QueryBuilder
         return sprintf('UPDATE  %s SET %s  %s',$table,$fields,$where);
     }
 
-    public function getDeleteQuery($table, $where)
+    public function getDeleteQuery($table, $where): string
     {
         return sprintf('DELETE FROM  %s   %s',$table,$where);
     }

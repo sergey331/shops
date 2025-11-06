@@ -2,6 +2,8 @@
 
 namespace Kernel\Session;
 
+use Kernel\Session\interface\SessionInterface;
+
 class Session implements SessionInterface
 {
     public function __construct()

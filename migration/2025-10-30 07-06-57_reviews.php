@@ -2,15 +2,15 @@
 
 namespace Migration;
 
-use Kernel\Migration\Fields;
-use Kernel\Migration\Table;
-use Kernel\Migration\MigrationsInterface;
+use Kernel\Migration\interface\FieldsInterface;
+use Kernel\Migration\interface\MigrationsInterface;
+use Kernel\Migration\interface\TableInterface;
 
 class Reviews implements MigrationsInterface
 {
-    public static function up(Table $table): void
+    public static function up(TableInterface $table): void
     {
-        $table->createTable('reviews', function (Fields $field) {
+        $table->createTable('reviews', function (FieldsInterface $field) {
             $field->id();
             $field->relations('book_id')->references('id')->on('books')->onDelete('cascade')->onUpdate('cascade');
             $field->string('user_name');
@@ -20,8 +20,8 @@ class Reviews implements MigrationsInterface
         });
     }
 
-    public static function down(Table $table): void
+    public static function down(TableInterface $table): void
     {
-        $table->dropTable('reviews');
+        $table->dropTable('TableInterface');
     }
 }

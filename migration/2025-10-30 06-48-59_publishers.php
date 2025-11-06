@@ -2,15 +2,15 @@
 
 namespace Migration;
 
-use Kernel\Migration\Fields;
-use Kernel\Migration\Table;
-use Kernel\Migration\MigrationsInterface;
+use Kernel\Migration\interface\FieldsInterface;
+use Kernel\Migration\interface\MigrationsInterface;
+use Kernel\Migration\interface\TableInterface;
 
 class Publishers implements MigrationsInterface
 {
-    public static function up(Table $table): void
+    public static function up(TableInterface $table): void
     {
-        $table->createTable('publishers', function (Fields $field) {
+        $table->createTable('publishers', function (FieldsInterface $field) {
             $field->id();
             $field->string('name');
             $field->string('slug')->unique();
@@ -23,7 +23,7 @@ class Publishers implements MigrationsInterface
         });
     }
 
-    public static function down(Table $table): void
+    public static function down(TableInterface $table): void
     {
         $table->dropTable('publishers');
     }

@@ -1,6 +1,8 @@
 <?php
 
-namespace Kernel\Migration;
+namespace Kernel\Migration\interface;
+
+use Kernel\Migration\Table;
 
 interface MigrationsInterface
 {

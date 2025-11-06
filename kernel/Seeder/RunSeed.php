@@ -2,7 +2,9 @@
 
 namespace Kernel\Seeder;
 
-final class RunSeed
+use Kernel\Seeder\interface\RunSeedInterface;
+
+final class RunSeed implements RunSeedInterface
 {
     public function __construct(
         private readonly ?string $selectedClass = null

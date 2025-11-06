@@ -2,15 +2,15 @@
 
 namespace Migration;
 
-use Kernel\Migration\Fields;
-use Kernel\Migration\Table;
-use Kernel\Migration\MigrationsInterface;
+use Kernel\Migration\interface\FieldsInterface;
+use Kernel\Migration\interface\MigrationsInterface;
+use Kernel\Migration\interface\TableInterface;
 
 class Post implements MigrationsInterface
 {
-    public static function up(Table $table): void
+    public static function up(TableInterface $table): void
     {
-        $table->createTable('posts', function (Fields $field) {
+        $table->createTable('posts', function (FieldsInterface $field) {
             $field->id();
             $field->relations('category_id')->references('id')->on('categories')->onDelete('cascade')->onUpdate('cascade');
             $field->string('title');
@@ -27,7 +27,7 @@ class Post implements MigrationsInterface
         });
     }
 
-    public static function down(Table $table): void
+    public static function down(TableInterface $table): void
     {
         $table->dropTable('posts');
     }

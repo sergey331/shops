@@ -1,6 +1,6 @@
 <?php
 
-namespace Kernel\Model;
+namespace Kernel\Model\interface;
 
 interface ModelInterface
 {
@@ -40,10 +40,10 @@ interface ModelInterface
 
     public function whereDate(array $conditions): static;
     public function orWhereDate(array $conditions): static;
-    public function whereDateBeetwen(array $conditions): static;
-    public function orWhereDateBeetwen(array $conditions): static;
-    public function whereDateNotBeetwen(array $conditions): static;
-    public function orWhereDateNotBeetwen(array $conditions): static;
+    public function whereDateBetween(array $conditions): static;
+    public function orWhereDateBetween(array $conditions): static;
+    public function whereDateNotBetween(array $conditions): static;
+    public function orWhereDateNotBetween(array $conditions): static;
     public function whereDateOperators(array $conditions): static;
     public function orWhereDateOperators(array $conditions): static;
 

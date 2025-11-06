@@ -1,6 +1,8 @@
 <?php
 namespace Kernel\File;
 
+use Kernel\File\interface\FileInterface;
+
 class File implements FileInterface
 {
     private $path;

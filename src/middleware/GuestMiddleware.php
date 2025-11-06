@@ -3,8 +3,8 @@
 namespace Shop\middleware;
 
 use Kernel\Container\Container;
+use Kernel\Route\interface\MiddlewareInterface;
 use Kernel\Route\Middleware;
-use Kernel\Route\MiddlewareInterface;
 
 class GuestMiddleware extends Middleware implements MiddlewareInterface
 {

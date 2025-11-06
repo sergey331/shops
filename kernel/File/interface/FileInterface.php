@@ -1,5 +1,5 @@
 <?php
-namespace Kernel\File;
+namespace Kernel\File\interface;
 
 interface FileInterface 
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Kernel\Auth;
+namespace Kernel\Auth\interface;
 
 interface AuthInterface
 {

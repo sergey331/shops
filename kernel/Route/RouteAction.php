@@ -3,7 +3,8 @@
 namespace Kernel\Route;
 
 use Kernel\Container\Container;
-use Kernel\Request\RequestInterface;
+use Kernel\Request\interface\RequestInterface;
+use Kernel\Route\interface\RouteActionInterface;
 
 class RouteAction implements RouteActionInterface
 {

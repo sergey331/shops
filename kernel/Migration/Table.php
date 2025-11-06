@@ -2,7 +2,9 @@
 
 namespace Kernel\Migration;
 
-class Table
+use Kernel\Migration\interface\TableInterface;
+
+class Table implements TableInterface
 {
     private string $tableName = '';
 

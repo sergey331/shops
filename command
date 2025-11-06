@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 
 use Kernel\Console\Console;
@@ -17,5 +18,5 @@ try {
     $console = $container->get('console');
     $console->run();
 } catch (Exception $e) {
-    print_r($e->getMessage());
+    echo "Error: " . $e->getMessage() . PHP_EOL;
 }

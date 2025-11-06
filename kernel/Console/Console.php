@@ -3,8 +3,9 @@
 namespace Kernel\Console;
 
 use Exception;
+use Kernel\Console\interface\ConsoleInterface;
 
-class Console
+class Console implements ConsoleInterface
 {
     private RunCommand $command;
     public function __construct()

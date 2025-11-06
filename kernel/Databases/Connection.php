@@ -2,9 +2,10 @@
 
 namespace Kernel\Databases;
 
+use Kernel\Databases\interface\ConnectionInterface;
 use PDO;
 
-class Connection
+class Connection implements ConnectionInterface
 {
     protected PDO $connection;
     public function __construct()

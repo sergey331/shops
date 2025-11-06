@@ -2,16 +2,16 @@
 
 namespace Migration;
 
-use Kernel\Migration\Fields;
-use Kernel\Migration\Table;
-use Kernel\Migration\MigrationsInterface;
+use Kernel\Migration\interface\FieldsInterface;
+use Kernel\Migration\interface\MigrationsInterface;
+use Kernel\Migration\interface\TableInterface;
 
 class About implements MigrationsInterface
 {
 
-    public static function up(Table $table): void
+    public static function up(TableInterface $table): void
     {
-        $table->createTable('about', function (Fields $field) {
+        $table->createTable('about', function (FieldsInterface $field) {
             $field->id();
             $field->mediumText('content');
             $field->string('media_path');
@@ -20,7 +20,7 @@ class About implements MigrationsInterface
         });
     }
 
-    public static function down(Table $table): void
+    public static function down(TableInterface $table): void
     {
         $table->dropTable('about');
     }

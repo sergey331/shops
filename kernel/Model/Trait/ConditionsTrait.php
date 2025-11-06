@@ -88,25 +88,25 @@ trait ConditionsTrait
         return $this;
     }
 
-    public function whereDateBeetwen(array $conditions): static
+    public function whereDateBetween(array $conditions): static
     {
         $this->modelWhere->setWhereDateBetweens($conditions);
         return $this;
     }
 
-    public function orWhereDateBeetwen(array $conditions): static
+    public function orWhereDateBetween(array $conditions): static
     {
         $this->modelWhere->setOrWhereDateBetweens($conditions);
         return $this;
     }
 
-    public function whereDateNotBeetwen(array $conditions): static
+    public function whereDateNotBetween(array $conditions): static
     {
         $this->modelWhere->setWhereDateNotBetweens($conditions);
         return $this;
     }
 
-    public function orWhereDateNotBeetwen(array $conditions): static
+    public function orWhereDateNotBetween(array $conditions): static
     {
         $this->modelWhere->setOrWhereDateNotBetweens($conditions);
         return $this;

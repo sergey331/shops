@@ -5,9 +5,10 @@ namespace Kernel\Container;
 
 use Closure;
 use Exception;
+use Kernel\Container\interface\ContainerInterface;
 
 
-class Container
+class Container implements ContainerInterface
 {
     private array $services = [];
     private array $shared = [];

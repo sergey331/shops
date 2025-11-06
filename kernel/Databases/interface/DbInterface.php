@@ -1,6 +1,6 @@
 <?php
 
-namespace Kernel\Databases;
+namespace Kernel\Databases\interface;
 
 interface DbInterface
 {

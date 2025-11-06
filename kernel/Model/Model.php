@@ -5,6 +5,7 @@ namespace Kernel\Model;
 use Exception;
 use Kernel\Databases\Connection;
 use Kernel\Hash\Hash;
+use Kernel\Model\interface\ModelInterface;
 use Kernel\Model\Relations\BelongsTo;
 use Kernel\Model\Relations\BelongsToMany;
 use Kernel\Model\Relations\HasMany;

@@ -2,10 +2,11 @@
 
 namespace Kernel\App;
 
+use Kernel\App\interface\AppInterface;
 use Kernel\Container\Container;
 use Exception;
 
-class App
+class App implements AppInterface
 {
     protected Container $container;
     public function __construct(Container $container)

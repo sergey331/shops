@@ -1,6 +1,6 @@
 <?php
 
-namespace Kernel\Route;
+namespace Kernel\Route\interface;
 
 interface RouteActionInterface
 {

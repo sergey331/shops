@@ -2,7 +2,9 @@
 
 namespace Kernel\Validator;
 
-class Validator
+use Kernel\Validator\interface\ValidatorInterface;
+
+class Validator implements ValidatorInterface
 {
     protected array $allowedRules = [
         'required', 'email', 'url', 'integer', 'string',

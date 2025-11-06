@@ -3,32 +3,59 @@
 namespace Kernel\Console;
 
 use Exception;
+use Kernel\Console\interface\RunCommandInterface;
 use Kernel\Migration\Migration;
 use Kernel\Seeder\RunSeed;
 
-class RunCommand
+class RunCommand implements RunCommandInterface
 {
     private string $argument = '';
-    private array $commandLists = [
-        'make:migration',
-        'migrate',
-        'migrate:reset',
-        'migrate:rollback',
-        'make:seed',
-        'seed',
-        'make:controller',
-        'make:model',
-    ];
-    protected string $command;
+    private string $command = '';
 
+    /**
+     * Command registry: command => handler class or callback
+     */
+    private array $commandMap = [
+        'make:migration' => [self::class, 'handleMake'],
+        'migrate'        => [self::class, 'handleMigrate'],
+        'migrate:reset'  => [self::class, 'handleMigrateReset'],
+        'migrate:rollback' => [self::class, 'handleMigrateRollback'],
+        'make:seed'      => [self::class, 'handleMakeSeed'],
+        'seed'           => [self::class, 'handleSeed'],
+        'make:controller'=> [self::class, 'handleMake'],
+        'make:model'     => [self::class, 'handleMake'],
+    ];
+
+    /**
+     * Entry point.
+     */
     public function run(): void
     {
-        [$type, $arg] = array_pad((array)$this->getResolvedCommands(), 2, null);
-        $this->{$type}($arg);
+        [$type, $arg] = array_pad($this->getResolvedCommandParts(), 2, null);
+
+        $handler = $this->resolveHandler($this->command);
+
+        if (!is_callable($handler)) {
+            throw new Exception("Handler for command '{$this->command}' not found");
+        }
+
+        call_user_func($handler, $arg);
     }
 
     /**
-     * @param string $argument
+     * Sets the command.
+     * @throws Exception
+     */
+    public function setCommand(string $command): void
+    {
+        if (!$this->isValidCommand($command)) {
+            throw new Exception("Command '$command' is not recognized");
+        }
+        $this->command = $command;
+    }
+
+    /**
+     * Sets optional argument.
      */
     public function setArgument(string $argument): void
     {
@@ -36,56 +63,66 @@ class RunCommand
     }
 
     /**
-     * @throws Exception
+     * Splits "command:sub" structure.
      */
-    public function setCommand(string $command): void
-    {
-        if (!$this->validCommand($command)) {
-            throw new Exception("Command '$command' not resolved");
-        }
-        $this->command = $command;
-    }
-
-    private function getResolvedCommands(): array
+    private function getResolvedCommandParts(): array
     {
         return explode(':', $this->command);
     }
 
     /**
-     * @throws Exception
+     * Verifies if command exists.
      */
-    private function make($arg)
+    private function isValidCommand(string $command): bool
+    {
+        return isset($this->commandMap[$command]);
+    }
+
+    /**
+     * Finds the callable handler for a command.
+     */
+    private function resolveHandler(string $command): ?callable
+    {
+        return $this->commandMap[$command] ?? null;
+    }
+
+    /* =====================
+     *  HANDLER METHODS
+     * ===================== */
+
+    private function handleMake(?string $arg): void
     {
         if (empty($this->argument)) {
-            throw new Exception("error accorded");
+            throw new Exception("Missing argument for make command");
         }
+
         $make = new Make($arg, $this->argument);
         $make->run();
     }
 
-    private function seed($arg): void
+    private function handleSeed(): void
     {
         $seed = new RunSeed($this->argument);
         $seed->seed();
     }
 
-    private function migrate($arg): void
+    private function handleMakeSeed(): void
     {
-        switch ($arg) {
-            case 'reset':
-                (new Migration())->resetMigration($this->argument);
-                break;
-            case 'rollback':
-                (new Migration())->rollbackMigration();
-                break;
-            default:
-                (new Migration())->migrate();
-                break;
-        }
+        $this->handleMake('seed');
     }
 
-    private function validCommand($command): bool
+    private function handleMigrate(): void
     {
-        return in_array($command, $this->commandLists);
+        (new Migration())->migrate();
+    }
+
+    private function handleMigrateReset(): void
+    {
+        (new Migration())->resetMigration($this->argument);
+    }
+
+    private function handleMigrateRollback(): void
+    {
+        (new Migration())->rollbackMigration();
     }
 }

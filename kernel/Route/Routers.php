@@ -3,10 +3,11 @@
 namespace Kernel\Route;
 
 use Exception;
-use JetBrains\PhpStorm\NoReturn;
 use Kernel\Container\Container;
+use Kernel\Route\interface\MiddlewareInterface;
+use Kernel\Route\interface\RoutersInterface;
 
-class Routers
+class Routers implements RoutersInterface
 {
     protected array $routes = [];
     protected string $method;

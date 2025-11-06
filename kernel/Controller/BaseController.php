@@ -3,12 +3,13 @@
 namespace Kernel\Controller;
 
 use Exception;
-use Kernel\Auth\AuthInterface;
+use Kernel\Auth\interface\AuthInterface;
 use Kernel\Container\Container;
-use Kernel\Redirect\RedirectInterface;
-use Kernel\Request\RequestInterface;
-use Kernel\Session\SessionInterface;
-use Kernel\View\ViewInterface;
+use Kernel\Controller\interface\BaseControllerInterface;
+use Kernel\Redirect\interface\RedirectInterface;
+use Kernel\Request\interface\RequestInterface;
+use Kernel\Session\interface\SessionInterface;
+use Kernel\View\interface\ViewInterface;
 
 abstract class BaseController implements BaseControllerInterface
 {

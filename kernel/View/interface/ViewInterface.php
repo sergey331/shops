@@ -1,6 +1,6 @@
 <?php
 
-namespace Kernel\View;
+namespace Kernel\View\interface;
 
 interface ViewInterface
 {

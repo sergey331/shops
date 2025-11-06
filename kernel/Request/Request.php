@@ -3,6 +3,8 @@
 namespace Kernel\Request;
 
 
+use Kernel\Request\interface\RequestInterface;
+
 class Request implements RequestInterface
 {
     public function __construct(

@@ -2,15 +2,15 @@
 
 namespace Migration;
 
-use Kernel\Migration\Fields;
-use Kernel\Migration\Table;
-use Kernel\Migration\MigrationsInterface;
+use Kernel\Migration\interface\FieldsInterface;
+use Kernel\Migration\interface\MigrationsInterface;
+use Kernel\Migration\interface\TableInterface;
 
 class Sliders implements MigrationsInterface
 {
-    public static function up(Table $table): void
+    public static function up(TableInterface $table): void
     {
-        $table->createTable('sliders', function (Fields $field) {
+        $table->createTable('sliders', function (FieldsInterface $field) {
             $field->id();
             $field->string('title');
             $field->text('content');
@@ -20,7 +20,7 @@ class Sliders implements MigrationsInterface
         });
     }
 
-    public static function down(Table $table): void
+    public static function down(TableInterface $table): void
     {
         $table->dropTable('sliders');
     }

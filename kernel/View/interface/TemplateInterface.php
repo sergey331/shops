@@ -1,5 +1,5 @@
 <?php 
-namespace Kernel\View;
+namespace Kernel\View\interface;
 
 use Kernel\Container\Container;
 

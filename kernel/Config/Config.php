@@ -2,7 +2,9 @@
 
 namespace Kernel\Config;
 
-class Config
+use Kernel\Config\inteface\ConfigInterface;
+
+class Config implements ConfigInterface
 {
     private string $configDirectory = __DIR__ . '/../../config/';
     public function get($key,$default)

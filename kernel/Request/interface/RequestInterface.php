@@ -1,6 +1,6 @@
 <?php
 
-namespace Kernel\Request;
+namespace Kernel\Request\interface;
 
 interface RequestInterface
 {

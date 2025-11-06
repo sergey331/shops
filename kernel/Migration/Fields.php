@@ -2,7 +2,9 @@
 
 namespace Kernel\Migration;
 
-class Fields
+use Kernel\Migration\interface\FieldsInterface;
+
+class Fields implements FieldsInterface
 {
     private array $fields = [];
     protected array $droppedFields = [];
@@ -50,18 +52,18 @@ class Fields
         'set' => 'set',
     ];
 
-    public function dropColumn($column)
+    public function dropColumn($column): static
     {
         $this->droppedFields[] = $column;
         return $this;
     }
-    public function dropRelation($column)
+    public function dropRelation($column): static
     {
         $this->dropRelations[] = $column;
         return $this;
     }
 
-    public function id()
+    public function id(): Fields
     {
         return $this->setField('id', 'integer', 11)
             ->primary()

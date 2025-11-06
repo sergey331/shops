@@ -2,7 +2,9 @@
 
 namespace Kernel\Migration;
 
-class GenerateSql
+use Kernel\Migration\interface\GenerateSqlInterface;
+
+class GenerateSql implements GenerateSqlInterface
 {
     protected string $sql = '';
 

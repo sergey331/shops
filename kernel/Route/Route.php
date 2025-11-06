@@ -3,6 +3,7 @@
 namespace Kernel\Route;
 
 use Closure;
+use Kernel\Route\interface\RouteInterface;
 
 class Route implements RouteInterface
 {
@@ -11,23 +12,6 @@ class Route implements RouteInterface
     private static bool $is_prefix = false;
     private static bool $is_group = false;
     private static array $currentMiddleware = [];
-
-    private static function formatUri(string $uri): string
-    {
-        $uriPath = self::$is_prefix ? self::$currentPrefix . $uri : $uri;
-        return strlen($uriPath) > 1 ? rtrim($uriPath, '/') : $uriPath;
-    }
-
-    private static function addRoute(string $method, string $uri, $action, array $params): void
-    {
-        self::$routers[] = [
-            'method' => strtoupper($method),
-            'uri' => self::formatUri($uri),
-            'action' => $action,
-            'params' => $params,
-            'group' => self::$is_group ? ['middleware' => self::$currentMiddleware] : [],
-        ];
-    }
 
     public static function get(string $uri, $action, array $params = []): void
     {
@@ -94,5 +78,22 @@ class Route implements RouteInterface
     public static function getRoutes(): array
     {
         return self::$routers;
+    }
+
+    private static function formatUri(string $uri): string
+    {
+        $uriPath = self::$is_prefix ? self::$currentPrefix . $uri : $uri;
+        return strlen($uriPath) > 1 ? rtrim($uriPath, '/') : $uriPath;
+    }
+
+    private static function addRoute(string $method, string $uri, $action, array $params): void
+    {
+        self::$routers[] = [
+            'method' => strtoupper($method),
+            'uri' => self::formatUri($uri),
+            'action' => $action,
+            'params' => $params,
+            'group' => self::$is_group ? ['middleware' => self::$currentMiddleware] : [],
+        ];
     }
 }

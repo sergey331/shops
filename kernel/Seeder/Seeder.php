@@ -3,8 +3,9 @@
 namespace Kernel\Seeder;
 
 use Kernel\Databases\Db;
+use Kernel\Seeder\interface\SeederInterface;
 
-abstract class Seeder
+abstract class Seeder implements SeederInterface
 {
     public function model($name)
     {

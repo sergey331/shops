@@ -2,7 +2,9 @@
 
 namespace Kernel\Model;
 
-class ModelWhere
+use Kernel\Model\interface\ModelWhereInterface;
+
+class ModelWhere implements ModelWhereInterface
 {
     protected string $whereQuery = "";
 
@@ -38,7 +40,7 @@ class ModelWhere
         $this->wheres = array_merge($this->wheres ?? [],$wheres);
         return $this;
     }
-    public function clearWhere()
+    public function clearWhere(): static
     {
         $this->wheres = [];
         return $this;
