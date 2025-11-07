@@ -15,6 +15,7 @@ class MigrationMakeCommand
 
 namespace Migration;
 
+use Kernel\Migration\interface\MigrationsInterface;
 use Kernel\Migration\interface\TableInterface;
 
 class {$className} implements MigrationsInterface

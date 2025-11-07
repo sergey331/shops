@@ -164,7 +164,6 @@ tr:hover {
 .form-row input,
 .form-row textarea,
 .form-row select {
-    padding: 10px;
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 14px;

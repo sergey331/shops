@@ -53,4 +53,5 @@ interface ModelInterface
     public function groupBy(string|array $column): static;
 
     public function limit(int $limit): static;
+    public function pluck(string $valueKey): array;
 }

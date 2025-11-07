@@ -3,10 +3,12 @@
 namespace Kernel\Model\Relations;
 
 use Kernel\Model\Model;
+use Kernel\Model\Trait\Pluck;
 use ReflectionClass;
 
 class BelongsToMany extends Relation
 {
+    use Pluck;
     protected Model $model;
 
     protected mixed $relatedClass;
@@ -14,6 +16,7 @@ class BelongsToMany extends Relation
 
     protected string $foreignKey;
     protected string $relatedKey;
+    protected array $data = [];
 
     public function __construct(Model $parent, string $relatedClass, string $relatedTable)
     {
@@ -29,7 +32,11 @@ class BelongsToMany extends Relation
     public function get()
     {
         $data = $this->getParentData();
-        return array_map(fn($row) => $this->fetch($row),$data);
+        $this->data = array_column(
+            array_map(fn($row) => $this->fetch($row), $data),
+            0
+        );
+        return $this->data;
     }
 
     private function fetch($row)
@@ -38,7 +45,7 @@ class BelongsToMany extends Relation
         $this->where(['id' => $row[$this->foreignKey]]);
         $this->modelWhere->resolve();
         $query = $this->queryBuilder->getSelectQuery($this->relatedClass->getTableName(), $this->modelWhere->getWhereQuery());
-        $result = $this->query($query, [1]);
+        $result = $this->query($query, $this->modelWhere->getWhereData());
         return $this->fetchArrayData($result->fetchAll(\PDO::FETCH_ASSOC));
     }
 

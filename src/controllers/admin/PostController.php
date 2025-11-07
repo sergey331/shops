@@ -40,8 +40,13 @@ class PostController extends BaseController
 
     public function edit(Post $post)
     {
+        $post->with(['tags']);
+
         $this->view()->load('Admin.Post.Edit', [
-            'post' => $post
+            'post' => $post,
+            'tags' => model('tag')->get(),
+            'categories' => model('category')->get(),
+            'selectedTagsId' => $post->pluck('tags.id')
         ], 'admin');
     }
 

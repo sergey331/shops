@@ -11,11 +11,12 @@ use Kernel\Model\Relations\BelongsToMany;
 use Kernel\Model\Relations\HasMany;
 use Kernel\Model\Relations\HasOne;
 use Kernel\Model\Trait\ConditionsTrait;
+use Kernel\Model\Trait\Pluck;
 
 #[\AllowDynamicProperties]
 class Model extends Connection implements ModelInterface
 {
-    use ConditionsTrait;
+    use ConditionsTrait,Pluck;
     protected string $table;
     protected array $data = [];
     protected array $newData = [];
@@ -91,7 +92,7 @@ class Model extends Connection implements ModelInterface
 
     public function delete(): bool
     {
-        $this->where(['id' => $this->id]);
+//        $this->where(['id' => $this->id]);
         $this->modelWhere->resolve();
         $query = $this->queryBuilder->getDeleteQuery($this->table, $this->modelWhere->getWhereQuery());
         return (bool)$this->query($query, $this->modelWhere->getWhereData());

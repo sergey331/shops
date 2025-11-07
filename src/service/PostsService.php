@@ -6,6 +6,7 @@ use Kernel\File\File;
 use Kernel\Validator\Validator;
 use Shop\model\Post;
 use Shop\rules\PostRules;
+use Shop\rules\PostUpdateRules;
 
 class PostsService
 {
@@ -24,11 +25,22 @@ class PostsService
             session()->set('errors', $validator->errors());
             return false;
         }
+        $tag_ids = [];
+        if (isset($data['tag_id'])) {
+            $tag_ids = $data['tag_id'];
+            unset($data['tag_id']);
+        }
 
         $data = $this->handleImageUpload($data);
 
-        model('post')->create($data);
-
+        if ($post = model('post')->create($data)) {
+            foreach ($tag_ids as $tag_id) {
+                model('PostTag')->create([
+                    'post_id' => $post->id,
+                    'tag_id' => $tag_id
+                ]);
+            }
+        }
         session()->set('success', 'created');
         return true;
     }
@@ -36,15 +48,34 @@ class PostsService
     public function update(Post $post)
     {
         $data = request()->all();
-        $validator = Validator::make($data, PostRules::rules(), PostRules::messages());
+        $validator = Validator::make($data, PostUpdateRules::rules(), PostUpdateRules::messages());
 
         if (!$validator->validate()) {
             session()->set('errors', $validator->errors());
             return false;
         }
 
+        $tag_ids = [];
+        if (isset($data['tag_id'])) {
+            $tag_ids = $data['tag_id'];
+            unset($data['tag_id']);
+        }
+
+        model('PostTag')->where(['post_id' => $post->id])->delete();
+
+
+
         $data = $this->handleImageUpload($data);
         $post->update($data);
+
+
+            foreach ($tag_ids as $tag_id) {
+                model('PostTag')->create([
+                    'post_id' => $post->id,
+                    'tag_id' => $tag_id
+                ]);
+            }
+
         session()->set('success', 'updated');
         return true;
     }

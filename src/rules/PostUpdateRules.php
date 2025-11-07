@@ -4,7 +4,7 @@ namespace Shop\rules;
 
 use Shop\rules\interface\RulesInterface;
 
-class PostRules implements interface\RulesInterface
+class PostUpdateRules implements interface\RulesInterface
 {
 
     public static function rules(): array
@@ -12,7 +12,7 @@ class PostRules implements interface\RulesInterface
         return [
             'title'        => 'required',
             'content' => 'required|min:3',
-            'image'      => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category_id' => 'required',
             'slug' => 'required',
             'excerpt' => 'required',

@@ -6,7 +6,6 @@ use PDO;
 
 interface ConnectionInterface
 {
-    public function __construct();
 
     public function query($query,$data = []);
 

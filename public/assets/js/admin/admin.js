@@ -9,6 +9,12 @@ document.querySelectorAll('.dropdown-toggle').forEach(item => {
 
 
 document.addEventListener('DOMContentLoaded', function () {
+    flatpickr("#published_at", {
+        enableTime: true,
+        minDate: "today",
+        dateFormat: "Y-m-d H:i",
+        time_24hr: true
+    });
     flatpickr("#start_date", {
         enableTime: true,
         minDate: "today",

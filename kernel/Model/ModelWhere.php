@@ -43,6 +43,7 @@ class ModelWhere implements ModelWhereInterface
     public function clearWhere(): static
     {
         $this->wheres = [];
+        $this->data = [];
         return $this;
     }
     public function setOrWhere($orWheres): static
