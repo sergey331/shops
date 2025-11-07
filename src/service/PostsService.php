@@ -12,7 +12,7 @@ class PostsService
 {
     public function getPosts()
     {
-        return model('post')->get();
+        return model('post')->with(['category','tags'])->get();
     }
 
     public function store()

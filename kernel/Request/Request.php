@@ -47,7 +47,7 @@ class Request implements RequestInterface
 
     public function getUri(): null|string
     {
-       return $_SERVER['REQUEST_URI'] ?? null;
+       return strtok($_SERVER['REQUEST_URI'],'?') ?? null;
     }
 
     public function getMethod(): null|string
