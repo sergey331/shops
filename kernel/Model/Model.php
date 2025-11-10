@@ -63,6 +63,11 @@ class Model extends Connection implements ModelInterface
         return $this->fetchArrayData($result->fetchAll(\PDO::FETCH_ASSOC));
     }
 
+    public function paginate(int $page = 1, int $perPage = 10): array
+    {
+        $this->modelWhere->resolve();
+    }
+
     public function first(): null|static
     {
         $this->modelWhere->resolve();

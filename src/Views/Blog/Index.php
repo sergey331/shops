@@ -25,114 +25,19 @@
 
                 <!-- Blog Posts Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @foreach($posts as $post)
                     <div class="posts mb-2">
-                        <img src="/images/post-item1.jpg" alt="post image" class="w-full rounded-lg mb-4">
-                        <a href="blog.html" class="text-primary text-sm">Books</a>
+                        <img src="/uploads/posts/{{ $post->image }}" alt="post image" class="w-full rounded-lg mb-4 h-[200px] object-cover">
+                        <a href="/blog/{{ $post->id }}" class="text-primary text-sm">{{ $post->category->name }}</a>
                         <h4 class="text-xl font-semibold my-2 text-gray-900 capitalize">
-                            <a href="single-post.html" class="hover:text-primary ">The Fascinating Realm of Science Fiction</a>
+                            <a href="/blog/{{ $post->id }}" class="hover:text-primary ">{{ $post->title }}</a>
                         </h4>
                         <p class="text-gray-600 mb-2">
-                            Dive into the world of cutting-edge technology with our latest blog post, where we highlight five
-                            essential gadge.
-                            <a href="single-post.html" class="underline text-gray-500 hover:text-gray-700">Read More</a>
+                            {{ $post->content }}
+                            <a href="/blog/{{ $post->id }}" class="underline text-gray-500 hover:text-gray-700">Read More</a>
                         </p>
                     </div>
-                    <div class="posts mb-2">
-                        <img src="/images/post-item2.jpg" alt="post image" class="w-full rounded-lg mb-4">
-                        <a href="blog.html" class="text-primary text-sm">Books</a>
-                        <h4 class="text-xl font-semibold my-2 text-gray-900 capitalize">
-                            <a href="single-post.html" class="hover:text-primary ">The Fascinating Realm of Science Fiction</a>
-                        </h4>
-                        <p class="text-gray-600 mb-2">
-                            Dive into the world of cutting-edge technology with our latest blog post, where we highlight five
-                            essential gadge.
-                            <a href="single-post.html" class="underline text-gray-500 hover:text-gray-700">Read More</a>
-                        </p>
-                    </div>
-                    <div class="posts mb-2">
-                        <img src="/images/post-item3.jpg" alt="post image" class="w-full rounded-lg mb-4">
-                        <a href="blog.html" class="text-primary text-sm">Books</a>
-                        <h4 class="text-xl font-semibold my-2 text-gray-900 capitalize">
-                            <a href="single-post.html" class="hover:text-primary ">The Fascinating Realm of Science Fiction</a>
-                        </h4>
-                        <p class="text-gray-600 mb-2">
-                            Dive into the world of cutting-edge technology with our latest blog post, where we highlight five
-                            essential gadge.
-                            <a href="single-post.html" class="underline text-gray-500 hover:text-gray-700">Read More</a>
-                        </p>
-                    </div>
-                    <div class="posts mb-2">
-                        <img src="/images/post-item4.jpg" alt="post image" class="w-full rounded-lg mb-4">
-                        <a href="blog.html" class="text-primary text-sm">Books</a>
-                        <h4 class="text-xl font-semibold my-2 text-gray-900 capitalize">
-                            <a href="single-post.html" class="hover:text-primary ">The Fascinating Realm of Science Fiction</a>
-                        </h4>
-                        <p class="text-gray-600 mb-2">
-                            Dive into the world of cutting-edge technology with our latest blog post, where we highlight five
-                            essential gadge.
-                            <a href="single-post.html" class="underline text-gray-500 hover:text-gray-700">Read More</a>
-                        </p>
-                    </div>
-                    <div class="posts mb-2">
-                        <img src="/images/post-item5.jpg" alt="post image" class="w-full rounded-lg mb-4">
-                        <a href="blog.html" class="text-primary text-sm">Books</a>
-                        <h4 class="text-xl font-semibold my-2 text-gray-900 capitalize">
-                            <a href="single-post.html" class="hover:text-primary ">The Fascinating Realm of Science Fiction</a>
-                        </h4>
-                        <p class="text-gray-600 mb-2">
-                            Dive into the world of cutting-edge technology with our latest blog post, where we highlight five
-                            essential gadge.
-                            <a href="single-post.html" class="underline text-gray-500 hover:text-gray-700">Read More</a>
-                        </p>
-                    </div>
-                    <div class="posts mb-2">
-                        <img src="/images/post-item6.jpg" alt="post image" class="w-full rounded-lg mb-4">
-                        <a href="blog.html" class="text-primary text-sm">Books</a>
-                        <h4 class="text-xl font-semibold my-2 text-gray-900 capitalize">
-                            <a href="single-post.html" class="hover:text-primary ">The Fascinating Realm of Science Fiction</a>
-                        </h4>
-                        <p class="text-gray-600 mb-2">
-                            Dive into the world of cutting-edge technology with our latest blog post, where we highlight five
-                            essential gadge.
-                            <a href="single-post.html" class="underline text-gray-500 hover:text-gray-700">Read More</a>
-                        </p>
-                    </div>
-                    <div class="posts mb-2">
-                        <img src="/images/post-item7.jpg" alt="post image" class="w-full rounded-lg mb-4">
-                        <a href="blog.html" class="text-primary text-sm">Books</a>
-                        <h4 class="text-xl font-semibold my-2 text-gray-900 capitalize">
-                            <a href="single-post.html" class="hover:text-primary ">The Fascinating Realm of Science Fiction</a>
-                        </h4>
-                        <p class="text-gray-600 mb-2">
-                            Dive into the world of cutting-edge technology with our latest blog post, where we highlight five
-                            essential gadge.
-                            <a href="single-post.html" class="underline text-gray-500 hover:text-gray-700">Read More</a>
-                        </p>
-                    </div>
-                    <div class="posts mb-2">
-                        <img src="/images/post-item8.jpg" alt="post image" class="w-full rounded-lg mb-4">
-                        <a href="blog.html" class="text-primary text-sm">Books</a>
-                        <h4 class="text-xl font-semibold my-2 text-gray-900 capitalize">
-                            <a href="single-post.html" class="hover:text-primary ">The Fascinating Realm of Science Fiction</a>
-                        </h4>
-                        <p class="text-gray-600 mb-2">
-                            Dive into the world of cutting-edge technology with our latest blog post, where we highlight five
-                            essential gadge.
-                            <a href="single-post.html" class="underline text-gray-500 hover:text-gray-700">Read More</a>
-                        </p>
-                    </div>
-                    <div class="posts mb-2">
-                        <img src="/images/post-item9.jpg" alt="post image" class="w-full rounded-lg mb-4">
-                        <a href="blog.html" class="text-primary text-sm">Books</a>
-                        <h4 class="text-xl font-semibold my-2 text-gray-900 capitalize">
-                            <a href="single-post.html" class="hover:text-primary ">The Fascinating Realm of Science Fiction</a>
-                        </h4>
-                        <p class="text-gray-600 mb-2">
-                            Dive into the world of cutting-edge technology with our latest blog post, where we highlight five
-                            essential gadge.
-                            <a href="single-post.html" class="underline text-gray-500 hover:text-gray-700">Read More</a>
-                        </p>
-                    </div>
+                    @endforeach
                 </div>
 
                 <!-- Pagination -->

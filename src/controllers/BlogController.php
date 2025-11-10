@@ -4,6 +4,7 @@ namespace Shop\controllers;
 
 use Exception;
 use Kernel\Controller\BaseController;
+use Shop\model\Post;
 
 class BlogController extends BaseController
 {
@@ -14,14 +15,16 @@ class BlogController extends BaseController
     {
         $this->view()->load('Blog.Index', [
             'title' => 'Blog',
+            'posts' => model('post')->with(['category'])->get()
         ]);
     }
 
-    public function show($id)
+    public function show(Post $post)
     {
-
+        $post->with(['category','tags']);
         $this->view()->load('Blog.Show', [
             'title' => 'Single Blog',
+            'post' => $post
         ]);
     }
 }

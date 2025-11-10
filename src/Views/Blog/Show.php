@@ -4,77 +4,25 @@
     <div class="container mx-auto px-4">
         <div class="flex justify-center flex-wrap -mx-4">
             <article class="mb-12">
-                <h3 class="text-3xl md:text-5xl font-bold mb-6">Must read books if you like reading Sci-Fi Plot.</h3>
+                <h3 class="text-3xl md:text-5xl font-bold mb-6">{{ $post->title }}</h3>
                 <div class="hero-image mb-6">
-                    <img src="/images/single-post.jpg" alt="single-post" class="w-full h-auto">
+                    <img src="/uploads/posts/{{ $post->image }}" alt="single-post" class="w-full h-auto">
                 </div>
 
                 <div class="post-content py-8">
                     <div class="post-description space-y-6">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consectetur facilisis
-                            vivamus massa magna. Blandit mauris libero condimentum commodo morbi consectetur
-                            sociis convallis sit. Magna diam amet justo sed vel dolor et volutpat integer.
-                            Iaculis sit sapien hac odio elementum egestas neque. Adipiscing purus euismod orci
-                            sem amet, et. Turpis erat ornare nisi laoreet est euismod.</p>
-
-                        <p>Sit suscipit tortor turpis sed fringilla lectus facilisis amet. Ipsum, amet dolor
-                            curabitur non aliquet orci urna volutpat. Id aliquam neque, ut vivamus sit imperdiet
-                            enim, lacus, vel. Morbi arcu amet, nulla fermentum vitae mattis arcu mi convallis.
-                            Urna in sollicitudin in vestibulum erat. Turpis faucibus augue ipsum, at aliquam.
-                            Cras sagittis tellus nunc integer vitae neque bibendum eget. Tempus malesuada et
-                            pellentesque maecenas. Sociis porttitor elit tincidunt tellus sit ornare. Purus ut
-                            quis sed venenatis eget ut ipsum, enim lacus. Praesent imperdiet vitae eu, eu
-                            tincidunt nunc integer sit.</p>
-
-                        <blockquote class="border-l-4 border-gray-300 pl-4 italic text-lg">"Sit suscipit tortor
-                            turpis sed fringilla lectus facilisis amet. Ipsum, amet dolor curabitur non aliquet
-                            orci urna volutpat. Id aliquam neque, ut vivamus sit imperdiet enim, lacus, vel.
-                        </blockquote>
-
-                        <h4 class="text-xl font-semibold mt-6">Consectetur Facilisis Vivamus</h4>
-
-                        <ul class="list-disc pl-5 space-y-2 mb-6">
-                            <li>Blandit mauris libero condimentum commodo sociis convallis sit.</li>
-                            <li>Magna diam amet justo sed vel dolor et volutpat integer.</li>
-                            <li>Laculis sit sapien hac odio elementum egestas neque.</li>
-                        </ul>
-
-                        <p>Morbi arcu amet, nulla fermentum vitae mattis arcu mi convallis. Urna in sollicitudin
-                            in vestibulum erat. Turpis faucibus augue ipsum, at aliquam. Cras sagittis tellus
-                            nunc integer vitae neque bibendum eget. Tempus malesuada et pellentesque maecenas.
-                            Sociis porttitor elit tincidunt tellus sit ornare. Purus ut ipsum, enim lacus.
-                            Praesent imperdiet vitae eu, eu tincidunt nunc integer sit.</p>
-
-                        <p>Tortor diam dignissim amet, in interdum aliquet. Magnis dictum et eros purus
-                            fermentum, massa ullamcorper sit sollicitudin. Nascetur libero elementum adipiscing
-                            mauris maecenas et magna. Etiam nec, rutrum a diam lacus, nunc integer etiam. Mattis
-                            pulvinar non viverra donec pellentesque. Odio mi consequat libero dolor. Porta ut
-                            diam lobortis eget leo, lectus. Nunc tempus feugiat massa laoreet ultrices diam
-                            magna quam. Congue auctor auctor luctus neque. Enim lorem ultrices diam donec. Sed
-                            id placerat consectetur faucibus.</p>
-
-                        <p>Id pulvinar amet. Consequat potenti mollis massa iaculis et, dolor, eget lectus.
-                            Aliquam pellentesque molestie felis fames sed eget non euismod eget. Et eget
-                            ullamcorper urna, elit ac diam tellus viverra lacus.</p>
-
-                        <p>Tortor diam dignissim amet, in interdum aliquet. Magnis dictum et eros purus
-                            fermentum, massa ullamcorper sit sollicitudin. Nascetur libero elementum adipiscing
-                            mauris maecenas et magna. Etiam nec, rutrum a diam lacus, nunc integer etiam. Mattis
-                            pulvinar non viverra donec pellentesque. Odio mi consequat libero dolor. Porta ut
-                            diam lobortis eget leo, lectus.</p>
+                        <p>
+                            {{ $post->content }}
+                        </p>
 
                         <div class="flex flex-col md:flex-row justify-between my-8 gap-4">
                             <div class="block-tag">
                                 <ul class="flex flex-wrap gap-3">
-                                    <li>
-                                        <a href="#" class="underline hover:no-underline">Colors</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="underline hover:no-underline">Website</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="underline hover:no-underline">Business</a>
-                                    </li>
+                                    @foreach($post->tags as $tag)
+                                        <li>
+                                            <a href="#" class="underline hover:no-underline">{{ $tag->name }}</a>
+                                        </li>
+                                   @endforeach
                                 </ul>
                             </div>
 

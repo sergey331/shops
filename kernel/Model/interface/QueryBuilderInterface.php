@@ -7,6 +7,7 @@ interface QueryBuilderInterface
     public function select(array|string $columns): void;
 
     public function getSelectQuery($table,$where = ""): string;
+    public function getPaginatedQuery($table,$where = ""): string;
 
     public function getInsertQuery($table,$data): string;
 

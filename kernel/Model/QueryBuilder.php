@@ -92,4 +92,8 @@ class QueryBuilder implements QueryBuilderInterface
         $this->groupBy = $groupBy;
     }
 
+    public function getPaginatedQuery($table, $where = ""): string
+    {
+        // TODO: Implement getPaginatedQuery() method.
+    }
 }

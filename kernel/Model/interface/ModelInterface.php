@@ -8,6 +8,7 @@ interface ModelInterface
     public function all(): array;
     public function select(array|string $columns): static;
     public function get(): array;
+    public function paginate(int $page = 1, int $perPage = 10): array;
     public function first(): null|static;
     public function find($id): null|static;
 
