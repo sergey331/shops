@@ -16,12 +16,12 @@ class Request implements RequestInterface
     {
     }
 
-    public function get($name): null|string
+    public function get($name): null|string|array
     {
         return $this->get[$name] ?? null;
     }
 
-    public function post($name): null|string
+    public function post($name): null|string|array
     {
         return $this->post[$name] ?? null;
     }
@@ -40,7 +40,7 @@ class Request implements RequestInterface
         return $data;
     }
 
-    public function input($name): null|string
+    public function input($name): null|string|array
     {
         return  $this->get[$name] ?? $this->post[$name] ?? null;
     }
@@ -48,6 +48,14 @@ class Request implements RequestInterface
     public function getUri(): null|string
     {
        return strtok($_SERVER['REQUEST_URI'],'?') ?? null;
+    }
+
+    public function has($key): bool
+    {
+        return (
+            (isset($this->get[$key]) && $this->get[$key] !== '') ||
+            (isset($this->post[$key]) && $this->post[$key] !== '')
+        );
     }
 
     public function getMethod(): null|string

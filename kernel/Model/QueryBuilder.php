@@ -105,7 +105,7 @@ class QueryBuilder implements QueryBuilderInterface
     public function getPaginatedSelectQuery($table,$offset,$limit, $where = ""): string
     {
         $query = "SELECT * FROM {$table}";
-        if ($where) $query .= " WHERE $where";
+        if ($where) $query .= " $where";
         $query .= " LIMIT $offset, $limit";
         return $query;
     }

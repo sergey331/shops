@@ -7,7 +7,7 @@ trait Pluck
     public function pluck(string $valueKey): array
     {
 
-        $keys = explode('.',$valueKey);
+        $keys = explode('.', $valueKey);
         $data = count($keys) === 2 ? $this->data[$keys[0]] : $this->data;
         $key = count($keys) === 2 ? $keys[1] : $valueKey;
 
@@ -19,10 +19,7 @@ trait Pluck
             } elseif (is_array($item)) {
                 $value = $item[$key] ?? null;
             }
-
-
-                $results[] = $value;
-
+            $results[] = $value;
         }
 
         return $results;

@@ -9,11 +9,10 @@ use ReflectionClass;
 class BelongsToMany extends Relation
 {
     use Pluck;
-    protected Model $model;
 
+    protected Model $parent;
     protected mixed $relatedClass;
     protected string $relatedTable;
-
     protected string $foreignKey;
     protected string $relatedKey;
     protected array $data = [];
@@ -24,50 +23,83 @@ class BelongsToMany extends Relation
 
         $this->parent = $parent;
         $this->relatedClass = new $relatedClass();
-        $this->relatedTable =  $relatedTable;
-        $this->foreignKey = strtolower((new ReflectionClass($this->relatedClass))->getShortName()) . '_id';
-        $this->relatedKey = strtolower((new ReflectionClass($parent))->getShortName()) . '_id';
+        $this->relatedTable = $relatedTable;
+
+        $relatedShort = strtolower((new ReflectionClass($this->relatedClass))->getShortName());
+        $parentShort = strtolower((new ReflectionClass($parent))->getShortName());
+
+        $this->foreignKey = $relatedShort . '_id';
+        $this->relatedKey = $parentShort . '_id';
     }
 
-    public function get()
+    public function get(): array
     {
-        $data = $this->getParentData();
-        $this->data = array_column(
-            array_map(fn($row) => $this->fetch($row), $data),
-            0
+        $parentRows = $this->getPivotRows();
+
+        $this->data = array_map(
+            fn($row) => $this->instantiateRelatedModel($row),
+            $parentRows
         );
+
         return $this->data;
     }
 
-    private function fetch($row)
+    public function getPivotTable(): string
     {
-        $this->modelWhere->clearWhere();
-        $this->where(['id' => $row[$this->foreignKey]]);
-        $this->modelWhere->resolve();
-        $query = $this->queryBuilder->getSelectQuery($this->relatedClass->getTableName(), $this->modelWhere->getWhereQuery());
-        $result = $this->query($query, $this->modelWhere->getWhereData());
-        return $this->fetchArrayData($result->fetchAll(\PDO::FETCH_ASSOC));
+        return $this->relatedTable;
     }
 
-    private function getParentData()
+    public function getForeignPivotKey(): string
+    {
+        return $this->relatedKey;
+    }
+
+    public function getRelatedPivotKey(): string
+    {
+        return $this->foreignKey;
+    }
+
+    public function getRelatedTable(): string
+    {
+        return $this->relatedClass->getTableName();
+    }
+
+    public function getQueryBuilder()
+    {
+        return $this->modelWhere;
+    }
+
+    private function getPivotRows(): array
     {
         $this->modelWhere->clearWhere();
         $this->where([$this->relatedKey => $this->parent->id]);
         $this->modelWhere->resolve();
-        $query = $this->queryBuilder->getSelectQuery($this->relatedTable, $this->modelWhere->getWhereQuery());
-        $result = $this->query($query, $this->modelWhere->getWhereData());
-        return $result->fetchAll(\PDO::FETCH_ASSOC);
+
+        $query = $this->queryBuilder->getSelectQuery(
+            $this->relatedTable,
+            $this->modelWhere->getWhereQuery()
+        );
+
+        $stmt = $this->query($query, $this->modelWhere->getWhereData());
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    private function fetchArrayData(array $data): array
+    private function instantiateRelatedModel(array $pivotRow): Model
     {
-        return array_map(fn($row) => $this->fetchData($row), $data);
-    }
+        $this->modelWhere->clearWhere();
+        $this->where(['id' => $pivotRow[$this->foreignKey]]);
+        $this->modelWhere->resolve();
 
-    private function fetchData(array $row)
-    {
-        $model = new  $this->relatedClass();
-        $model->setData($row);
+        $query = $this->queryBuilder->getSelectQuery(
+            $this->relatedClass->getTableName(),
+            $this->modelWhere->getWhereQuery()
+        );
+
+        $stmt = $this->query($query, $this->modelWhere->getWhereData());
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $model = new $this->relatedClass();
+        $model->setData($row ?: []);
         return $model;
     }
 }

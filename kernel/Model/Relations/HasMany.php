@@ -40,4 +40,23 @@ class HasMany extends Relation
         $model->setData($row);
         return $model;
     }
+    public function getQueryBuilder()
+    {
+        return $this->modelWhere;
+    }
+
+    public function getRelatedTable()
+    {
+        return $this->relatedClass;
+    }
+
+    public function getForeignKey(): string
+    {
+        return $this->foreignKey;
+    }
+
+    public function getLocalKey(): ?string
+    {
+        return 'id';
+    }
 }

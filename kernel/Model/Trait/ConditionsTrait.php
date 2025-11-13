@@ -2,6 +2,8 @@
 
 namespace Kernel\Model\Trait;
 
+use Kernel\Model\Relations\BelongsToMany;
+
 trait ConditionsTrait
 {
     public function where(array $wheres): static
@@ -122,5 +124,74 @@ trait ConditionsTrait
     {
         $this->modelWhere->setOrWhereDateOperators($conditions);
         return $this;
+    }
+    public function whereHas(string $relation, callable $callback): static
+    {
+        $relationInstance = $this->$relation();
+        if ($relationInstance instanceof BelongsToMany) {
+            return $this->addWhereExistsBelongsToMany($relationInstance, $callback);
+        }
+        $relationInstance = $this->$relation();
+        $relatedQuery = $relationInstance->getQueryBuilder();
+        $callback($relationInstance);
+        $this->addWhereExists($relationInstance, $relatedQuery);
+        return $this;
+    }
+    private function addWhereExistsBelongsToMany($relation, callable $callback)
+    {
+        $relatedQuery = $relation->getQueryBuilder();
+        $callback($relation);
+
+        $pivot = $relation->getPivotTable();
+        $related = $relation->getRelatedTable();
+
+        $foreignPivotKey = $relation->getForeignPivotKey();
+        $relatedPivotKey = $relation->getRelatedPivotKey();
+
+        $relatedQuery->resolve();
+
+
+        $relatedWhere = trim($relatedQuery->getWhereQuery() ?? '');
+        $relatedWhere = preg_replace('/^\s*WHERE\s+/i', '', $relatedWhere);
+
+        $subQuery = "EXISTS (
+        SELECT 1
+        FROM {$pivot}
+        JOIN {$related} ON {$related}.id = {$pivot}.{$relatedPivotKey}
+        WHERE {$pivot}.{$foreignPivotKey} = {$this->getTableName()}.id
+    ";
+
+        if ($relatedWhere) {
+            $subQuery .= " AND {$relatedWhere}";
+        }
+
+        $subQuery .= ")";
+
+        $this->modelWhere->setWhereHas($subQuery,$relatedQuery->getWhereData());
+
+        return $this;
+    }
+
+    protected function addWhereExists($relationInstance, $relatedQuery)
+    {
+        $relatedTable = $relationInstance->getRelatedTable();
+        $foreignKey   = $relationInstance->getForeignKey();
+        $localKey     = $relationInstance->getLocalKey();
+
+
+        $relatedQuery->resolve();
+
+        $relatedTable = $relatedTable->getTableName();
+
+        // Append EXISTS subquery
+        $subSql = "EXISTS (SELECT 1 FROM {$relatedTable} WHERE {$relatedTable}.{$localKey} = {$this->table}.{$foreignKey}";
+
+        if (!empty($relatedQuery->getWhereData())) {
+            $subSql .= ' AND ' . str_replace('WHERE','', $relatedQuery->getWhereQuery());
+        }
+
+        $subSql .= ')';
+
+        $this->modelWhere->setWhereHas($subSql,$relatedQuery->getWhereData());
     }
 }

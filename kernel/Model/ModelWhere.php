@@ -34,6 +34,7 @@ class ModelWhere implements ModelWhereInterface
     protected array $orWhereDateBetweens = [];
     protected array $orWhereDateNotBetweens = [];
     protected array $orWhereDateOperators = [];
+    protected array $whereHas = [];
 
     public function setWhere($wheres): static
     {
@@ -160,6 +161,12 @@ class ModelWhere implements ModelWhereInterface
         return $this;
     }
 
+    public function setWhereHas($sql,$data)
+    {
+        $this->whereHas['sql'] = $sql;
+        $this->whereHas['data'] = $data;
+    }
+
     /**
      * Resolves the where clauses and returns the instance for method chaining.
      *
@@ -169,6 +176,11 @@ class ModelWhere implements ModelWhereInterface
     {
         $clauses = [];
         $data = [];
+
+        if (!empty($this->whereHas)) {
+            $clauses[] = $this->whereHas['sql'];
+            $data = array_merge($data, $this->whereHas['data']);
+        }
 
         if (!empty($this->wheres)) {
             $parts = array_map(fn($field) => "$field=?", array_keys($this->wheres));

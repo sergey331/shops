@@ -15,6 +15,32 @@ class PostsService
         return model('post')->with(['category','tags'])->get();
     }
 
+    public function getFilteredPosts()
+    {
+        $posts = model('post')->with(['category']);
+
+        $filteredData = [];
+        if (request()->has('category_id')) {
+            $category_id = request()->get('category_id');
+            $posts = $posts->whereHas('category', function ($e) use ($category_id) {
+                return $e->where(['id' => $category_id]);
+            });
+            $filteredData['category_id'] = $category_id;
+        }
+
+        if (request()->has('tags_id')) {
+            $tags_id = request()->get('tags_id');
+            $posts = $posts->whereHas('tags', function ($e) use ($tags_id) {
+                return $e->whereIn(['tags.id' => (array)$tags_id]);
+            });
+            $filteredData['tags_id'] = $tags_id;
+        }
+
+
+        $posts = $posts->paginate()->appends($filteredData);
+        return [$posts,$filteredData];
+    }
+
     public function store()
     {
         $data = request()->all();

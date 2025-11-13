@@ -5,22 +5,27 @@ namespace Shop\controllers;
 use Exception;
 use Kernel\Controller\BaseController;
 use Shop\model\Post;
+use Shop\service\PostsService;
 
 class BlogController extends BaseController
 {
+    private PostsService $postsService;
+
+    public function __construct()
+    {
+        $this->postsService = new PostsService();
+    }
+
     /**
      * @throws Exception
      */
     public function index(): void
     {
-
-        $category_id = request()->get('category_id');
-        $posts = model('post')->with(['category'])->paginate()->appends(['category_id'=> $category_id]);
-
-
+        [$posts,$filteredData] = $this->postsService->getFilteredPosts();
         $this->view()->load('Blog.Index', [
             'title' => 'Blog',
             'posts' => $posts,
+            'filteredData' => $filteredData,
             'categories' => model('Category')->get(),
             'tags' => model('Tag')->get()
         ]);
