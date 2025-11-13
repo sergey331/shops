@@ -13,9 +13,16 @@ class BlogController extends BaseController
      */
     public function index(): void
     {
+
+        $category_id = request()->get('category_id');
+        $posts = model('post')->with(['category'])->paginate()->appends(['category_id'=> $category_id]);
+
+
         $this->view()->load('Blog.Index', [
             'title' => 'Blog',
-            'posts' => model('post')->with(['category'])->get()
+            'posts' => $posts,
+            'categories' => model('Category')->get(),
+            'tags' => model('Tag')->get()
         ]);
     }
 

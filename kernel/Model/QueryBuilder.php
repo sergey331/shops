@@ -94,6 +94,19 @@ class QueryBuilder implements QueryBuilderInterface
 
     public function getPaginatedQuery($table, $where = ""): string
     {
-        // TODO: Implement getPaginatedQuery() method.
+        $sql = "SELECT COUNT(*) as total FROM $table";
+
+        if (!empty($where)) {
+            $sql .= " {$where}";
+        }
+        return  $sql;
+    }
+
+    public function getPaginatedSelectQuery($table,$offset,$limit, $where = ""): string
+    {
+        $query = "SELECT * FROM {$table}";
+        if ($where) $query .= " WHERE $where";
+        $query .= " LIMIT $offset, $limit";
+        return $query;
     }
 }

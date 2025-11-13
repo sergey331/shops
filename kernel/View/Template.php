@@ -35,6 +35,7 @@ class Template implements TemplateInterface
             '/@endif/'        => '<?php endif; ?>',
             '/@endauth/'      => '<?php endif; ?>',
             '/@endforeach/'   => '<?php endforeach; ?>',
+            '/@endfor/'   => '<?php endfor; ?>',
             '/@if\s*\((.*?)\)/'      => '<?php if ($1): ?>',
             '/@dd\s*\((.*?)\)/'      => '<?php dd($1); ?>',
             '/@empty\s*\((.*?)\)/'      => '<?php if (empty($1)): ?>',
@@ -49,6 +50,7 @@ class Template implements TemplateInterface
             '/@endcount/'      => '<?php endif; ?>',
             '/@elseif\s*\((.*?)\)/'  => '<?php elseif ($1): ?>',
             '/@foreach\s*\((.*?)\)/' => '<?php foreach ($1): ?>',
+            '/@for\s*\((.*?)\)/' => '<?php for ($1): ?>',
             '/{{\s*(.*?)\s*}}/'      => '<?php echo $1; ?>',
             '/{!!\s*(.*?)\s*!!}/s' => '<?php $1 ?>'
         ];

@@ -16,7 +16,8 @@ use Kernel\Model\Trait\Pluck;
 #[\AllowDynamicProperties]
 class Model extends Connection implements ModelInterface
 {
-    use ConditionsTrait,Pluck;
+    use ConditionsTrait, Pluck;
+
     protected string $table;
     protected array $data = [];
     protected array $newData = [];
@@ -28,12 +29,14 @@ class Model extends Connection implements ModelInterface
 
     private ModelWhere $modelWhere;
     private QueryBuilder $queryBuilder;
+    private Paginator $paginator;
 
     public function __construct()
     {
         parent::__construct();
         $this->modelWhere = new ModelWhere();
         $this->queryBuilder = new QueryBuilder();
+        $this->paginator = new Paginator();
     }
 
     public function select(array|string $columns): static
@@ -63,9 +66,47 @@ class Model extends Connection implements ModelInterface
         return $this->fetchArrayData($result->fetchAll(\PDO::FETCH_ASSOC));
     }
 
-    public function paginate(int $page = 1, int $perPage = 10): array
+    public function paginate(): static
     {
+        $page = request()->get('page') ?? 1;
+        $perPage = request()->get('perPage') ?? 10;
         $this->modelWhere->resolve();
+        $query = $this->queryBuilder->getPaginatedQuery($this->table, $this->modelWhere->getWhereQuery());
+        $result = $this->query($query, $this->modelWhere->getWhereData());
+
+        $total = (int) $result->fetchColumn();
+        $page = max($page, 1);
+        $offset = ($page - 1) * $perPage;
+        $totalPages = (int)ceil($total / $perPage);
+
+        $query = $this->queryBuilder->getPaginatedSelectQuery($this->table, $offset, $perPage, $this->modelWhere->getWhereQuery());
+        $result = $this->query($query, $this->modelWhere->getWhereData());
+
+        $data = $this->fetchArrayData($result->fetchAll(\PDO::FETCH_ASSOC));
+
+        $this->paginator->setResponse([
+            'data' => $data,
+            'total' => $total,
+            'total_data' => count($data),
+            'perPage' => (int) $perPage,
+            'current_page' => (int)$page,
+            'total_pages' => $totalPages,
+            'has_next' => $page < $totalPages,
+            'has_prev' => $page > 1,
+        ]);
+        $this->data = $this->paginator->getResponse();
+        return $this;
+    }
+
+    public function appends(array|string $key, $value = null): static
+    {
+        $oldData = $this->paginator->getResponse();
+        if (empty($oldData)) {
+            throw new Exception('You do not access in appands');
+        }
+        $this->paginator->appends($key, $value);
+        $this->data = $this->paginator->getResponse();
+        return $this;
     }
 
     public function first(): null|static
@@ -174,17 +215,17 @@ class Model extends Connection implements ModelInterface
     // Relationships
     public function belongsTo($model)
     {
-        return new BelongsTo($this,$model);
+        return new BelongsTo($this, $model);
     }
 
-    public function belongsToMany($model,$relatedTable)
+    public function belongsToMany($model, $relatedTable)
     {
-        return new BelongsToMany($this,$model,$relatedTable);
+        return new BelongsToMany($this, $model, $relatedTable);
     }
 
     public function hasMany($model)
     {
-        return new HasMany($this,$model);
+        return new HasMany($this, $model);
     }
 
     public function hasOne($model)

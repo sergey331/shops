@@ -1,3 +1,6 @@
+{!!
+    use Kernel\Model\Paginator;
+!!}
 @include('Component.broadCast')
 <div id="blog" class="py-28">
     <div class="container mx-auto px-4">
@@ -7,7 +10,7 @@
                 <!-- Filter/Sort Section -->
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                     <div class="showing-product">
-                        <p class="text-gray-600">Showing 1-9 of 55 results</p>
+                        <p class="text-gray-600">Showing {{ $posts->total_data }} of {{ $posts->total }} results</p>
                     </div>
                     <div class="sort-by">
                         <select id="sorting"
@@ -25,7 +28,7 @@
 
                 <!-- Blog Posts Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @foreach($posts as $post)
+                    @foreach($posts->data as $post)
                     <div class="posts mb-2">
                         <img src="/uploads/posts/{{ $post->image }}" alt="post image" class="w-full rounded-lg mb-4 h-[200px] object-cover">
                         <a href="/blog/{{ $post->id }}" class="text-primary text-sm">{{ $post->category->name }}</a>
@@ -41,25 +44,7 @@
                 </div>
 
                 <!-- Pagination -->
-                <nav class="pt-12" aria-label="Page navigation">
-                    <ul class="flex justify-center items-center gap-4">
-                        <li class="disabled">
-                            <span class="text-gray-400 cursor-not-allowed">Prev</span>
-                        </li>
-                        <li class="active" aria-current="page">
-                            <span class="bg-primary text-white px-3 py-1 rounded-md">1</span>
-                        </li>
-                        <li>
-                            <a href="#" class="text-gray-700 hover:text-primary px-3 py-1">2</a>
-                        </li>
-                        <li>
-                            <a href="#" class="text-gray-700 hover:text-primary px-3 py-1">3</a>
-                        </li>
-                        <li>
-                            <a href="#" class="text-gray-700 hover:text-primary px-3 py-1">Next</a>
-                        </li>
-                    </ul>
-                </nav>
+                {{ Paginator::html($posts) }}
             </main>
 
             <!-- Sidebar -->
@@ -84,21 +69,11 @@
                             <h3 class="text-xl font-semibold mb-0">Categories</h3>
                         </div>
                         <ul class="space-y-2">
+                            @foreach($categories as $category)
                             <li class="cat-item">
-                                <a href="/collections/categories" class="text-gray-600 hover:text-primary">All</a>
+                                <a href="/" class="text-gray-600 hover:text-primary">{{ $category->name }}</a>
                             </li>
-                            <li class="cat-item">
-                                <a href="#" class="text-gray-600 hover:text-primary">Phones</a>
-                            </li>
-                            <li class="cat-item">
-                                <a href="#" class="text-gray-600 hover:text-primary">Accessories</a>
-                            </li>
-                            <li class="cat-item">
-                                <a href="#" class="text-gray-600 hover:text-primary">Tablets</a>
-                            </li>
-                            <li class="cat-item">
-                                <a href="#" class="text-gray-600 hover:text-primary">Watches</a>
-                            </li>
+                            @endforeach
                         </ul>
                     </div>
 
@@ -108,18 +83,11 @@
                             <h3 class="text-xl font-semibold mb-0">Tags</h3>
                         </div>
                         <ul class="space-y-2">
-                            <li class="tags-item">
-                                <a href="#" class="text-gray-600 hover:text-primary">White</a>
-                            </li>
-                            <li class="tags-item">
-                                <a href="#" class="text-gray-600 hover:text-primary">Cheap</a>
-                            </li>
-                            <li class="tags-item">
-                                <a href="#" class="text-gray-600 hover:text-primary">Mobile</a>
-                            </li>
-                            <li class="tags-item">
-                                <a href="#" class="text-gray-600 hover:text-primary">Modern</a>
-                            </li>
+                            @foreach($tags as $tag)
+                                <li class="cat-item">
+                                    <a href="#" class="text-gray-600 hover:text-primary">{{ $tag->name }}</a>
+                                </li>
+                            @endforeach
                         </ul>
                     </div>
 
