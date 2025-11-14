@@ -5,6 +5,7 @@ namespace Shop\service;
 use Kernel\File\File;
 use Kernel\Validator\Validator;
 use Shop\model\Post;
+use Shop\rules\PostCommentRules;
 use Shop\rules\PostRules;
 use Shop\rules\PostUpdateRules;
 
@@ -49,6 +50,18 @@ class PostsService
 
         $posts = $posts->paginate()->appends($filteredData);
         return [$posts,$filteredData];
+    }
+
+    public function writeComment(Post $post)
+    {
+        $data = request()->all();
+        $data['user_id'] = auth()->id();
+        $validator = Validator::make($data, PostCommentRules::rules(), PostCommentRules::messages());
+        if (!$validator->validate()) {
+            session()->set('errors', $validator->errors());
+        } else {
+            $post->comments()->create($data);
+        }
     }
 
     public function store()

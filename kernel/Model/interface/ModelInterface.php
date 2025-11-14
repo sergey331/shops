@@ -58,4 +58,9 @@ interface ModelInterface
 
     public function limit(int $limit): static;
     public function pluck(string $valueKey): array;
+    public function getWith(): array;
+
+    public function getData(): array;
+
+    public function setRelation($key, $value): void;
 }

@@ -60,6 +60,7 @@ Route::get('/shop', [ShopController::class, 'index']);
 Route::get('/about', [AboutController::class, 'index']);
 Route::get('/blog', [BlogController::class, 'index']);
 Route::get('/blog/{Post}', [BlogController::class, 'show']);
+Route::post('/blog/comment/{Post}', [BlogController::class, 'comment']);
 Route::get('/contact', [ContactController::class, 'index']);
 Route::get('/product', [FrontProductController::class, 'index']);
 Route::get('/cart', [CartController::class, 'index']);

@@ -9,7 +9,7 @@ use Kernel\Model\QueryBuilder;
 use Kernel\Model\Trait\ConditionsTrait;
 use ReflectionClass;
 
-class Relation extends Connection
+abstract class Relation extends Connection
 {
     use ConditionsTrait;
 

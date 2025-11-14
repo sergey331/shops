@@ -237,14 +237,28 @@ class Model extends Connection implements ModelInterface
     {
         $this->with = array_merge($this->with, $relations);
         if ($this->id) {
-            foreach ($relations as $relation) {
-                $related = $this->$relation()->get();
-                $this->relations[$relation] = $related;
-                $this->data[$relation] = $related;
+            foreach ($relations as $key =>  $relation) {
+                $this->extracted($relation, $key);
             }
         }
         return $this;
     }
+
+    public function getWith(): array
+    {
+        return $this->with;
+    }
+
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    public function setRelation($key, $value): void
+    {
+        $this->relations[$key] = $value;
+    }
+
 
     private function fetchArrayData(array $data): array
     {
@@ -256,10 +270,9 @@ class Model extends Connection implements ModelInterface
         $model = new static();
         $model->data = $row;
 
-        foreach ($this->with as $relation) {
-            $related = $model->$relation()->get();
-            $model->relations[$relation] = $related;
-            $model->data[$relation] = $related;
+        foreach ($this->with as $key => $relation) {
+
+            $this->extracted($relation, $key);
         }
 
         return $model;
@@ -273,5 +286,23 @@ class Model extends Connection implements ModelInterface
     public function setData($data): void
     {
         $this->data = $data;
+    }
+
+    /**
+     * @param mixed $relation
+     * @param int|string $key
+     * @return void
+     */
+    private function extracted(mixed $relation, int|string $key): void
+    {
+        if (is_string($relation)) {
+            $related = $this->$relation()->get();
+            $this->relations[$relation] = $related;
+            $this->data[$relation] = $related;
+        } elseif ($relation instanceof \Closure) {
+            $related = $relation($this->$key())->get();
+            $this->relations[$key] = $related;
+            $this->data[$key] = $related;
+        }
     }
 }

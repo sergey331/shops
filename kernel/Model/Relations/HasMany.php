@@ -38,6 +38,11 @@ class HasMany extends Relation
         $model = new  $this->relatedClass();
 
         $model->setData($row);
+        foreach ($model->getWith() as $relation) {
+            $related = $model->$relation()->get();
+            $model->setRelation($relation, $related);
+            $model->setData(array_merge($model->getData(), [$relation => $related]));
+        }
         return $model;
     }
     public function getQueryBuilder()

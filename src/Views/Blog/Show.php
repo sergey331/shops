@@ -1,12 +1,12 @@
 @include('Component.broadCast')
-
+{!! $errors = $session->getCLean('errors') ?? []; !!}
 <div id="singlepost" class="py-28">
     <div class="container mx-auto px-4">
         <div class="flex justify-center flex-wrap -mx-4">
             <article class="mb-12">
                 <h3 class="text-3xl md:text-5xl font-bold mb-6">{{ $post->title }}</h3>
                 <div class="hero-image mb-6">
-                    <img src="/uploads/posts/{{ $post->image }}" alt="single-post" class="w-full h-auto">
+                    <img src="/uploads/posts/{{ $post->image }}" alt="single-post" class="w-full h-auto max-h-[500px]">
                 </div>
 
                 <div class="post-content py-8">
@@ -81,89 +81,78 @@
             </article>
 
             <section class="w-full lg:w-10/12 mt-8">
-                <h3 class="text-2xl font-bold mb-6"><span>3</span> Comments</h3>
+                <h3 class="text-2xl font-bold mb-6"><span>{{ count($post->comments) }}</span> Comments</h3>
 
                 <div class="space-y-8">
+                    @foreach($post->comments as $comment)
                     <article class="flex flex-col md:flex-row gap-6 pb-6">
                         <div class="w-full md:w-1/6">
+                            @if($comment->user->avatar)
+                            <img src="/uploads/users/{{ $comment->user->avatar }}" alt="default" class="rounded-full">
+                            @else
                             <img src="/images/commentor-item1.jpg" alt="default" class="rounded-full">
+                            @endif
                         </div>
                         <div class="w-full md:w-5/6">
                             <div class="mb-4">
                                 <div class="flex gap-3 uppercase font-medium">
-                                    <div>Lufy carlson</div>
-                                    <span class="text-gray-500">Jul 10</span>
+                                    <div>{{ $comment->user->username }}</div>
+                                    <span class="text-gray-500">{{ date('Y-m-d H:i:s',strtotime($comment->created_at)) }}</span>
                                 </div>
-                                <p class="mt-2">Tristique tempis condimentum diam done ullancomroer sit element
-                                    henddg sit he consequert.Tristique tempis condimentum diam done ullancomroer
-                                    sit element henddg sit he consequert.</p>
+                                <p class="mt-2">{{ $comment->comment }}</p>
                                 <a href="#" class="inline-block mt-3 hover:underline">Reply</a>
                             </div>
                         </div>
                     </article>
 
-                    <article class="flex flex-col md:flex-row gap-6 pb-6 ml-0 md:ml-12">
-                        <div class="w-full md:w-1/6">
-                            <img src="/images/commentor-item2.jpg" alt="default" class="rounded-full">
-                        </div>
-                        <div class="w-full md:w-5/6">
-                            <div class="mb-4">
-                                <div class="flex gap-3 uppercase font-medium">
-                                    <div>Lora leigh</div>
-                                    <span class="text-gray-500">Jul 10</span>
-                                </div>
-                                <p class="mt-2">Tristique tempis condimentum diam done ullancomroer sit element
-                                    henddg sit he consequert.Tristique tempis condimentum diam done ullancomroer
-                                    sit element henddg sit he consequert.</p>
-                                <a href="#" class="inline-block mt-3 hover:underline">Reply</a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="flex flex-col md:flex-row gap-6 pb-6">
-                        <div class="w-full md:w-1/6">
-                            <img src="/images/commentor-item3.jpg" alt="default" class="rounded-full">
-                        </div>
-                        <div class="w-full md:w-5/6">
-                            <div class="mb-4">
-                                <div class="flex gap-3 uppercase font-medium">
-                                    <div>Lufy carlson</div>
-                                    <span class="text-gray-500">Jul 10</span>
-                                </div>
-                                <p class="mt-2">Tristique tempis condimentum diam done ullancomroer sit element
-                                    henddg sit he consequert.Tristique tempis condimentum diam done ullancomroer
-                                    sit element henddg sit he consequert.</p>
-                                <a href="#" class="inline-block mt-3 hover:underline">Reply</a>
-                            </div>
-                        </div>
-                    </article>
+                        @count($comment->children)
+                            @foreach($comment->children as $children)
+                                <article class="flex flex-col md:flex-row gap-2 pb-6 ml-[80px]">
+                                    <div class="w-full md:w-1/6">
+                                        @if($children->user->avatar)
+                                        <img src="/uploads/users/{{ $children->user->avatar }}" alt="default" class="rounded-full">
+                                        @else
+                                        <img src="/images/commentor-item1.jpg" alt="default" class="rounded-full">
+                                        @endif
+                                    </div>
+                                    <div class="w-full md:w-5/6">
+                                        <div class="mb-4">
+                                            <div class="flex gap-3 uppercase font-medium">
+                                                <div>{{ $children->user->username }}</div>
+                                                <span class="text-gray-500">{{ date('Y-m-d H:i:s',strtotime($children->created_at)) }}</span>
+                                            </div>
+                                            <p class="mt-2">{{ $children->comment }}</p>
+                                            <a href="#" class="inline-block mt-3 hover:underline">Reply</a>
+                                        </div>
+                                    </div>
+                                </article>
+                            @endforeach
+                        @endcount
+                    @endforeach
                 </div>
 
                 <div class="mt-12">
                     <h3 class="text-2xl font-bold mb-4">Leave a Comment</h3>
-                    <p class="mb-6 text-gray-600">Your email address will not be published. Required fields are
-                        marked *</p>
-
-                    <form class="space-y-4">
+                    @auth
+                    <form class="space-y-4" method="post" action="/blog/comment/{{ $post->id }}">
                         <div>
-                <textarea
+                            <textarea
+                                    name="comment"
                         class="w-full px-4 py-2 border border-gray-300 focus:border-gray-800 focus:outline-none focus:ring-0"
                         placeholder="Write your comment here *"></textarea>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input
-                                    class="w-full px-4 py-2 border border-gray-300 focus:border-gray-800 focus:outline-none focus:ring-0"
-                                    type="text" placeholder="Write your full name here *">
-                            <input
-                                    class="w-full px-4 py-2 border border-gray-300 focus:border-gray-800 focus:outline-none focus:ring-0"
-                                    type="email" placeholder="Write your e-mail address *">
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" class="mr-2">
-                            <span>Save my name, email, and website in this browser for the next time.</span>
+                            @isset($errors['comment'])
+                                <ul class="errors">
+                                    @foreach ($errors['comment'] as $error)
+                                        <li style="font-size: 15px;color: #dc3545">{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            @endisset
                         </div>
                         <button class="bg-primary text-white px-6 py-3 mt-4" type="submit">Post Comment</button>
                     </form>
+                    @else
+                        Please Login for write comment
+                    @endauth
                 </div>
             </section>
         </div>

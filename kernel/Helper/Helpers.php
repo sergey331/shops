@@ -1,5 +1,6 @@
 <?php
 
+use Kernel\Auth\Auth;
 use Kernel\Container\Container;
 use Kernel\Redirect\Redirect;
 use Kernel\Request\Request;
@@ -29,10 +30,10 @@ function session(): Session
 }
 
 /**
- * @return Redirect
+ * @return Auth
  * @throws Exception
  */
-function auth(): Redirect
+function auth(): Auth
 {
     return container()->get('auth');
 }

@@ -10,7 +10,7 @@
     <meta name="author" content="Templates Jungle">
     <meta name="keywords" content="Tailwind CSS eCommerce HTML CSS Template">
     <meta name="description" content="Bookly is Bookstore">
-
+    <link rel="icon" type="image/png"  href="/images/favicon.ico">
 
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
     <!-- Swiper CSS -->

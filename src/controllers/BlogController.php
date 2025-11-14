@@ -31,12 +31,19 @@ class BlogController extends BaseController
         ]);
     }
 
-    public function show(Post $post)
+    public function show(Post $post): void
     {
-        $post->with(['category','tags']);
+        $post->with(['category','tags', 'comments' => function ($e) {
+            return $e->whereNull(['postcomment_id']);
+        }]);
         $this->view()->load('Blog.Show', [
             'title' => 'Single Blog',
             'post' => $post
         ]);
+    }
+    public function comment(Post $post): void
+    {
+        $this->postsService->writeComment($post);
+        $this->redirect()->back();
     }
 }
