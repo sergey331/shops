@@ -15,6 +15,7 @@ use Shop\controllers\CartController;
 use Shop\controllers\CheckoutController;
 use Shop\controllers\ProductController as FrontProductController;
 use Shop\controllers\admin\PostController;
+use Shop\controllers\admin\CategoryController;
 
 
 Route::group(["middleware" => ["guest"]], function () {
@@ -52,6 +53,15 @@ Route::middleware(["admin"])->group(function () {
             Route::get('/{Post}', [PostController::class, 'edit']);
             Route::post('/{Post}', [PostController::class, 'update']);
             Route::get('/delete/{Post}', [PostController::class, 'delete']);
+        });
+
+        Route::group(['prefix' => '/categories'], function () {
+            Route::get('/', [CategoryController::class, 'index']);
+            Route::get('/create', [CategoryController::class, 'create']);
+            Route::post('/store', [CategoryController::class, 'store']);
+            Route::get('/{Category}', [CategoryController::class, 'edit']);
+            Route::post('/{Category}', [CategoryController::class, 'update']);
+            Route::get('/delete/{Category}', [CategoryController::class, 'delete']);
         });
     });
 });

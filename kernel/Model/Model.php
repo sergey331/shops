@@ -138,7 +138,7 @@ class Model extends Connection implements ModelInterface
 
     public function delete(): bool
     {
-//        $this->where(['id' => $this->id]);
+        $this->where(['id' => $this->id]);
         $this->modelWhere->resolve();
         $query = $this->queryBuilder->getDeleteQuery($this->table, $this->modelWhere->getWhereQuery());
         return (bool)$this->query($query, $this->modelWhere->getWhereData());
