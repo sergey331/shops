@@ -12,4 +12,5 @@ interface RequestInterface
     public function getMethod(): null|string;
     public function file($name): null|array;
     public function hasFile($name): bool;
+    public function has($name): bool;
 }

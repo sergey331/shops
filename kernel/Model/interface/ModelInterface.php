@@ -21,6 +21,8 @@ interface ModelInterface
     public function save(bool $update = false);
 
     // Where clause methods
+    public function whereLike(array $wheres): static;
+    public function orWhereLike(array $wheres): static;
     public function where(array $wheres): static;
     public function orWhere(array $wheres): static;
 

@@ -8,6 +8,8 @@ class ModelWhere implements ModelWhereInterface
 {
     protected string $whereQuery = "";
 
+    protected array $wheresLike = [];
+    protected array $orWheresLike = [];
     protected array $wheres = [];
     protected array $orWheres = [];
     protected array $notEquals = [];
@@ -35,21 +37,33 @@ class ModelWhere implements ModelWhereInterface
     protected array $orWhereDateNotBetweens = [];
     protected array $orWhereDateOperators = [];
     protected array $whereHas = [];
+    public array $orWhereHas = [];
 
+    public function setWhereLike($likes): static
+    {
+        $this->wheresLike = array_merge($this->wheresLike ?? [],$likes);
+        return $this;
+    }
+    public function setOrWhereLike($likes): static
+    {
+        $this->orWheresLike = array_merge($this->orWheresLike ?? [],$likes);
+        return $this;
+    }
     public function setWhere($wheres): static
     {
         $this->wheres = array_merge($this->wheres ?? [],$wheres);
         return $this;
     }
+    public function setOrWhere($orWheres): static
+    {
+        $this->orWheres = array_merge($this->orWheres ?? [],$orWheres);
+        return $this;
+    }
+
     public function clearWhere(): static
     {
         $this->wheres = [];
         $this->data = [];
-        return $this;
-    }
-    public function setOrWhere($orWheres): static
-    {
-        $this->orWheres = array_merge($this->orWheres ?? [],$orWheres);
         return $this;
     }
 
@@ -161,11 +175,36 @@ class ModelWhere implements ModelWhereInterface
         return $this;
     }
 
-    public function setWhereHas($sql,$data)
+    public function setWhereHas(string $sql, array $data): static
     {
-        $this->whereHas['sql'] = $sql;
-        $this->whereHas['data'] = $data;
+        // Initialize as array if empty
+        if (!isset($this->whereHas)) {
+            $this->whereHas = [];
+        }
+
+        // Append new whereHas clause
+        $this->whereHas[] = [
+            'sql'  => $sql,
+            'data' => $data
+        ];
+
+        return $this;
     }
+
+    public function setOrWhereHas(string $sql, array $data): static
+    {
+        if (!isset($this->orWhereHas)) {
+            $this->orWhereHas = [];
+        }
+
+        $this->orWhereHas[] = [
+            'sql'  => $sql,
+            'data' => $data
+        ];
+
+        return $this;
+    }
+
 
     /**
      * Resolves the where clauses and returns the instance for method chaining.
@@ -174,185 +213,277 @@ class ModelWhere implements ModelWhereInterface
      */
     public function resolve(): static
     {
-        $clauses = [];
+        $and = [];   // AND conditions
+        $or  = [];   // OR conditions
         $data = [];
 
+        /* ----------------------------------------------------
+        | 1) WHERE HAS (AND)
+        ---------------------------------------------------- */
         if (!empty($this->whereHas)) {
-            $clauses[] = $this->whereHas['sql'];
-            $data = array_merge($data, $this->whereHas['data']);
+            $parts = [];
+            foreach ($this->whereHas as $item) {
+                $parts[] = '(' . $item['sql'] . ')';
+                $data = array_merge($data, $item['data']);
+            }
+            $and[] = implode(' AND ', $parts);
         }
 
+        /* ----------------------------------------------------
+         | 2) OR WHERE HAS
+         ---------------------------------------------------- */
+        if (!empty($this->orWhereHas)) {
+            $parts = [];
+            foreach ($this->orWhereHas as $item) {
+                $parts[] = '(' . $item['sql'] . ')';
+                $data = array_merge($data, $item['data']);
+            }
+            $or[] = '(' . implode(' OR ', $parts) . ')';
+        }
+
+        /* ----------------------------------------------------
+         | 3) WHERE LIKE (AND)
+         ---------------------------------------------------- */
+        if (!empty($this->wheresLike)) {
+            $parts = array_map(fn($f) => "$f LIKE ?", array_keys($this->wheresLike));
+            $and[] = '(' . implode(' AND ', $parts) . ')';
+            $data = array_merge($data, array_values($this->wheresLike));
+        }
+
+        /* ----------------------------------------------------
+         | 4) OR WHERE LIKE
+         ---------------------------------------------------- */
+        if (!empty($this->orWheresLike)) {
+            $parts = array_map(fn($f) => "$f LIKE ?", array_keys($this->orWheresLike));
+            $or[] = '(' . implode(' OR ', $parts) . ')';
+            $data = array_merge($data, array_values($this->orWheresLike));
+        }
+
+        /* ----------------------------------------------------
+         | 5) WHERE = (AND)
+         ---------------------------------------------------- */
         if (!empty($this->wheres)) {
-            $parts = array_map(fn($field) => "$field=?", array_keys($this->wheres));
-            $clauses[] = implode(' AND ', $parts);
+            $parts = array_map(fn($f) => "$f=?", array_keys($this->wheres));
+            $and[] = '(' . implode(' AND ', $parts) . ')';
             $data = array_merge($data, array_values($this->wheres));
         }
 
+        /* ----------------------------------------------------
+         | 6) OR WHERE =
+         ---------------------------------------------------- */
         if (!empty($this->orWheres)) {
-            $parts = array_map(fn($field) => "$field=?", array_keys($this->orWheres));
-            $clauses[] = '(' . implode(' OR ', $parts) . ')';
+            $parts = array_map(fn($f) => "$f=?", array_keys($this->orWheres));
+            $or[] = '(' . implode(' OR ', $parts) . ')';
             $data = array_merge($data, array_values($this->orWheres));
         }
 
+        /* ----------------------------------------------------
+         | 7) WHERE != (AND)
+         ---------------------------------------------------- */
         if (!empty($this->notEquals)) {
-            $parts = array_map(fn($field) => "$field!=?", array_keys($this->notEquals));
-            $clauses[] = implode(' AND ', $parts);
+            $parts = array_map(fn($f) => "$f!=?", array_keys($this->notEquals));
+            $and[] = '(' . implode(' AND ', $parts) . ')';
             $data = array_merge($data, array_values($this->notEquals));
         }
 
+        /* ----------------------------------------------------
+         | 8) OR WHERE !=
+         ---------------------------------------------------- */
         if (!empty($this->orNotEquals)) {
-            $parts = array_map(fn($field) => "$field!=?", array_keys($this->orNotEquals));
-            $clauses[] = '(' . implode(' OR ', $parts) . ')';
+            $parts = array_map(fn($f) => "$f!=?", array_keys($this->orNotEquals));
+            $or[] = '(' . implode(' OR ', $parts) . ')';
             $data = array_merge($data, array_values($this->orNotEquals));
         }
 
+        /* ----------------------------------------------------
+         | 9) WHERE NULL (AND)
+         ---------------------------------------------------- */
         if (!empty($this->whereNull)) {
-            $parts = array_map(fn($field) => "$field IS NULL", array_values($this->whereNull));
-            $clauses[] = '(' . implode(' AND ', $parts) . ')';
+            $parts = array_map(fn($f) => "$f IS NULL", array_values($this->whereNull));
+            $and[] = '(' . implode(' AND ', $parts) . ')';
         }
 
+        /* ----------------------------------------------------
+         | 10) OR WHERE NULL
+         ---------------------------------------------------- */
         if (!empty($this->orWhereNull)) {
-            $parts = array_map(fn($field) => "$field IS NULL", array_values($this->orWhereNull));
-            $clauses[] = '(' . implode(' OR ', $parts) . ')';
+            $parts = array_map(fn($f) => "$f IS NULL", array_values($this->orWhereNull));
+            $or[] = '(' . implode(' OR ', $parts) . ')';
         }
 
+        /* ----------------------------------------------------
+         | 11) WHERE NOT NULL (AND)
+         ---------------------------------------------------- */
         if (!empty($this->whereNotNull)) {
-            $parts = array_map(fn($field) => "$field IS NOT NULL", array_values($this->whereNotNull));
-            $clauses[] = '(' . implode(' AND ', $parts) . ')';
+            $parts = array_map(fn($f) => "$f IS NOT NULL", array_values($this->whereNotNull));
+            $and[] = '(' . implode(' AND ', $parts) . ')';
         }
 
+        /* ----------------------------------------------------
+         | 12) OR WHERE NOT NULL
+         ---------------------------------------------------- */
         if (!empty($this->orWhereNotNull)) {
-            $parts = array_map(fn($field) => "$field IS NOT NULL", array_values($this->orWhereNotNull));
-            $clauses[] = '(' . implode(' OR ', $parts) . ')';
+            $parts = array_map(fn($f) => "$f IS NOT NULL", array_values($this->orWhereNotNull));
+            $or[] = '(' . implode(' OR ', $parts) . ')';
         }
 
+        /* ----------------------------------------------------
+         | 13) WHERE IN (AND)
+         ---------------------------------------------------- */
         if (!empty($this->whereIn)) {
             foreach ($this->whereIn as $field => $values) {
-                $placeholders = implode(', ', array_fill(0, count($values), '?'));
-                $clauses[] = "$field IN ($placeholders)";
+                $ph = implode(', ', array_fill(0, count($values), '?'));
+                $and[] = "$field IN ($ph)";
                 $data = array_merge($data, $values);
             }
         }
 
+        /* ----------------------------------------------------
+         | 14) WHERE NOT IN (AND)
+         ---------------------------------------------------- */
         if (!empty($this->whereNotIn)) {
             foreach ($this->whereNotIn as $field => $values) {
-                $placeholders = implode(', ', array_fill(0, count($values), '?'));
-                $clauses[] = "$field NOT IN ($placeholders)";
+                $ph = implode(', ', array_fill(0, count($values), '?'));
+                $and[] = "$field NOT IN ($ph)";
                 $data = array_merge($data, $values);
             }
         }
 
+        /* ----------------------------------------------------
+         | 15) OR WHERE IN
+         ---------------------------------------------------- */
         if (!empty($this->orWhereIn)) {
-            $orParts = [];
+            $parts = [];
             foreach ($this->orWhereIn as $field => $values) {
-                $placeholders = implode(', ', array_fill(0, count($values), '?'));
-                $orParts[] = "$field IN ($placeholders)";
+                $ph = implode(', ', array_fill(0, count($values), '?'));
+                $parts[] = "$field IN ($ph)";
                 $data = array_merge($data, $values);
             }
-            $clauses[] = '(' . implode(' OR ', $orParts) . ')';
+            $or[] = '(' . implode(' OR ', $parts) . ')';
         }
 
+        /* ----------------------------------------------------
+         | 16) OR WHERE NOT IN
+         ---------------------------------------------------- */
         if (!empty($this->orWhereNotIn)) {
-            $orParts = [];
+            $parts = [];
             foreach ($this->orWhereNotIn as $field => $values) {
-                $placeholders = implode(', ', array_fill(0, count($values), '?'));
-                $orParts[] = "$field NOT IN ($placeholders)";
+                $ph = implode(', ', array_fill(0, count($values), '?'));
+                $parts[] = "$field NOT IN ($ph)";
                 $data = array_merge($data, $values);
             }
-            $clauses[] = '(' . implode(' OR ', $orParts) . ')';
+            $or[] = '(' . implode(' OR ', $parts) . ')';
         }
 
-        // whereDates
+        /* ----------------------------------------------------
+         | 17) DATE EQUAL (AND)
+         ---------------------------------------------------- */
         foreach ($this->whereDates as $field => $date) {
-            $clauses[] = "$field = ?";
+            $and[] = "$field = ?";
             $data[] = $date;
         }
 
-        // whereDateBetweens
+        /* ----------------------------------------------------
+         | 18) DATE BETWEEN (AND)
+         ---------------------------------------------------- */
         foreach ($this->whereDateBetweens as $field => $range) {
-            if (count($range) === 2) {
-                $clauses[] = "$field BETWEEN ? AND ?";
-                $data[] = $range[0];
-                $data[] = $range[1];
-            }
+            $and[] = "$field BETWEEN ? AND ?";
+            $data[] = $range[0];
+            $data[] = $range[1];
         }
 
-        // whereDateNotBetweens
+        /* ----------------------------------------------------
+         | 19) DATE NOT BETWEEN (AND)
+         ---------------------------------------------------- */
         foreach ($this->whereDateNotBetweens as $field => $range) {
-            if (count($range) === 2) {
-                $clauses[] = "$field NOT BETWEEN ? AND ?";
-                $data[] = $range[0];
-                $data[] = $range[1];
-            }
+            $and[] = "$field NOT BETWEEN ? AND ?";
+            $data[] = $range[0];
+            $data[] = $range[1];
         }
 
-        // whereDateOperators
-        foreach ($this->whereDateOperators as $field => $condition) {
-            [$operator, $value] = $condition;
-            if (in_array($operator, ['<', '>', '<=', '>=', '=', '!='])) {
-                $clauses[] = "$field $operator ?";
-                $data[] = $value;
-            }
+        /* ----------------------------------------------------
+         | 20) DATE OPERATORS (AND)
+         ---------------------------------------------------- */
+        foreach ($this->whereDateOperators as $field => [$op, $value]) {
+            $and[] = "$field $op ?";
+            $data[] = $value;
         }
 
-        // orWhereDates
+        /* ----------------------------------------------------
+         | 21) OR DATE EQUAL
+         ---------------------------------------------------- */
         if (!empty($this->orWhereDates)) {
-            $orParts = [];
+            $parts = [];
             foreach ($this->orWhereDates as $field => $date) {
-                $orParts[] = "$field = ?";
+                $parts[] = "$field = ?";
                 $data[] = $date;
             }
-            $clauses[] = '(' . implode(' OR ', $orParts) . ')';
+            $or[] = '(' . implode(' OR ', $parts) . ')';
         }
 
-        // orWhereDateBetweens
+        /* ----------------------------------------------------
+         | 22) OR DATE BETWEEN
+         ---------------------------------------------------- */
         if (!empty($this->orWhereDateBetweens)) {
-            $orParts = [];
+            $parts = [];
             foreach ($this->orWhereDateBetweens as $field => $range) {
-                if (count($range) === 2) {
-                    $orParts[] = "$field BETWEEN ? AND ?";
-                    $data[] = $range[0];
-                    $data[] = $range[1];
-                }
+                $parts[] = "$field BETWEEN ? AND ?";
+                $data[] = $range[0];
+                $data[] = $range[1];
             }
-            $clauses[] = '(' . implode(' OR ', $orParts) . ')';
+            $or[] = '(' . implode(' OR ', $parts) . ')';
         }
 
-        // orWhereDateNotBetweens
+        /* ----------------------------------------------------
+         | 23) OR DATE NOT BETWEEN
+         ---------------------------------------------------- */
         if (!empty($this->orWhereDateNotBetweens)) {
-            $orParts = [];
+            $parts = [];
             foreach ($this->orWhereDateNotBetweens as $field => $range) {
-                if (count($range) === 2) {
-                    $orParts[] = "$field NOT BETWEEN ? AND ?";
-                    $data[] = $range[0];
-                    $data[] = $range[1];
-                }
+                $parts[] = "$field NOT BETWEEN ? AND ?";
+                $data[] = $range[0];
+                $data[] = $range[1];
             }
-            $clauses[] = '(' . implode(' OR ', $orParts) . ')';
+            $or[] = '(' . implode(' OR ', $parts) . ')';
         }
 
-        // orWhereDateOperators
+        /* ----------------------------------------------------
+         | 24) OR DATE OPERATORS
+         ---------------------------------------------------- */
         if (!empty($this->orWhereDateOperators)) {
-            $orParts = [];
-            foreach ($this->orWhereDateOperators as $field => $condition) {
-                [$operator, $value] = $condition;
-                if (in_array($operator, ['<', '>', '<=', '>=', '=', '!='])) {
-                    $orParts[] = "$field $operator ?";
-                    $data[] = $value;
-                }
+            $parts = [];
+            foreach ($this->orWhereDateOperators as $field => [$op, $value]) {
+                $parts[] = "$field $op ?";
+                $data[] = $value;
             }
-            if (!empty($orParts)) {
-                $clauses[] = '(' . implode(' OR ', $orParts) . ')';
-            }
+            $or[] = '(' . implode(' OR ', $parts) . ')';
         }
 
-        if (!empty($clauses)) {
-            $this->whereQuery = 'WHERE ' . implode(' AND ', $clauses);
-            $this->data = array_merge($this->data, $data);
+        /* ----------------------------------------------------
+         | FINAL QUERY MERGE
+         ---------------------------------------------------- */
+
+        $andSql = !empty($and) ? implode(' AND ', $and) : '';
+        $orSql  = !empty($or)  ? implode(' OR ', $or)  : '';
+
+        if ($andSql && $orSql) {
+            // AND + OR together
+            $this->whereQuery = "WHERE ($andSql) OR ($orSql)";
         }
+        elseif ($andSql) {
+            // Only AND
+            $this->whereQuery = "WHERE $andSql";
+        }
+        elseif ($orSql) {
+            // Only OR
+            $this->whereQuery = "WHERE $orSql";
+        }
+
+        $this->data = array_merge($this->data, $data);
 
         return $this;
     }
+
 
 
     public function getWhereQuery(): string

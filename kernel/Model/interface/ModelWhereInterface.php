@@ -4,8 +4,14 @@ namespace Kernel\Model\interface;
 
 interface ModelWhereInterface
 {
+    public function setWhereLike($likes): static;
+
+    public function setOrWhereLike($likes): static;
+
     public function setWhere($wheres): static;
+
     public function clearWhere(): static;
+
     public function setOrWhere($orWheres): static;
 
     public function setNotEquals($notEquals): static;
@@ -23,6 +29,7 @@ interface ModelWhereInterface
     public function setWhereIn(array $wheres): static;
 
     public function setWhereNotIn(array $wheres): static;
+
     public function setOrWhereIn(array $wheres): static;
 
     public function setOrWhereNotIn(array $wheres): static;
@@ -48,4 +55,6 @@ interface ModelWhereInterface
     public function getWhereQuery(): string;
 
     public function getWhereData(): array;
+    public function setWhereHas(string $sql, array $data): static;
+    public function setOrWhereHas(string $sql, array $data): static;
 }

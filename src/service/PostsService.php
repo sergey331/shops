@@ -20,17 +20,27 @@ class PostsService
         $posts = model('post')->with(['category']);
 
         $filteredData = [];
+        if (request()->has('search')) {
+            $search = request()->input('search');
+            $posts->whereLike([
+                'title' => "%$search%"
+            ])->orWhereHas('category', function ($e) use ($search) {
+                return $e->whereLike(['categories.name' => "%$search%"]);
+            })->orWhereHas('tags', function ($e) use ($search) {
+                return $e->whereLike(['tags.name' => "%$search%"]);
+            });
+            $filteredData['search'] = $search;
+        }
         if (request()->has('category_id')) {
             $category_id = request()->get('category_id');
-            $posts = $posts->whereHas('category', function ($e) use ($category_id) {
+           $posts->whereHas('category', function ($e) use ($category_id) {
                 return $e->where(['id' => $category_id]);
             });
             $filteredData['category_id'] = $category_id;
         }
-
         if (request()->has('tags_id')) {
             $tags_id = request()->get('tags_id');
-            $posts = $posts->whereHas('tags', function ($e) use ($tags_id) {
+            $posts->whereHas('tags', function ($e) use ($tags_id) {
                 return $e->whereIn(['tags.id' => (array)$tags_id]);
             });
             $filteredData['tags_id'] = $tags_id;

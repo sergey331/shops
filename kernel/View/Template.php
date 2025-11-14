@@ -30,30 +30,41 @@ class Template implements TemplateInterface
     private function compileTemplate(string $template): string
     {
         $replacements = [
-            '/@auth/'         => '<?php if ($auth->user()): ?>',
-            '/@else/'         => '<?php else: ?>',
-            '/@endif/'        => '<?php endif; ?>',
-            '/@endauth/'      => '<?php endif; ?>',
-            '/@endforeach/'   => '<?php endforeach; ?>',
-            '/@endfor/'   => '<?php endfor; ?>',
-            '/@if\s*\((.*?)\)/'      => '<?php if ($1): ?>',
-            '/@dd\s*\((.*?)\)/'      => '<?php dd($1); ?>',
-            '/@empty\s*\((.*?)\)/'      => '<?php if (empty($1)): ?>',
-            '/@noempty\s*\((.*?)\)/'      => '<?php if (!empty($1)): ?>',
-            '/@count\s*\((.*?)\)/'      => '<?php if (is_array($1) && count($1) > 0): ?>',
-            '/@isset\s*\((.*?)\)/'      => '<?php if (isset($1)): ?>',
-            '/@inarray\s*\((.*?)\)/'      => '<?php if (in_array($1)): ?>',
-            '/@noisset\s*\((.*?)\)/'      => '<?php if (!isset($1)): ?>',
-            '/@endisset/'      => '<?php endif; ?>',
-            '/@endinarray/'      => '<?php endif; ?>',
-            '/@endempty/'      => '<?php endif; ?>',
-            '/@endcount/'      => '<?php endif; ?>',
-            '/@elseif\s*\((.*?)\)/'  => '<?php elseif ($1): ?>',
-            '/@foreach\s*\((.*?)\)/' => '<?php foreach ($1): ?>',
-            '/@for\s*\((.*?)\)/' => '<?php for ($1): ?>',
+
+            // Auth
+            '/@auth/'       => '<?php if ($auth->user()): ?>',
+            '/@endauth/'    => '<?php endif; ?>',
+
+            // Loops
+            '/@foreach\s*\((.*)\)/' => '<?php foreach ($1): ?>',
+            '/@endforeach/'           => '<?php endforeach; ?>',
+            '/@for\s*\((.*)\)/'     => '<?php for ($1): ?>',
+            '/@endfor/'               => '<?php endfor; ?>',
+
+            // Conditional statements with nested parentheses
+            '/@if\s*\(((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*)\)(.*?)@endif/s' => '<?php if ($1): ?>$2<?php endif; ?>',
+
+            '/@elseif\s*\(((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*)\)/' => '<?php elseif ($1): ?>',
+            '/@else/' => '<?php else: ?>',
+
+            // Special helpers
+            '/@isset\s*\(((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*)\)/'   => '<?php if (isset($1)): ?>',
+            '/@endisset/'            => '<?php endif; ?>',
+            '/@empty\s*\(((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*)\)/'   => '<?php if (empty($1)): ?>',
+            '/@endempty/'            => '<?php endif; ?>',
+            '/@noempty\s*\(((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*)\)/' => '<?php if (!empty($1)): ?>',
+            '/@count\s*\(((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*)\)/'   => '<?php if (is_array($1) && count($1) > 0): ?>',
+            '/@endcount/'            => '<?php endif; ?>',
+            '/@noisset\s*\(((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*)\)/' => '<?php if (!isset($1)): ?>',
+            '/@inarray\s*\(((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*)\)/' => '<?php if (in_array($1)): ?>',
+            '/@endinarray/'          => '<?php endif; ?>',
+            '/@dd\s*\(((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*)\)/'      => '<?php dd($1); ?>',
+
+            // Echo
             '/{{\s*(.*?)\s*}}/'      => '<?php echo $1; ?>',
-            '/{!!\s*(.*?)\s*!!}/s' => '<?php $1 ?>'
+            '/{!!\s*(.*?)\s*!!}/s'   => '<?php $1 ?>'
         ];
+
 
         $template = preg_replace(array_keys($replacements), array_values($replacements), $template);
 

@@ -6,6 +6,17 @@ use Kernel\Model\Relations\BelongsToMany;
 
 trait ConditionsTrait
 {
+    public function whereLike(array $wheres): static
+    {
+        $this->modelWhere->setWhereLike($wheres);
+        return $this;
+    }
+
+    public function orWhereLike(array $wheres): static
+    {
+        $this->modelWhere->setOrWhereLike($wheres);
+        return $this;
+    }
     public function where(array $wheres): static
     {
         $this->modelWhere->setWhere($wheres);
@@ -137,6 +148,22 @@ trait ConditionsTrait
         $this->addWhereExists($relationInstance, $relatedQuery);
         return $this;
     }
+
+    public function orWhereHas(string $relation, callable $callback): static
+    {
+        $relationInstance = $this->$relation();
+
+        if ($relationInstance instanceof BelongsToMany) {
+            return $this->addOrWhereExistsBelongsToMany($relationInstance, $callback);
+        }
+
+        $related = $relationInstance->getQueryBuilder();
+        $callback($relationInstance);
+
+        $this->addOrWhereExists($relationInstance, $related);
+        return $this;
+    }
+
     private function addWhereExistsBelongsToMany($relation, callable $callback)
     {
         $relatedQuery = $relation->getQueryBuilder();
@@ -194,4 +221,59 @@ trait ConditionsTrait
 
         $this->modelWhere->setWhereHas($subSql,$relatedQuery->getWhereData());
     }
+
+    private function addOrWhereExistsBelongsToMany($relation, callable $callback)
+    {
+        $relatedQuery = $relation->getQueryBuilder();
+        $callback($relation);
+
+        $pivot = $relation->getPivotTable();
+        $related = $relation->getRelatedTable();
+
+        $foreignPivotKey = $relation->getForeignPivotKey();
+        $relatedPivotKey = $relation->getRelatedPivotKey();
+
+        $relatedQuery->resolve();
+
+        $relatedWhere = trim($relatedQuery->getWhereQuery() ?? '');
+        $relatedWhere = preg_replace('/^\s*WHERE\s+/i', '', $relatedWhere);
+
+        $subQuery = "EXISTS (
+        SELECT 1
+        FROM {$pivot}
+        JOIN {$related} ON {$related}.id = {$pivot}.{$relatedPivotKey}
+        WHERE {$pivot}.{$foreignPivotKey} = {$this->getTableName()}.id";
+
+        if ($relatedWhere) {
+            $subQuery .= " AND {$relatedWhere}";
+        }
+
+        $subQuery .= ")";
+
+        $this->modelWhere->setOrWhereHas($subQuery, $relatedQuery->getWhereData());
+
+        return $this;
+    }
+    protected function addOrWhereExists($relationInstance, $relatedQuery)
+    {
+        $relatedTable = $relationInstance->getRelatedTable();
+        $foreignKey   = $relationInstance->getForeignKey();
+        $localKey     = $relationInstance->getLocalKey();
+
+        $relatedQuery->resolve();
+
+        $relatedTable = $relatedTable->getTableName();
+
+        $subSql = "EXISTS (SELECT 1 FROM {$relatedTable} 
+                       WHERE {$relatedTable}.{$localKey} = {$this->table}.{$foreignKey}";
+
+        if (!empty($relatedQuery->getWhereData())) {
+            $subSql .= ' AND ' . str_replace('WHERE','', $relatedQuery->getWhereQuery());
+        }
+
+        $subSql .= ')';
+
+        $this->modelWhere->setOrWhereHas($subSql, $relatedQuery->getWhereData());
+    }
+
 }
