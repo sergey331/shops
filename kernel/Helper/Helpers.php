@@ -42,6 +42,10 @@ function model($name)
 {
     return container()->get('db')->model($name);
 }
+function view()
+{
+    return container()->get('views');
+}
 
 function public_path($path): string
 {
