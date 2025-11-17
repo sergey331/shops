@@ -238,7 +238,7 @@ class Model extends Connection implements ModelInterface
         $this->with = array_merge($this->with, $relations);
         if ($this->id) {
             foreach ($relations as $key =>  $relation) {
-                $this->extracted($relation, $key);
+                $this->extracted($relation, $key, $this);
             }
         }
         return $this;
@@ -271,8 +271,7 @@ class Model extends Connection implements ModelInterface
         $model->data = $row;
 
         foreach ($this->with as $key => $relation) {
-
-            $this->extracted($relation, $key);
+            $this->extracted($relation, $key, $model);
         }
 
         return $model;
@@ -288,21 +287,17 @@ class Model extends Connection implements ModelInterface
         $this->data = $data;
     }
 
-    /**
-     * @param mixed $relation
-     * @param int|string $key
-     * @return void
-     */
-    private function extracted(mixed $relation, int|string $key): void
+    private function extracted(mixed $relation, int|string $key, $model): void
     {
+        $related = null;
+        $k = is_string($relation) ? $relation : $key;
         if (is_string($relation)) {
-            $related = $this->$relation()->get();
-            $this->relations[$relation] = $related;
-            $this->data[$relation] = $related;
+            $related = $model->{$relation}()->get();
         } elseif ($relation instanceof \Closure) {
-            $related = $relation($this->$key())->get();
-            $this->relations[$key] = $related;
-            $this->data[$key] = $related;
+            $related = $relation($model->{$key}())->get();
         }
+        $model->relations[$k] = $related;
+        $model->data[$k] = $related;
     }
+
 }
