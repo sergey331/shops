@@ -35,12 +35,12 @@ class Paginator
     public static function html($data): string
     {
         $html = '<nav class="pt-12" aria-label="Page navigation">';
-        $html .= '<ul class="flex justify-center items-center gap-4">';
+        $html .= '<ul class="d-flex justify-content-center align-items-center gap-4 list-unstyled">';
 
         // Previous button
         if ($data->has_prev) {
             $html .= '<li>';
-            $html .= '<a href="' . htmlspecialchars($data->prevLink) . '" class="text-gray-700 hover:text-primary px-3 py-1">Prev</a>';
+            $html .= '<a href="' . htmlspecialchars($data->prevLink) . '" class="text-gray-700 hover:text-primary px-3 py-1 text-decoration-none">Prev</a>';
             $html .= '</li>';
         } else {
             $html .= '<li class="opacity-50 cursor-not-allowed"><span class="px-3 py-1 text-gray-400">Prev</span></li>';
@@ -54,14 +54,14 @@ class Paginator
                 : 'bg-banner text-black';
 
             $html .= '<li>';
-            $html .= '<a href="' . htmlspecialchars($link) . '" class="' . $activeClass . ' px-3 py-1 rounded-md">' . $i . '</a>';
+            $html .= '<a href="' . htmlspecialchars($link) . '" class="' . $activeClass . ' px-3 py-1 rounded text-decoration-none">' . $i . '</a>';
             $html .= '</li>';
         }
 
         // Next button
         if ($data->has_next) {
             $html .= '<li>';
-            $html .= '<a href="' . htmlspecialchars($data->nextLink) . '" class="text-gray-700 hover:text-primary px-3 py-1">Next</a>';
+            $html .= '<a href="' . htmlspecialchars($data->nextLink) . '" class="text-gray-700 hover:text-primary px-3 py-1 text-decoration-none">Next</a>';
             $html .= '</li>';
         } else {
             $html .= '<li class="opacity-50 cursor-not-allowed"><span class="px-3 py-1 text-gray-400">Next</span></li>';

@@ -1,7 +1,4 @@
 {!!
-    /**
-     * @var \App\Models\Slider[] $sliders
-     */
 
 use Kernel\Model\Paginator;
 !!}
