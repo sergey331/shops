@@ -26,6 +26,7 @@ class Model extends Connection implements ModelInterface
     protected array $with = [];
     protected array $casts = [];
     protected array $relations = [];
+    protected bool $is_model = true;
 
     private ModelWhere $modelWhere;
     private QueryBuilder $queryBuilder;
@@ -66,6 +67,9 @@ class Model extends Connection implements ModelInterface
         return $this->fetchArrayData($result->fetchAll(\PDO::FETCH_ASSOC));
     }
 
+    /**
+     * @throws Exception
+     */
     public function paginate(): static
     {
         $page = request()->get('page') ?? 1;
@@ -148,7 +152,7 @@ class Model extends Connection implements ModelInterface
     {
 
         foreach ($data as $key => $value) {
-            if (!in_array($key, $this->fillable)) {
+            if ($this->is_model && !in_array($key, $this->fillable)) {
                 throw new Exception("Field '{$key}' not found");
             }
             $this->newData[$key] = ($this->table === 'users' && $key === 'password')
@@ -207,28 +211,38 @@ class Model extends Connection implements ModelInterface
         return $this;
     }
 
+    public function getTableName(): string
+    {
+        return $this->table;
+    }
+
+    public function setData($data): void
+    {
+        $this->data = $data;
+    }
+
     public function __get(string $name)
     {
         return $this->data[$name] ?? null;
     }
 
     // Relationships
-    public function belongsTo($model)
+    protected function belongsTo($model): BelongsTo
     {
         return new BelongsTo($this, $model);
     }
 
-    public function belongsToMany($model, $relatedTable)
+    protected function belongsToMany($model, $relatedTable): BelongsToMany
     {
         return new BelongsToMany($this, $model, $relatedTable);
     }
 
-    public function hasMany($model)
+    protected function hasMany($model): HasMany
     {
         return new HasMany($this, $model);
     }
 
-    public function hasOne($model)
+    protected function hasOne($model): HasOne
     {
         return new HasOne($this, $model);
     }
@@ -259,7 +273,6 @@ class Model extends Connection implements ModelInterface
         $this->relations[$key] = $value;
     }
 
-
     private function fetchArrayData(array $data): array
     {
         return array_map(fn($row) => $this->fetchData($row), $data);
@@ -277,14 +290,10 @@ class Model extends Connection implements ModelInterface
         return $model;
     }
 
-    public function getTableName()
+    protected function setTable($table): void
     {
-        return $this->table;
-    }
-
-    public function setData($data): void
-    {
-        $this->data = $data;
+        $this->table = $table;
+        $this->is_model = false;
     }
 
     private function extracted(mixed $relation, int|string $key, $model): void

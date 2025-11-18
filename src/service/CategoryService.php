@@ -3,6 +3,7 @@
 namespace Shop\service;
 
 use Kernel\File\File;
+use Kernel\Table\Table;
 use Kernel\Validator\Validator;
 use Shop\model\Category;
 use Shop\rules\CategoryRules;
@@ -11,7 +12,8 @@ class CategoryService
 {
     public function getCategories()
     {
-        return model('category')->paginate();
+        $data = model('category')->paginate();
+        return ['tableData' => $this->getTableData($data),'categories' => $data];
     }
 
     public function store()
@@ -78,5 +80,28 @@ class CategoryService
             }
         }
         return $data;
+    }
+
+    private function getTableData($categories)
+    {
+        $table = new Table($categories->data,[
+            "#" => ['field' => 'id'],
+            "Name" => ['field' => 'name'],
+            "Description" => ['field' => 'description'],
+            "Logo" => ['field' => 'logo','data' => ['type' => 'image','path' => "/images/categories"]],
+            "Actions" => [
+                'callback' => function($row) {
+                    $id = $row->id;
+                    return '
+                        <a href="/admin/categories/'.$id.'" class="btn btn-sm btn-primary">Edit</a>
+                        <a href="/admin/categories/delete/'.$id.'" class="btn btn-sm btn-danger">Delete</a>
+                    ';
+                }
+            ]
+        ]);
+
+        $table
+            ->setTableAttributes(['class' => 'table']);
+        return $table;
     }
 }

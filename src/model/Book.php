@@ -3,6 +3,8 @@
 namespace Shop\model;
 
 use Kernel\Model\Model;
+use Kernel\Model\Relations\BelongsTo;
+use Kernel\Model\Relations\BelongsToMany;
 
 class Book extends Model
 {
@@ -26,9 +28,14 @@ class Book extends Model
         'status',
     ];
 
-    public function publisher()
+    public function publisher(): BelongsTo
     {
         return $this->belongsTo(Publisher::class);
+    }
+
+    public function authors(): BelongsToMany
+    {
+        return $this->belongsToMany(Author::class,'book_author');
     }
 
     public function categories()

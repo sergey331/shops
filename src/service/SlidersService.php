@@ -3,6 +3,7 @@
 namespace Shop\service;
 
 use Kernel\File\File;
+use Kernel\Table\Table;
 use Kernel\Validator\Validator;
 use Shop\model\Slider;
 use Shop\rules\SliderRules;
@@ -11,7 +12,11 @@ class SlidersService
 {
     public function getSliders()
     {
-        return model('slider')->get();
+        $sliders = model('slider')->paginate();
+        return [
+            'sliders' => $sliders,
+            'tableData' => $this->getTableData($sliders)
+        ];
     }
 
     public function store()
@@ -81,5 +86,28 @@ class SlidersService
             }
         }
         return $data;
+    }
+
+    private function getTableData($sliders): Table
+    {
+        $table = new Table($sliders->data,[
+            "#" => ['field' => 'id'],
+            "Title" => ['field' => 'title'],
+            "Content" => ['field' => 'content'],
+            "Image" => ['field' => 'image_url','data' => ['type' => 'image','path' => "/uploads/sliders"]],
+            "Actions" => [
+                'callback' => function($row) {
+                    $id = $row->id;
+                    return '
+                        <a href="/admin/sliders/'.$id.'" class="btn btn-sm btn-primary">Edit</a>
+                        <a href="/admin/sliders/delete/'.$id.'" class="btn btn-sm btn-danger">Delete</a>
+                    ';
+                }
+            ]
+        ]);
+
+        $table
+            ->setTableAttributes(['class' => 'table']);
+        return $table;
     }
 }

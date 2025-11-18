@@ -18,8 +18,10 @@ class SlidersController extends BaseController
     }
     public function index(): void
     {
+        $data = $this->slidersService->getSliders();
         $this->view()->load('Admin.Sliders.Index', [
-            'sliders' => $this->slidersService->getSliders(),
+            'sliders' => $data['sliders'],
+            'tableData' => $data['tableData'],
         ], 'admin');
     }
 

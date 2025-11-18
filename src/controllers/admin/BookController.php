@@ -16,8 +16,10 @@ class BookController extends BaseController
 
     public function index()
     {
+        $data = $this->productService->getBooks();
         $this->view()->load('Admin.Book.Index', [
-            'books' => $this->productService->getBooks(),
+            'books' => $data['books'],
+            'tableData' => $data['tableData'],
         ], 'admin');
     }
 }

@@ -3,6 +3,7 @@
 namespace Shop\service;
 
 use Kernel\File\File;
+use Kernel\Table\Table;
 use Kernel\Validator\Validator;
 use Shop\model\Post;
 use Shop\rules\PostCommentRules;
@@ -13,7 +14,12 @@ class PostsService
 {
     public function getPosts()
     {
-        return model('post')->with(['category','tags'])->get();
+
+        $posts =  model('post')->with(['category','tags'])->paginate();
+        return [
+            'posts' => $posts,
+            'tableData' => $this->getTableData($posts)
+        ];
     }
 
     public function getFilteredPosts()
@@ -158,5 +164,33 @@ class PostsService
             }
         }
         return $data;
+    }
+
+    private function getTableData($posts): Table
+    {
+        $table = new Table($posts->data,[
+            "#" => ['field' => 'id'],
+            "Title" => ['field' => 'title'],
+            "Slug" => ['field' => 'slug'],
+            "Content" => ['field' => 'content'],
+            "Excerpt" => ['field' => 'excerpt'],
+            "Tags" => ['field' => 'tags.*.name'],
+            "Categories" => ['field' => 'category.name'],
+            "Status" => ['field' => 'status'],
+            "Image" => ['field' => 'image','data' => ['type' => 'image','path' => "/uploads/posts"]],
+            "Actions" => [
+                'callback' => function($row) {
+                    $id = $row->id;
+                    return '
+                        <a href="/admin/posts/'.$id.'" class="btn btn-sm btn-primary">Edit</a>
+                        <a href="/admin/posts/delete/'.$id.'" class="btn btn-sm btn-danger">Delete</a>
+                    ';
+                }
+            ]
+        ]);
+
+        $table
+            ->setTableAttributes(['class' => 'table']);
+        return $table;
     }
 }

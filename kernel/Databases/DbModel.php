@@ -2,7 +2,7 @@
 
 namespace Kernel\Databases;
 
-class Db
+class DbModel
 {
 
     /**

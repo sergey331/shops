@@ -2,7 +2,7 @@
 
 namespace Kernel\Seeder\interface;
 
-use Kernel\Databases\Db;
+use Kernel\Databases\DbModel;
 
 interface SeederInterface
 {

@@ -20,8 +20,10 @@ class CategoryController extends BaseController
     }
     public function index(): void
     {
+        $data = $this->categoryService->getCategories();
         $this->view()->load('Admin.Category.Index', [
-            'categories' => $this->categoryService->getCategories(),
+            'categories' => $data['categories'],
+            'tableData' => $data['tableData']
         ], 'admin');
     }
 

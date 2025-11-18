@@ -16,8 +16,10 @@ class PostController extends BaseController
     }
     public function index(): void
     {
+        $data = $this->postsService->getPosts();
         $this->view()->load('Admin.Post.Index', [
-            'posts' => $this->postsService->getPosts(),
+            'posts' => $data['posts'],
+            'tableData' => $data['tableData'],
         ], 'admin');
     }
 
