@@ -111,11 +111,24 @@
     });
     if ($("#datepicker-popup").length) {
       $('#datepicker-popup').datepicker({
+        format: 'yyyy-mm-dd',   // ← Y-m-d format
         enableOnReadonly: true,
         todayHighlight: true,
+        autoclose: true
       });
       $("#datepicker-popup").datepicker("setDate", "0");
     }
+
+    if ($("#publication_date").length) {
+      $('#publication_date').datepicker({
+        format: 'yyyy-mm-dd',   // ← Y-m-d format
+        enableOnReadonly: true,
+        todayHighlight: true,
+        autoclose: true
+      });
+      $("#publication_date").datepicker("setDate", "0");
+    }
+    
 
   });
 

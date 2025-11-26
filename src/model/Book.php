@@ -5,6 +5,7 @@ namespace Shop\model;
 use Kernel\Model\Model;
 use Kernel\Model\Relations\BelongsTo;
 use Kernel\Model\Relations\BelongsToMany;
+use Kernel\Model\Relations\HasOne;
 
 class Book extends Model
 {
@@ -15,7 +16,7 @@ class Book extends Model
         'slug',
         'description',
         'isbn',
-        'language',
+        'language_id',
         'pages',
         'price',
         'discount_price',
@@ -27,6 +28,11 @@ class Book extends Model
         'featured',
         'status',
     ];
+
+    public function language(): HasOne   
+    {
+        return $this->hasOne(Language::class);
+    }
 
     public function publisher(): BelongsTo
     {

@@ -22,4 +22,13 @@ class BookController extends BaseController
             'tableData' => $data['tableData'],
         ], 'admin');
     }
+
+    public function create()
+    {
+        $this->view()->load('Admin.Book.Create',[
+            'languages' => $this->model('Language')->get(),
+            'publishers' => $this->model('Publisher')->get(),
+            'authors' => $this->model('Author')->get(),
+        ], 'admin');
+    }
 }
