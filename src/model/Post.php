@@ -21,6 +21,12 @@ class Post extends Model
         'views'
     ];
 
+    const STATUS = [
+        "draft" =>"Draft",
+        "published" =>"Published",
+        "archived" => "Archived"
+    ];
+
     public function tags()
     {
         return $this->belongsToMany(Tag::class,'post_tags');

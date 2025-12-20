@@ -2,13 +2,14 @@
 
 namespace Shop\service;
 
-use Kernel\File\File;
-use Kernel\Table\Table;
-use Kernel\Validator\Validator;
 use Shop\model\Post;
-use Shop\rules\PostCommentRules;
+use Kernel\File\File;
+use Kernel\Form\Form;
+use Kernel\Table\Table;
 use Shop\rules\PostRules;
+use Kernel\Validator\Validator;
 use Shop\rules\PostUpdateRules;
+use Shop\rules\PostCommentRules;
 
 class PostsService
 {
@@ -20,6 +21,69 @@ class PostsService
             'posts' => $posts,
             'tableData' => $this->getTableData($posts)
         ];
+    }
+
+    public function getForms($url, ?Post $post = null) 
+    {
+        
+        $errors = session()->getCLean('errors') ?? [];
+        $form  = new Form($url,'POST', ['enctype' => 'multipart/form-data',"class" => 'form-html'],$errors);
+        $form->setInput('title','Title', [
+            'class' => 'form-control',
+            'value' => $post->title ?? ''
+        ]);
+        $form->setInput('slug','Slug', [
+            'class' => 'form-control',
+            'value' => $post->slug ?? ''
+        ]);
+        
+        $form->setSelect('status','Status',
+        Post::STATUS, 
+        [
+            'class' => 'form-control',
+            'value' => $post->status ?? ''
+        ]);
+        $form->setFile('image','Image', [
+            'class' => 'form-control',
+        ]);
+        $form->setTextarea('content','Content',[
+            'class' => 'form-control',
+            'value' => $post->content ?? ''
+        ]);
+        $form->setTextarea('excerpt','Excerpt',[
+            'class' => 'form-control',
+            'value' => $post->content ?? ''
+        ]);
+        $form->setInput('published_at','Published at', [
+            'class' => 'form-control',
+            'value' => $post->published_at ?? ''
+        ]);
+        $form->setInput('meta_title','Meta title', [
+            'class' => 'form-control',
+            'value' => $post->meta_title ?? ''
+        ]);
+
+         $form->setTextarea('meta_description','Meta description',[
+            'class' => 'form-control',
+            'value' => $post->meta_description ?? ''
+        ]);
+
+        $form->setSelect('category_id','Category',
+        model('category')->get(), 
+        [
+            'class' => 'form-control',
+            'value' => $post->category_id ?? ''
+        ]);
+
+        $form->setSelect('tag_id','Tags',
+        model('tag')->get(), 
+        [
+            'class' => 'form-control',
+            'multiple' => 'multiple',
+            'value' => $post ? $post->pluck('tags.id') ?? [] : []
+        ]);
+
+        return $form;
     }
 
     public function getFilteredPosts()

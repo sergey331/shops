@@ -4,6 +4,10 @@
     gap: 20px;
 }
 
+.form-html .form-actions {
+    grid-column: span 3;
+}
+
 .errors {
     color: #EF9A9A;
     list-style: none;

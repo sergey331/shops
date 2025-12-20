@@ -26,13 +26,13 @@ class PostController extends BaseController
     public function create(): void
     {
         $this->view()->load('Admin.Post.Create', [
-            'tags' => model('tag')->get(),
-            'categories' => model('category')->get(),
+            'form' => $this->postsService->getForms('/admin/posts/store')
         ], 'admin');
     }
 
     public function store(): void
     {
+        
         if (!$this->postsService->store()) {
             $this->redirect()->back();
             return;
@@ -42,13 +42,11 @@ class PostController extends BaseController
 
     public function edit(Post $post)
     {
+        
         $post->with(['tags']);
 
         $this->view()->load('Admin.Post.Edit', [
-            'post' => $post,
-            'tags' => model('tag')->get(),
-            'categories' => model('category')->get(),
-            'selectedTagsId' => $post->pluck('tags.id')
+             'form' => $this->postsService->getForms("/admin/posts/{$post->id}",$post)
         ], 'admin');
     }
 

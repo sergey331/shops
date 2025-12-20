@@ -67,7 +67,7 @@ class FormHtml
 
         return $html . '
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-inverse-primary me-2">Submit</button>
             </div>
         </form>';
     }
@@ -140,10 +140,21 @@ class FormHtml
         array $attrs,
         array $options
     ): string {
-        $valueKey  = $attrs['option_value'] ?? 'id';
-        $labelKey  = $attrs['option_label'] ?? 'name';
-        $selected  = $attrs['value'] ?? null;
-        $default   = $attrs['option_default_label'] ?? '';
+        $valueKey = $attrs['option_value'] ?? 'id';
+        $labelKey = $attrs['option_label'] ?? 'name';
+        $default  = $attrs['option_default_label'] ?? '';
+
+        $selected = $attrs['value'] ?? null;
+        $isMultiple = !empty($attrs['multiple']);
+
+        // Normalize selected values
+        if ($selected === null) {
+            $selectedValues = [];
+        } elseif (is_array($selected)) {
+            $selectedValues = array_map('strval', $selected);
+        } else {
+            $selectedValues = [(string)$selected];
+        }
 
         unset(
             $attrs['option_value'],
@@ -154,13 +165,23 @@ class FormHtml
 
         $attrs = array_merge([
             'id'   => $name,
-            'name' => $name,
+            'name' => $isMultiple ? $name . '[]' : $name,
         ], $attrs);
 
-        $optionsHtml = '<option value="">' . htmlspecialchars($default) . '</option>';
+        $optionsHtml = '';
 
-        foreach ($options as $option) {
-            if (is_array($option)) {
+        // Default option only for single select
+        if (!$isMultiple && $default !== '') {
+            $optionsHtml .= '<option value="">' .
+                htmlspecialchars($default, ENT_QUOTES) .
+                '</option>';
+        }
+
+        foreach ($options as $key =>  $option) {
+            if (is_scalar($option)) {
+                $value = $key;
+                $text  = $option;
+            } elseif (is_array($option)) {
                 $value = $option[$valueKey] ?? null;
                 $text  = $option[$labelKey] ?? null;
             } elseif (is_object($option)) {
@@ -174,11 +195,15 @@ class FormHtml
                 continue;
             }
 
-            $isSelected = ((string)$value === (string)$selected) ? ' selected' : '';
+            $valueStr = (string)$value;
+
+            $isSelected = in_array($valueStr, $selectedValues, true)
+                ? ' selected'
+                : '';
 
             $optionsHtml .= sprintf(
                 '<option value="%s"%s>%s</option>',
-                htmlspecialchars((string)$value, ENT_QUOTES),
+                htmlspecialchars($valueStr, ENT_QUOTES),
                 $isSelected,
                 htmlspecialchars((string)$text, ENT_QUOTES)
             );
