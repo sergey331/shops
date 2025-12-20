@@ -25,10 +25,24 @@ class BookController extends BaseController
 
     public function create()
     {
+
+        $forms = $this->productService->getForms();
+
+
+        $tags = $this->model('Tag')->get();
         $this->view()->load('Admin.Book.Create',[
             'languages' => $this->model('Language')->get(),
             'publishers' => $this->model('Publisher')->get(),
             'authors' => $this->model('Author')->get(),
+            'statuses' => ['draft','published','archived'],
+            'categories' => $this->model('Category')->get(),
+            'tags' => $tags,
+            'forms' => $forms
         ], 'admin');
+    }
+
+    public function store() 
+    {
+
     }
 }

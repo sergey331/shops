@@ -17,6 +17,7 @@
     <link rel="stylesheet" type="text/css" href="/assets/js/select.dataTables.min.css">
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
     <!-- endinject -->
     <link rel="shortcut icon" href="/assets/images/favicon.png"/>
 </head>

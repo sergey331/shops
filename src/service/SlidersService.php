@@ -3,10 +3,11 @@
 namespace Shop\service;
 
 use Kernel\File\File;
-use Kernel\Table\Table;
-use Kernel\Validator\Validator;
+use Kernel\Form\Form;
 use Shop\model\Slider;
+use Kernel\Table\Table;
 use Shop\rules\SliderRules;
+use Kernel\Validator\Validator;
 
 class SlidersService
 {
@@ -17,6 +18,29 @@ class SlidersService
             'sliders' => $sliders,
             'tableData' => $this->getTableData($sliders)
         ];
+    }
+
+    public function getForms($url,?Slider $slider = null) 
+    {
+        $errors = session()->getCLean('errors') ?? [];
+        $form  = new Form($url,'POST', ['enctype' => 'multipart/form-data'],$errors);
+        $form->setInput('title','Title',[
+            'class' => 'form-control',
+            'value' => $slider->title ?? ''
+        ]);
+        $form->setTextarea('content','Content',[
+            'class' => 'form-control',
+            'value' => $slider->content ?? ''
+        ]);
+        $form->setFile('image_url','Image',[
+            'class' => 'form-control'
+        ]);
+        $form->setCheckbox('is_show','Show',[
+            'class' => 'form-check-input',
+            'checked' => (bool) $slider->is_show,
+            'value' => 1
+        ]);
+        return $form;
     }
 
     public function store()

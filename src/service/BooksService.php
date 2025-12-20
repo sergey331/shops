@@ -2,6 +2,7 @@
 
 namespace Shop\service;
 
+use Kernel\Form\Form;
 use Kernel\Table\Table;
 
 class BooksService
@@ -13,6 +14,24 @@ class BooksService
             'books' => $books,
             'tableData' => $this->getTableData($books)
         ];
+    }
+
+    public function getForms() 
+    {
+        $errors = session()->getCLean('errors') ?? [];
+        $form  = new Form('/books/store','POST', ['enctype' => 'multipart/form-data',"class" => 'form-html'],$errors);
+        $form->setInput('title','Title',[
+            'class' => 'form-control'
+        ]);
+        $form->setInput('slug','Slug',[
+            'class' => 'form-control',
+        ]);
+
+        $form->setSelect('publisher_id', 'Publisher',model('Publisher')->get(),[
+            'class' => 'form-control',
+            'option_default_label' => "Select Publishor"
+        ]);
+        return $form;
     }
 
     private function getTableData($books)

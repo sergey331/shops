@@ -27,8 +27,9 @@ class SlidersController extends BaseController
 
     public function create(): void
     {
-
-        $this->view()->load('Admin.Sliders.Create', [], 'admin');
+        $this->view()->load('Admin.Sliders.Create', [
+            'form' => $this->slidersService->getForms('/admin/sliders/store')
+        ], 'admin');
     }
 
     public function store(): void
@@ -43,7 +44,7 @@ class SlidersController extends BaseController
     public function edit(Slider $slider)
     {
         $this->view()->load('Admin.Sliders.Edit', [
-            'slider' => $slider
+            'form' => $this->slidersService->getForms("/admin/sliders/{$slider->id}",$slider)
         ], 'admin');
     }
 
