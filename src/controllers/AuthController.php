@@ -29,8 +29,9 @@ class AuthController extends BaseController
 
         $email = $this->request()->input('email');
         $password = $this->request()->input('password');
+        $remember = $this->request()->input('remember') ?? false;
 
-        if (!$this->auth()->attempt($email, $password)) {
+        if (!$this->auth()->attempt($email, $password, $remember)) {
             $this->redirect()->back();
         }
 

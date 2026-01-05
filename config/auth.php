@@ -4,5 +4,6 @@
         "session_key" => "user_id",
         'user_name' => 'email',
         'user_model' => 'user',
-        'error_key' => 'login_error'
+        'error_key' => 'login_error',
+        'session_expire' => 3600,
     ];

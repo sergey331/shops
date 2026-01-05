@@ -4,7 +4,7 @@ namespace Kernel\Auth\interface;
 
 interface AuthInterface
 {
-    public function attempt(string $email, string $password): bool;
+    public function attempt(string $email, string $password,bool $remember): bool;
 
     public function isAdmin();
 

@@ -13,6 +13,7 @@ class User extends Model
         'email',
         'password',
         'avatar',
-        'is_admin'
+        'is_admin',
+        'remember_token'
     ];
 }

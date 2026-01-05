@@ -2,6 +2,7 @@
 
 use Kernel\Auth\Auth;
 use Kernel\Container\Container;
+use Kernel\Cookie\Cookie;
 use Kernel\Redirect\Redirect;
 use Kernel\Request\Request;
 use Kernel\Session\Session;
@@ -27,6 +28,11 @@ function request(): Request
 function session(): Session
 {
     return container()->get('session');
+}
+
+function cookie(): Cookie
+{
+    return container()->get('cookie');
 }
 
 /**

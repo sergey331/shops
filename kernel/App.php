@@ -11,12 +11,14 @@ use Kernel\Route\RouteAction;
 use Kernel\Route\Routers;
 use Kernel\Session\Session;
 use Kernel\View\View;
+use Kernel\Cookie\Cookie;
 
 $container = new Container();
 
 // Core services
 $container->set('request', fn() => new Request($_GET, $_POST, $_FILES, $_SERVER));
 $container->set('session', fn() => new Session());
+$container->set('cookie', fn() => new Cookie());
 $container->set('redirect', fn() => new Redirect());
 $container->set('db', fn() => new DbModel());
 $container->set('config', fn() => new Config());

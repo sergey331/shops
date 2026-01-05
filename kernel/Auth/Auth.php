@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Kernel\Auth;
 
@@ -8,85 +8,169 @@ use Kernel\Hash\Hash;
 
 class Auth implements AuthInterface
 {
-    public function __construct()
-    {   
-    }
-
     /**
-     * @throws Exception
+     * Attempt to login user
      */
-    public function attempt(string $email, string $password): bool
+    public function attempt(string $email, string $password, bool $remember): bool
     {
-        $model_name = $this->getModelName();
-        $user_name = $this->getUserName();
-        $user = model($model_name)->where([$user_name => $email])->first();
+        $model = $this->getModelName();
+        $usernameField = $this->getUserName();
 
-        $error_key = $this->error_key();
+        $user = model($model)->where([$usernameField => $email])->first();
+
         if (!$user) {
-            session()->set($error_key,"Email is incorrect");
+            session()->set($this->error_key(), 'Email is incorrect');
             return false;
         }
 
         if (!Hash::verify($password, $user->password)) {
-            session()->set($error_key,"Password is incorrect");
-            return  false;
+            session()->set($this->error_key(), 'Password is incorrect');
+            return false;
         }
 
-        $session_key = $this->session_key();
-        session()->set($session_key, $user->id);
-        session()->set('login_success',"Login successfully");
+        // Store session
+        session()->set($this->session_key(), $user->id);
+
+        // Remember me
+        if ($remember) {
+            $this->setRememberToken($user->id);
+        }
+
+        session()->set('login_success', 'Login successfully');
         return true;
     }
 
-    public function isAdmin()
+    /**
+     * Check authentication (session OR remember token)
+     */
+    public function check(): bool
     {
-        return $this->user()->is_admin;
+        if (session()->has($this->session_key())) {
+            return true;
+        }
+
+        if (cookie()->has('remember_token')) {
+            return $this->loginViaRememberToken();
+        }
+
+        return false;
     }
 
-    public function check() 
+    /**
+     * Get authenticated user ID
+     */
+    public function id(): ?int
     {
-        $session_key = $this->session_key();
-        return session()->has($session_key);
+        return session()->get($this->session_key());
     }
 
-    public function id() 
+    /**
+     * Get authenticated user model
+     */
+    public function user()
     {
-        $session_key = $this->session_key();
-        return session()->get($session_key);
-    }
-
-    public function user() 
-    {
-        if (!$this->check())
+        if (!$this->check()) {
             return null;
+        }
 
-        $user_model = $this->getModelName();
-        return model($user_model)->find($this->id());
+        return model($this->getModelName())->find($this->id());
     }
 
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        $user = $this->user();
+        return $user ? (bool)$user->is_admin : false;
+    }
+
+    /**
+     * Logout user
+     */
     public function logout(): void
     {
-        $session_key = $this->session_key();
-        session()->remove($session_key);
+        if ($this->check()) {
+            model($this->getModelName())
+                ->where(['id' => $this->id()])
+                ->update(['remember_token' => null]);
+        }
+
+        session()->remove($this->session_key());
+        cookie()->remove('remember_token');
     }
 
-    private function  getModelName()
+    /* ==========================================================
+       REMEMBER TOKEN LOGIC
+       ========================================================== */
+
+    /**
+     * Create and store remember token
+     */
+    private function setRememberToken(int $userId): void
     {
-        return config('auth.model','user');
+        $token = bin2hex(random_bytes(32));
+        $hashedToken = hash('sha256', $token);
+
+        model($this->getModelName())
+            ->where(['id' => $userId])
+            ->update(['remember_token' => $hashedToken]);
+
+        cookie()->set(
+            'remember_token',
+            $token,
+            30 * 24 * 3600, // 30 days
+            '/',
+            '',
+            true,  // secure
+            true   // httponly
+        );
     }
 
-    private function getUserName()
+    /**
+     * Restore session using remember token
+     */
+    private function loginViaRememberToken(): bool
     {
-        return config('auth.user_name','email');
+        $token = cookie()->get('remember_token');
+        if (!$token) {
+            return false;
+        }
+
+        $user = model($this->getModelName())
+            ->where(['remember_token' => hash('sha256', $token)])
+            ->first();
+
+        if (!$user) {
+            cookie()->remove('remember_token');
+            return false;
+        }
+
+        session()->set($this->session_key(), $user->id);
+        return true;
     }
 
-    private function session_key()
+    /* ==========================================================
+       CONFIG HELPERS
+       ========================================================== */
+
+    private function getModelName(): string
     {
-        return config('auth.session_key','user_id');
-    }
-    private function error_key()
-    {
-        return config('auth.error_key','login_error');
+        return config('auth.model', 'user');
     }
 
+    private function getUserName(): string
+    {
+        return config('auth.user_name', 'email');
+    }
+
+    private function session_key(): string
+    {
+        return config('auth.session_key', 'user_id');
+    }
+
+    private function error_key(): string
+    {
+        return config('auth.error_key', 'login_error');
+    }
 }
