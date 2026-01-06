@@ -2,41 +2,34 @@
 
 namespace Kernel\Auth;
 
-use Exception;
 use Kernel\Auth\interface\AuthInterface;
 use Kernel\Hash\Hash;
 
 class Auth implements AuthInterface
 {
+    private ?object $cachedUser = null;
+
     /**
      * Attempt to login user
      */
-    public function attempt(string $email, string $password, bool $remember): bool
+    public function attempt(string $email, string $password, bool $remember = false): bool
     {
-        $model = $this->getModelName();
-        $usernameField = $this->getUserName();
-
-        $user = model($model)->where([$usernameField => $email])->first();
+        $user = $this->findUserByUsername($email);
 
         if (!$user) {
-            session()->set($this->error_key(), 'Email is incorrect');
-            return false;
+            return $this->fail('Email is incorrect');
         }
 
         if (!Hash::verify($password, $user->password)) {
-            session()->set($this->error_key(), 'Password is incorrect');
-            return false;
+            return $this->fail('Password is incorrect');
         }
 
-        // Store session
-        session()->set($this->session_key(), $user->id);
-
-        // Remember me
-        if ($remember) {
-            $this->setRememberToken($user->id);
-        }
+        $remember
+            ? $this->setRememberToken($user->id)
+            : session()->set($this->sessionKey(), $user->id);
 
         session()->set('login_success', 'Login successfully');
+
         return true;
     }
 
@@ -45,15 +38,11 @@ class Auth implements AuthInterface
      */
     public function check(): bool
     {
-        if (session()->has($this->session_key())) {
+        if (session()->has($this->sessionKey())) {
             return true;
         }
 
-        if (cookie()->has('remember_token')) {
-            return $this->loginViaRememberToken();
-        }
-
-        return false;
+        return cookie()->has('remember_token') && $this->loginViaRememberToken();
     }
 
     /**
@@ -61,19 +50,26 @@ class Auth implements AuthInterface
      */
     public function id(): ?int
     {
-        return session()->get($this->session_key());
+        return $this->check()
+            ? session()->get($this->sessionKey())
+            : null;
     }
 
     /**
      * Get authenticated user model
      */
-    public function user()
+    public function user(): ?object
     {
-        if (!$this->check()) {
+        if ($this->cachedUser !== null) {
+            return $this->cachedUser;
+        }
+
+        $id = $this->id();
+        if (!$id) {
             return null;
         }
 
-        return model($this->getModelName())->find($this->id());
+        return $this->cachedUser = model($this->model())->find($id);
     }
 
     /**
@@ -81,8 +77,7 @@ class Auth implements AuthInterface
      */
     public function isAdmin(): bool
     {
-        $user = $this->user();
-        return $user ? (bool)$user->is_admin : false;
+        return (bool)($this->user()->is_admin ?? false);
     }
 
     /**
@@ -90,54 +85,44 @@ class Auth implements AuthInterface
      */
     public function logout(): void
     {
-        if ($this->check()) {
-            model($this->getModelName())
-                ->where(['id' => $this->id()])
+        if ($id = $this->id()) {
+            model($this->model())
+                ->where(['id' => $id])
                 ->update(['remember_token' => null]);
         }
 
-        session()->remove($this->session_key());
+        session()->remove($this->sessionKey());
         cookie()->remove('remember_token');
+        $this->cachedUser = null;
     }
 
-    /* ==========================================================
-       REMEMBER TOKEN LOGIC
-       ========================================================== */
-
-    /**
-     * Create and store remember token
-     */
     private function setRememberToken(int $userId): void
     {
         $token = bin2hex(random_bytes(32));
-        $hashedToken = hash('sha256', $token);
 
-        model($this->getModelName())
+        model($this->model())
             ->where(['id' => $userId])
-            ->update(['remember_token' => $hashedToken]);
+            ->update([
+                'remember_token' => hash('sha256', $token)
+            ]);
 
         cookie()->set(
             'remember_token',
             $token,
-            30 * 24 * 3600, // 30 days
-            '/',
-            '',
-            true,  // secure
-            true   // httponly
+            $this->expireTime(),
+            '/'
         );
     }
 
-    /**
-     * Restore session using remember token
-     */
     private function loginViaRememberToken(): bool
     {
         $token = cookie()->get('remember_token');
+
         if (!$token) {
             return false;
         }
 
-        $user = model($this->getModelName())
+        $user = model($this->model())
             ->where(['remember_token' => hash('sha256', $token)])
             ->first();
 
@@ -146,31 +131,47 @@ class Auth implements AuthInterface
             return false;
         }
 
-        session()->set($this->session_key(), $user->id);
+        session()->set($this->sessionKey(), $user->id);
+        $this->cachedUser = $user;
+
         return true;
     }
 
-    /* ==========================================================
-       CONFIG HELPERS
-       ========================================================== */
+    private function findUserByUsername(string $value): ?object
+    {
+        return model($this->model())
+            ->where([$this->usernameField() => $value])
+            ->first();
+    }
 
-    private function getModelName(): string
+    private function fail(string $message): bool
+    {
+        session()->set($this->errorKey(), $message);
+        return false;
+    }
+
+    private function model(): string
     {
         return config('auth.model', 'user');
     }
 
-    private function getUserName(): string
+    private function usernameField(): string
     {
         return config('auth.user_name', 'email');
     }
 
-    private function session_key(): string
+    private function sessionKey(): string
     {
         return config('auth.session_key', 'user_id');
     }
 
-    private function error_key(): string
+    private function errorKey(): string
     {
         return config('auth.error_key', 'login_error');
+    }
+
+    private function expireTime(): int
+    {
+        return (int) config('auth.session_expire', 2592000);
     }
 }

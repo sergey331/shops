@@ -30,7 +30,9 @@ class CategoryController extends BaseController
     public function create(): void
     {
 
-        $this->view()->load('Admin.Category.Create', [], 'admin');
+        $this->view()->load('Admin.Category.Create', [
+            'form' => $this->categoryService->getForms('/admin/categories/store')
+        ], 'admin');
     }
 
     public function store(): void
@@ -45,7 +47,7 @@ class CategoryController extends BaseController
     public function edit(Category $category)
     {
         $this->view()->load('Admin.Category.Edit', [
-            'category' => $category
+            'form' => $this->categoryService->getForms("/admin/categories/{$category->id}",$category)
         ], 'admin');
     }
 

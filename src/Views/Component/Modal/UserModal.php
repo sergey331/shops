@@ -60,7 +60,7 @@
                                 <!-- Remember Me + Forgot -->
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center">
-                                        <input id="remember" type="checkbox" class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300
+                                        <input id="remember" name="remember" value="1" type="checkbox" class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300
                      rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800
                      dark:bg-gray-700 dark:border-gray-600">
                                         <label for="remember" class="ml-2 text-sm text-gray-600 dark:text-gray-400">Remember me</label>

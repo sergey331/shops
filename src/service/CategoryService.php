@@ -3,10 +3,11 @@
 namespace Shop\service;
 
 use Kernel\File\File;
+use Kernel\Form\Form;
 use Kernel\Table\Table;
-use Kernel\Validator\Validator;
 use Shop\model\Category;
 use Shop\rules\CategoryRules;
+use Kernel\Validator\Validator;
 
 class CategoryService
 {
@@ -14,6 +15,28 @@ class CategoryService
     {
         $data = model('category')->paginate();
         return ['tableData' => $this->getTableData($data),'categories' => $data];
+    }
+
+    public function getForms($url, ?Category $category = null) 
+    {
+        
+        $errors = session()->getCLean('errors') ?? [];
+        $form  = new Form($url,'POST', ['enctype' => 'multipart/form-data'],$errors);
+        $form->setInput('name','Name', [
+            'class' => 'form-control',
+            'value' => $category->name ?? ''
+        ]);
+        $form->setInput('description','Description', [
+            'class' => 'form-control',
+            'value' => $category->description ?? ''
+        ]);
+        
+
+        $form->setFile('logo','Logo', [
+            'class' => 'form-control',
+        ]);
+
+        return $form;
     }
 
     public function store()

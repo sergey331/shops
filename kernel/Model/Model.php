@@ -169,7 +169,9 @@ class Model extends Connection implements ModelInterface
 
         $values = array_values($this->newData);
         if ($update) {
-            $this->where(['id' => $this->id]);
+            if ($this->id) {
+             $this->where(['id' => $this->id]);   
+            }
             $this->modelWhere->resolve();
             $query = $this->queryBuilder->getUpdateQuery($this->table, $this->newData, $this->modelWhere->getWhereQuery());
 
