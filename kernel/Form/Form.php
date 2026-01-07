@@ -1,7 +1,11 @@
 <?php 
 namespace Kernel\Form;
+
+use Closure;
+
 class Form {
     private FormFields $formFields;
+    private FormStepe $formStepe;
 
     public function __construct(
         private string $path,
@@ -11,6 +15,15 @@ class Form {
     )
     {
         $this->formFields = new FormFields();
+        $this->formStepe = new FormStepe();
+    }
+
+    public function stepe($title, Closure $callback ) 
+    {
+        $callback($this);
+        $this->formStepe->setSteps($title,$this->formFields->getFields());
+        $this->formFields->clearFields();
+        return $this;
     }
 
     public function setInput(string $name,string $label, array $attrs = []) 
@@ -19,6 +32,17 @@ class Form {
         return $this;
     } 
 
+    public function setNumber(string $name,string $label, array $attrs = []) 
+    {
+        $this->formFields->setField(FormFields::FIELD_NUMBER,$name,$label,$attrs);
+        return $this;
+    } 
+
+    public function setDate(string $name,string $label, array $attrs = []) 
+    {
+        $this->formFields->setField(FormFields::FIELD_DATE,$name,$label,$attrs);
+        return $this;
+    } 
     public function setTextarea(string $name,string $label, array $attrs = []) 
     {
         $this->formFields->setField(FormFields::FIELD_TEXTAREA,$name,$label,$attrs);
@@ -64,7 +88,7 @@ class Form {
     public function render() 
     {
         $formHtml = new FormHtml($this->path,$this->method, $this->attrs);
-
+        $formHtml->setFormSteps($this->formStepe->getSteps());
         $formHtml->setFormFields($this->formFields->getFields());
         $formHtml->setErrors($this->errors);
 

@@ -20,6 +20,9 @@
     <link rel="stylesheet" href="/assets/css/admin.css">
     <!-- endinject -->
     <link rel="shortcut icon" href="/assets/images/favicon.png"/>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
 </head>
 <body class="with-welcome-text">
     <div class="container-fluid page-body-wrapper">

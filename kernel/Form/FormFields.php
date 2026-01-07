@@ -6,12 +6,14 @@ use Exception;
 class FormFields 
 {
     public const FIELD_INPUT = 'input';
+    public const FIELD_NUMBER = 'number';
     public const FIELD_TEXTAREA = 'textarea';
     public const FIELD_CHECBOX = 'checkbox';
     public const FIELD_SELECT = 'select';
     public const FIELD_RADIO = 'radio';
     public const FIELD_FILE = 'file';
     public const FIELD_EMAIL = 'email';
+    public const FIELD_DATE = 'date';
     public const FIELD_PASSWORD = 'password';
     const ALLOWED_TYPE = [
         'input',
@@ -21,7 +23,9 @@ class FormFields
         'radio',
         'file',
         'email',
-        'password'
+        'password',
+        'number',
+        'date'
     ];
     private array $fields = [];
 
@@ -43,5 +47,10 @@ class FormFields
     public function getFields(): array 
     {
         return $this->fields;
+    }
+
+    public function clearFields() 
+    {
+        $this->fields = [];
     }
 }

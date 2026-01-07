@@ -26,7 +26,7 @@ class BookController extends BaseController
     public function create()
     {
 
-        $forms = $this->productService->getForms();
+        $forms = $this->productService->getForms('/admin/books/create');
 
 
         $tags = $this->model('Tag')->get();
