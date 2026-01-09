@@ -1,11 +1,29 @@
 .form-html {
-    display: grid;
-    grid-template-columns: auto auto auto;
-    gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 600px) {
+  .form-html {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .form-html {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .form-html .form-actions {
-    grid-column: span 3;
+  grid-column: 1 / -1;
+}
+
+.form-html > .form-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
 }
 
 .errors {

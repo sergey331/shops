@@ -2,15 +2,19 @@
 
 namespace Kernel\Request\interface;
 
+use Kernel\File\FileData;
+
 interface RequestInterface
 {
-    public function get($name): null|string|array;
-    public function post($name): null|string|array;
-    public function all(): array;
-    public function input($name): null|string|array;
-    public function getUri(): null|string;
-    public function getMethod(): null|string;
-    public function file($name): null|array;
-    public function hasFile($name): bool;
-    public function has($name): bool;
+    public function get(string $name): string|array|null;
+
+    public function post(string $name): string|array|null;
+
+    public function input(string $name): string|array|null;
+     public function all(): array;
+    public function getUri(): ?string;
+    public function getMethod(): ?string;
+    public function file(string $name): FileData|array|null;
+    public function hasFile(string $name): bool;
+    public function has(string $name): bool;
 }

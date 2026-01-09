@@ -2,55 +2,40 @@
 
 namespace Kernel\Request;
 
-
 use Kernel\Request\interface\RequestInterface;
+use Kernel\File\FileData;
 
 class Request implements RequestInterface
 {
     public function __construct(
-        public array $get,
-        public array $post,
-        public array $files,
-        public array $server,
-    )
-    {
-    }
+        public array $get = [],
+        public array $post = [],
+        public array $files = [],
+        public array $server = []
+    ) {}
 
-    public function get($name): null|string|array
+    /* ==========================
+       BASIC INPUT METHODS
+    ========================== */
+
+    public function get(string $name): string|array|null
     {
         return $this->get[$name] ?? null;
     }
 
-    public function post($name): null|string|array
+    public function post(string $name): string|array|null
     {
         return $this->post[$name] ?? null;
     }
 
-    public function all(): array
+    public function input(string $name): string|array|null
     {
-        $data = array_map(function ($value) {
-            return $value;
-        }, $this->get);
-        foreach ($this->post as $key => $value) {
-            $data[$key] = $value;
-        }
-        foreach ($this->files as $key => $value) {
-            $data[$key] = $value;
-        }
-        return $data;
+        return $this->get[$name]
+            ?? $this->post[$name]
+            ?? null;
     }
 
-    public function input($name): null|string|array
-    {
-        return  $this->get[$name] ?? $this->post[$name] ?? null;
-    }
-
-    public function getUri(): null|string
-    {
-       return strtok($_SERVER['REQUEST_URI'],'?') ?? null;
-    }
-
-    public function has($key): bool
+    public function has(string $key): bool
     {
         return (
             (isset($this->get[$key]) && $this->get[$key] !== '') ||
@@ -58,17 +43,125 @@ class Request implements RequestInterface
         );
     }
 
-    public function getMethod(): null|string
+    public function all(): array
     {
-        return $_SERVER['REQUEST_METHOD'] ?? null;
+        $data = $this->get + $this->post; // combine GET + POST
+
+        foreach ($this->files as $key => $file) {
+            $data[$key] = $this->file($key); // converts to FileData or array of FileData
+        }
+
+        return $data;
     }
 
-    public function file($name): null|array
+
+    /* ==========================
+       REQUEST INFO
+    ========================== */
+
+    public function getUri(): ?string
     {
-        return $this->files[$name] ?? null;
+        return isset($this->server['REQUEST_URI'])
+            ? strtok($this->server['REQUEST_URI'], '?')
+            : null;
     }
-    public function hasFile($name): bool
+
+    public function getMethod(): ?string
     {
-        return isset($_FILES[$name]) && $_FILES[$name]['error'] !== UPLOAD_ERR_NO_FILE;
+        return $this->server['REQUEST_METHOD'] ?? null;
+    }
+
+    /* ==========================
+       FILE HANDLING
+    ========================== */
+
+    public function hasFile(string $name): bool
+    {
+        if (!isset($this->files[$name])) {
+            return false;
+        }
+
+        $files = $this->normalizeFiles($this->files[$name]);
+
+        foreach ($files as $file) {
+            if ($file['error'] !== UPLOAD_ERR_NO_FILE) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns:
+     * - FileData (single file)
+     * - FileData[] (multiple files)
+     * - null (no file)
+     */
+    public function file(string $name): FileData|array|null
+    {
+        if (!isset($this->files[$name])) {
+            return null;
+        }
+
+        $files = $this->normalizeFiles($this->files[$name]);
+
+        $fileObjects = array_map(
+            fn ($file) => new FileData(
+                $file['name'],
+                $file['full_path'] ?? '',
+                $file['type'],
+                $file['tmp_name'],
+                $file['error'],
+                $file['size']
+            ),
+            $files
+        );
+
+        return count($fileObjects) === 1
+            ? $fileObjects[0]
+            : $fileObjects;
+    }
+
+    /**
+     * Always returns an array of FileData
+     */
+    public function files(string $name): array
+    {
+        $result = $this->file($name);
+
+        return $result instanceof FileData
+            ? [$result]
+            : ($result ?? []);
+    }
+
+    /* ==========================
+       INTERNAL HELPERS
+    ========================== */
+
+    /**
+     * Normalize PHP $_FILES structure
+     */
+    private function normalizeFiles(array $file): array
+    {
+        // Single file
+        if (!is_array($file['name'])) {
+            return [$file];
+        }
+
+        $normalized = [];
+
+        foreach ($file['name'] as $index => $name) {
+            $normalized[] = [
+                'name'       => $name,
+                'full_path' => $file['full_path'][$index] ?? '',
+                'type'       => $file['type'][$index],
+                'tmp_name'   => $file['tmp_name'][$index],
+                'error'      => $file['error'][$index],
+                'size'       => $file['size'][$index],
+            ];
+        }
+
+        return $normalized;
     }
 }

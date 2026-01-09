@@ -42,14 +42,14 @@ class File implements FileInterface
         $path = $this->getPath();
 
         // Проверяем, что файл действительно загружен
-        if (empty($file) || !isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+        if (!$file instanceof FileData || !$file->isValid() || !is_uploaded_file($file->tmpName)) {
             $this->error = 'No file uploaded.';
             return false;
         }
 
         // Проверяем MIME тип
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = finfo_file($finfo, $file['tmp_name']);
+        $mime = finfo_file($finfo, $file->tmpName);
         finfo_close($finfo);
 
         $allowedImageTypes = [
@@ -79,10 +79,10 @@ class File implements FileInterface
             return false;
         }
 
-        $safeName = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', basename($file['name']));
+        $safeName = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', basename($file->name));
         $targetPath = $path . $safeName;
 
-        if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+        if (!move_uploaded_file($file->tmpName, $targetPath)) {
             $this->error = 'Failed to move uploaded file.';
             return false;
         }
@@ -118,12 +118,12 @@ class File implements FileInterface
     {
         $file = $this->getFile();
 
-        if (empty($file) || !isset($file['tmp_name']) || !file_exists($file['tmp_name'])) {
+        if (!$file instanceof FileData || !$file->isValid() || !is_uploaded_file($file->tmpName)) {
             return null;
         }
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = finfo_file($finfo, $file['tmp_name']);
+        $mime = finfo_file($finfo, $file->tmpName);
         finfo_close($finfo);
 
         if (str_starts_with($mime, 'image/')) {

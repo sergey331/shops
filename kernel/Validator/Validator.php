@@ -2,6 +2,7 @@
 
 namespace Kernel\Validator;
 
+use Kernel\File\FileData;
 use Kernel\Validator\interface\ValidatorInterface;
 
 class Validator implements ValidatorInterface
@@ -37,7 +38,7 @@ class Validator implements ValidatorInterface
             $isNullable = in_array('nullable', $rules);
             $value = $this->data[$field] ?? null;
 
-            if ($isNullable && ($value === null || $value === '' || (!isset($value['size']) || $value['size'] === 0))) {
+            if ($isNullable && ($value === null || $value === '' || ($value instanceof FileData &&  $value->size === 0))) {
                 continue;
             }
 
@@ -205,12 +206,13 @@ class Validator implements ValidatorInterface
     {
         $file = $this->data[$field] ?? null;
 
-        if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+        if (!$file instanceof FileData || !$file->isValid() || !is_uploaded_file($file->tmpName)) {
             $this->addError($field, "The {$field} must be a valid uploaded image.", $rule);
             return false;
         }
 
-        $check = getimagesize($file['tmp_name']);
+
+        $check = getimagesize($file->tmpName);
         if ($check === false) {
             $this->addError($field, "The {$field} must be a valid image file.", $rule);
             return false;
@@ -223,13 +225,13 @@ class Validator implements ValidatorInterface
     {
         $file = $this->data[$field] ?? null;
 
-        if (!isset($file['type'])) {
+        if (empty($file->type)) {
             $this->addError($field, "The {$field} file type could not be determined.", $rule);
             return false;
         }
 
         $allowed = array_map('strtolower', explode(',', $param));
-        $mime = mime_content_type($file['tmp_name'] ?? '');
+        $mime = mime_content_type($file->tmpName ?? '');
 
         $map = [
             'jpeg' => 'image/jpeg',

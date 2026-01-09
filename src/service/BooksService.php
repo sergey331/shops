@@ -21,26 +21,25 @@ class BooksService
     {
         $errors = session()->getCLean('errors') ?? [];
         $form  = new Form($url,'POST', ['enctype' => 'multipart/form-data',"class" => 'form-html'],$errors);
-        $form->stepe('general', callback: function ($f){
-            $f->setInput('title','Title',[
-                'class' => 'form-control',
-                'value' => $book->title ?? ''
-            ]);
-            $f->setInput('slug','Slug',[
-                'class' => 'form-control',
-                'value' => $book->slug ?? ''
-            ]);
-        });
-        $form->stepe('price', callback: function ($f){
-            $f->setNumber('price','Price',[
-                'class' => 'form-control',
-                'value' => $book->price ?? ''
-            ]);
-            $f->setNumber('discount_price','Discount Price',[
+        
+        $form->setInput('title','Title',[
+            'class' => 'form-control',
+            'value' => $book->title ?? ''
+        ]);
+        $form->setInput('slug','Slug',[
+            'class' => 'form-control',
+            'value' => $book->slug ?? ''
+        ]);
+        
+        $form->setNumber('price','Price',[
+            'class' => 'form-control',
+            'value' => $book->price ?? ''
+        ]);
+        $form->setNumber('discount_price','Discount Price',[
             'class' => 'form-control',
             'value' => $book->discount_price ?? ''
         ]);
-        });
+      
         $form->setInput('isbn','Isbn',[
             'class' => 'form-control',
             'value' => $book->isbn ?? ''
@@ -55,6 +54,12 @@ class BooksService
         $form->setFile('cover_image','Cover Image',[
             'class' => 'form-control'
         ]);
+
+         $form->setFile('images','Images',[
+            'class' => 'form-control',
+            'multiple' => 'multiple',
+        ]);
+
         $form->setTextarea('description','Description',[
             'class' => 'form-control',
             'value' => $book->description ?? ''
@@ -66,9 +71,50 @@ class BooksService
             'value' => $book->publisher_id ?? ''
         ]);
 
+        $form->setSelect('language_id', 'Language',model('Language')->get(),[
+            'class' => 'form-control',
+            'option_default_label' => "Select Language",
+            'value' => $book->language_id ?? ''
+        ]);
+
+        $form->setSelect('status', 'Status',
+        [
+            'draft' => "Draft",
+            'published' => "Published",
+            'archived' => "Archived"
+        ],[
+            'class' => 'form-control',
+            'option_default_label' => "Set Status",
+            'value' => $book->publisher_id ?? ''
+        ]);
+
          $form->setDate('publication_date','Publication Date',[
             'class' => 'form-control',
             'value' => $book->publication_date ?? ''
+        ]);
+
+        $form->setSelect('author_id','Author',
+        model('Author')->get(), 
+        [
+            'class' => 'form-control',
+            'multiple' => 'multiple',
+            'value' => $book ? $book->pluck('authors.id') ?? [] : []
+        ]);
+
+        $form->setSelect('category_id','Categories',
+        model('category')->get(), 
+        [
+            'class' => 'form-control',
+            'multiple' => 'multiple',
+            'value' => $book ? $book->pluck('categories.id') ?? [] : []
+        ]);
+
+        $form->setSelect('tag_id','Tags',
+        model('tag')->get(), 
+        [
+            'class' => 'form-control',
+            'multiple' => 'multiple',
+            'value' => $book ? $book->pluck('tags.id') ?? [] : []
         ]);
 
         $form->setCheckbox('stock','Stock',[
@@ -76,6 +122,13 @@ class BooksService
             'checked' => isset($book->stock) ? (bool)$book->stock : '',
             'value' => 1
         ]);
+
+        $form->setCheckbox('featured','Featured',[
+            'class' => 'form-check-input',
+            'checked' => isset($book->featured) ? (bool)$book->featured : '',
+            'value' => 1
+        ]);
+        
         return $form;
     }
 

@@ -26,8 +26,7 @@ class BookController extends BaseController
     public function create()
     {
 
-        $forms = $this->productService->getForms('/admin/books/create');
-
+        $forms = $this->productService->getForms('/admin/books/store');
 
         $tags = $this->model('Tag')->get();
         $this->view()->load('Admin.Book.Create',[
@@ -43,6 +42,6 @@ class BookController extends BaseController
 
     public function store() 
     {
-
+        dd($this->request()->file('cover_image')->name);
     }
 }
