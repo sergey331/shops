@@ -3,13 +3,11 @@
 namespace Shop\service;
 
 use Exception;
-use Kernel\File\File;
+use Kernel\Service\BaseService;
 use Kernel\Validator\Validator;
-use Shop\model\Slider;
 use Shop\rules\AboutRules;
-use Shop\rules\SliderRules;
 
-class AboutService
+class AboutService extends BaseService
 {
     public function getAbout()
     {
@@ -31,7 +29,7 @@ class AboutService
             return false;
         }
 
-        $data = $this->handleImageUpload($data);
+        $data = $this->handleImageUpload("media_path",APP_PATH . '/public/uploads/about/',$data);
 
         if ($about) {
             $about->update($data);
@@ -41,29 +39,5 @@ class AboutService
 
         session()->set('success', 'created');
         return true;
-    }
-
-
-    /**
-     * @throws Exception
-     */
-    private function handleImageUpload(array $data): array
-    {
-
-        if (request()->hasFile('media_path')) {
-            $uploader = new File();
-            $uploader->setFile(request()->file('media_path'));
-            $uploader->setPath(APP_PATH . '/public/uploads/about/');
-
-            if ($uploader->upload()) {
-                $data['media_path'] = $uploader->getName();
-                $data['media_type'] = $uploader->getFileCategory() ?? 'image';
-            }
-        } else {
-            if (isset($data['media_path'])) {
-                unset($data['media_path']);
-            }
-        }
-        return $data;
     }
 }

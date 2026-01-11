@@ -2,11 +2,15 @@
 
 namespace Shop\service;
 
+use Kernel\Databases\DB;
+use Kernel\Service\BaseService;
+use Shop\model\Book;
 use Kernel\Form\Form;
 use Kernel\Table\Table;
-use Shop\model\Book;
+use Kernel\Validator\Validator;
+use Shop\rules\BookRules;
 
-class BooksService
+class BooksService extends BaseService
 {
     public function getBooks()
     {
@@ -34,10 +38,6 @@ class BooksService
         $form->setNumber('price','Price',[
             'class' => 'form-control',
             'value' => $book->price ?? ''
-        ]);
-        $form->setNumber('discount_price','Discount Price',[
-            'class' => 'form-control',
-            'value' => $book->discount_price ?? ''
         ]);
       
         $form->setInput('isbn','Isbn',[
@@ -119,17 +119,66 @@ class BooksService
 
         $form->setCheckbox('stock','Stock',[
             'class' => 'form-check-input',
-            'checked' => isset($book->stock) ? (bool)$book->stock : '',
+            'checked' => isset($book->stock) ? (bool)$book->stock : false,
             'value' => 1
         ]);
 
         $form->setCheckbox('featured','Featured',[
             'class' => 'form-check-input',
-            'checked' => isset($book->featured) ? (bool)$book->featured : '',
+            'checked' => isset($book->featured) ? (bool)$book->featured : false,
             'value' => 1
         ]);
         
         return $form;
+    }
+
+    public function store() 
+    {
+        $data = request()->all();
+
+        $validator = Validator::make($data, BookRules::rules(), BookRules::messages());
+
+        if (!$validator->validate()) {
+            session()->set('errors', $validator->errors());
+            return false;
+        }
+
+        $data = $this->handleImageUpload('cover_image', APP_PATH . '/public/uploads/books',$data);
+
+        $authors = $data['author_id'];
+        $images = $data['images'];
+        $categories = $data['category_id'];
+        $tags = $data['tag_id'];
+
+        unset($data['author_id']);
+        unset($data['images']);
+        unset($data['category_id']);
+        unset($data['tag_id']);
+
+        $data['stock'] = isset($data['stock']) ? (bool) $data['stock'] : false;
+        $data['featured'] = isset($data['featured']) ? (bool) $data['featured'] : false;
+
+        $book = model('Book')->create($data);
+
+        foreach ($authors as $author) {
+            DB::table('book_author')->create([
+                'book_id' => $book->id,
+                'author_id' => $author
+            ]);
+        }
+        foreach ($categories as $category) {
+            DB::table('book_category')->create([
+                'book_id' => $book->id,
+                'category_id' => $category
+            ]);
+        }
+
+        foreach ($tags as $tag) {
+            DB::table('book_tag')->create([
+                'book_id' => $book->id,
+                'tag_id' => $tag
+            ]);
+        }
     }
 
     private function getTableData($books)

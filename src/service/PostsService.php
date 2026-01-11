@@ -2,8 +2,8 @@
 
 namespace Shop\service;
 
+use Kernel\Service\BaseService;
 use Shop\model\Post;
-use Kernel\File\File;
 use Kernel\Form\Form;
 use Kernel\Table\Table;
 use Shop\rules\PostRules;
@@ -11,7 +11,7 @@ use Kernel\Validator\Validator;
 use Shop\rules\PostUpdateRules;
 use Shop\rules\PostCommentRules;
 
-class PostsService
+class PostsService extends BaseService
 {
     public function getPosts()
     {
@@ -150,7 +150,7 @@ class PostsService
             unset($data['tag_id']);
         }
 
-        $data = $this->handleImageUpload($data);
+        $data = $this->handleImageUpload("image",APP_PATH . '/public/uploads/posts/',$data);
 
         if ($post = model('post')->create($data)) {
             foreach ($tag_ids as $tag_id) {
@@ -184,7 +184,7 @@ class PostsService
 
 
 
-        $data = $this->handleImageUpload($data);
+        $data = $this->handleImageUpload("image",APP_PATH . '/public/uploads/posts/',$data);
         $post->update($data);
 
 
@@ -202,32 +202,11 @@ class PostsService
     public function delete(Post $post)
     {
         if ($post->image) {
-            $file = new File();
-            $file->setPath(APP_PATH . '/public/uploads/posts/');
-            $file->delete($post->image);
+            $this->deleteImage("image",APP_PATH . '/public/uploads/posts/');
         }
         $post->delete();
         session()->set('success', 'deleted');
         return true;
-    }
-
-    private function handleImageUpload(array $data): array
-    {
-
-        if (request()->hasFile('image')) {
-            $uploader = new File();
-            $uploader->setFile(request()->file('image'));
-            $uploader->setPath(APP_PATH . '/public/uploads/posts/');
-
-            if ($uploader->upload()) {
-                $data['image'] = $uploader->getName();
-            }
-        } else {
-            if (isset($data['image'])) {
-                unset($data['image']);
-            }
-        }
-        return $data;
     }
 
     private function getTableData($posts): Table

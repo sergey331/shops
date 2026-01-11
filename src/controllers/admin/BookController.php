@@ -7,16 +7,16 @@ use Shop\service\BooksService;
 
 class BookController extends BaseController
 {
-    private BooksService $productService;
+    private BooksService $bookService;
 
     public function __construct()
     {
-        $this->productService = new BooksService();
+        $this->bookService = new BooksService();
     }
 
     public function index()
     {
-        $data = $this->productService->getBooks();
+        $data = $this->bookService->getBooks();
         $this->view()->load('Admin.Book.Index', [
             'books' => $data['books'],
             'tableData' => $data['tableData'],
@@ -26,22 +26,20 @@ class BookController extends BaseController
     public function create()
     {
 
-        $forms = $this->productService->getForms('/admin/books/store');
-
-        $tags = $this->model('Tag')->get();
+        $forms = $this->bookService->getForms('/admin/books/store');
         $this->view()->load('Admin.Book.Create',[
-            'languages' => $this->model('Language')->get(),
-            'publishers' => $this->model('Publisher')->get(),
-            'authors' => $this->model('Author')->get(),
-            'statuses' => ['draft','published','archived'],
-            'categories' => $this->model('Category')->get(),
-            'tags' => $tags,
             'forms' => $forms
         ], 'admin');
     }
 
     public function store() 
     {
-        dd($this->request()->file('cover_image')->name);
+         if (!$this->bookService->store()) {
+            $this->redirect()->back();
+            return;
+        }
+
+        
+        $this->redirect()->to('/admin/books');
     }
 }

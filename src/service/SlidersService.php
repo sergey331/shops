@@ -2,14 +2,14 @@
 
 namespace Shop\service;
 
-use Kernel\File\File;
 use Kernel\Form\Form;
 use Shop\model\Slider;
 use Kernel\Table\Table;
 use Shop\rules\SliderRules;
 use Kernel\Validator\Validator;
+use Kernel\Service\BaseService;
 
-class SlidersService
+class SlidersService extends BaseService
 {
     public function getSliders()
     {
@@ -54,7 +54,7 @@ class SlidersService
             return false;
         }
 
-        $data = $this->handleImageUpload($data);
+        $data = $this->handleImageUpload('image_url',APP_PATH . '/public/uploads/sliders/',$data);
 
         $data['is_show'] = isset($data['is_show']) ? 1 : 0;
 
@@ -74,7 +74,7 @@ class SlidersService
             return false;
         }
 
-        $data = $this->handleImageUpload($data);
+        $data = $this->handleImageUpload('image_url',APP_PATH . '/public/uploads/sliders/',$data);
         $data['is_show'] = isset($data['is_show']) ? 1 : 0;
         $slider->update($data);
         session()->set('success', 'updated');
@@ -84,32 +84,11 @@ class SlidersService
     public function delete(Slider  $slider)
     {
         if ($slider->image_url) {
-            $file = new File();
-            $file->setPath(APP_PATH . '/public/uploads/sliders/');
-            $file->delete($slider->image_url);
+            $this->deleteImage("image_url",APP_PATH . '/public/uploads/sliders/');
         }
         $slider->delete();
         session()->set('success', 'deleted');
         return true;
-    }
-
-    private function handleImageUpload(array $data): array
-    {
-
-        if (request()->hasFile('image_url')) {
-            $uploader = new File();
-            $uploader->setFile(request()->file('image_url'));
-            $uploader->setPath(APP_PATH . '/public/uploads/sliders/');
-
-            if ($uploader->upload()) {
-                $data['image_url'] = $uploader->getName();
-            }
-        } else {
-            if (isset($data['image_url'])) {
-                unset($data['image_url']);
-            }
-        }
-        return $data;
     }
 
     private function getTableData($sliders): Table

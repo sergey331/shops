@@ -4,12 +4,13 @@ namespace Shop\service;
 
 use Kernel\File\File;
 use Kernel\Form\Form;
+use Kernel\Service\BaseService;
 use Kernel\Table\Table;
 use Shop\model\Category;
 use Shop\rules\CategoryRules;
 use Kernel\Validator\Validator;
 
-class CategoryService
+class CategoryService extends BaseService
 {
     public function getCategories()
     {
@@ -50,7 +51,7 @@ class CategoryService
             return false;
         }
 
-        $data = $this->handleImageUpload($data);
+        $data = $this->handleImageUpload("logo",APP_PATH . '/public/images/categories/',$data);
 
         model('category')->create($data);
 
@@ -68,7 +69,7 @@ class CategoryService
             return false;
         }
 
-        $data = $this->handleImageUpload($data);
+        $data = $this->handleImageUpload("logo",APP_PATH . '/public/images/categories/',$data);
         $category->update($data);
         session()->set('success', 'updated');
         return true;
@@ -77,34 +78,12 @@ class CategoryService
     public function delete(Category $category)
     {
         if ($category->logo) {
-            $file = new File();
-            $file->setPath(APP_PATH . '/public/images/categories/');
-            $file->delete($category->logo);
+            $this->deleteImage("logo",APP_PATH . '/public/images/categories/');
         }
         $category->delete();
         session()->set('success', 'deleted');
         return true;
     }
-
-    private function handleImageUpload(array $data): array
-    {
-
-        if (request()->hasFile('logo')) {
-            $uploader = new File();
-            $uploader->setFile(request()->file('logo'));
-            $uploader->setPath(APP_PATH . '/public/images/categories/');
-
-            if ($uploader->upload()) {
-                $data['logo'] = $uploader->getName();
-            }
-        } else {
-            if (isset($data['logo'])) {
-                unset($data['logo']);
-            }
-        }
-        return $data;
-    }
-
     private function getTableData($categories)
     {
         $table = new Table($categories->data,[
