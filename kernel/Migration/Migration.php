@@ -20,7 +20,7 @@ class Migration
         $this->user = env('DB_USERNAME', 'root');
         $this->pass = env('DB_PASSWORD', '');
         $this->dbName = env('DB_DATABASE', '');
-        $this->migrationDir = __DIR__ . '/../../migration';
+        $this->migrationDir = __DIR__ . '/../../databases/migration';
         $this->db = new Database();
     }
 

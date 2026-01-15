@@ -40,7 +40,7 @@ PHP;
             exit(1);
         }
         $timestamp = date('Y-m-d H-i-s');
-        $filename = __DIR__ . "/../../../migration/{$timestamp}_" . lcfirst($this->name) . ".php";
+        $filename = __DIR__ . "/../../../databases/migration/{$timestamp}_" . lcfirst($this->name) . ".php";
 
         if (file_exists($filename)) {
             echo "Migration file already exists: $filename" . PHP_EOL;

@@ -52,6 +52,11 @@ PHP;
         if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
-        file_put_contents($filename, $this->content);
+        if (file_put_contents($filename, $this->content)) {
+            echo "Controller created successfully: $filename" . PHP_EOL;
+        } else {
+            echo "Failed to write controller file!" . PHP_EOL;
+            exit(1);
+        }
     }
 }

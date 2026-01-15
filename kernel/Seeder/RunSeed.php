@@ -22,7 +22,7 @@ final class RunSeed implements RunSeedInterface
      */
     private function getSeedClasses(): array
     {
-        $dir = __DIR__ . '/../../seeders';
+        $dir = __DIR__ . '/../../databases/seeders';
         $files = glob("{$dir}/*.php") ?: [];
 
         $classes = array_map(

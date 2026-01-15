@@ -40,6 +40,11 @@ PHP;
             echo "Model file already exists: $filename" . PHP_EOL;
             exit(1);
         }
-        file_put_contents($filename, $this->content);
+        if (file_put_contents($filename, $this->content)) {
+            echo "Model created successfully: $filename" . PHP_EOL;
+        } else {
+            echo "Failed to write model file!" . PHP_EOL;
+            exit(1);
+        }
     }
 }

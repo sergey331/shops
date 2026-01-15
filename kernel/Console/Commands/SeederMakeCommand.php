@@ -40,12 +40,17 @@ PHP;
 
 
 
-        $filename = __DIR__ . "/../../seeders/$this->name.php";
+        $filename = __DIR__ . "/../../databases/seeders/$this->name.php";
 
         if (file_exists($filename)) {
             echo "Seeder file already exists: $filename" . PHP_EOL;
             exit(1);
         }
-        file_put_contents($filename, $this->content);
+        if (file_put_contents($filename, $this->content)) {
+            echo "Seeder created successfully: $filename" . PHP_EOL;
+        } else {
+            echo "Failed to write seeder file!" . PHP_EOL;
+            exit(1);
+        }
     }
 }
