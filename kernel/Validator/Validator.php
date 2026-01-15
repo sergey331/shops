@@ -44,7 +44,7 @@ class Validator implements ValidatorInterface
             $value = $this->getValue($field);
 
             $isNullable = in_array('nullable', $rules, true);
-            if ($isNullable && ($value === null || $value === '')) {
+            if ($isNullable && ($value === null || $value === '' || empty($value) || ($value instanceof FileData && !$value->isValid()) )) {
                 continue;
             }
 
@@ -180,47 +180,47 @@ class Validator implements ValidatorInterface
         return true;
     }
 
-   protected function validateMax(string $field, $rule, $param, $value): bool
-{
-    $max = (int) $param;
+    protected function validateMax(string $field, $rule, $param, $value): bool
+    {
+        $max = (int) $param;
 
-    // File upload
-    if ($value instanceof FileData) {
-        if ($value->size > ($max * 1024)) {
-            $this->addError($field, "The {$field} must not be larger than {$max} kilobytes.", $rule);
-            return false;
+        // File upload
+        if ($value instanceof FileData) {
+            if ($value->size > ($max * 1024)) {
+                $this->addError($field, "The {$field} must not be larger than {$max} kilobytes.", $rule);
+                return false;
+            }
+            return true;
         }
+
+        // Array
+        if (is_array($value)) {
+            if (count($value) > $max) {
+                $this->addError($field, "The {$field} must not have more than {$max} items.", $rule);
+                return false;
+            }
+            return true;
+        }
+
+        // Numeric
+        if (is_numeric($value)) {
+            if ($value > $max) {
+                $this->addError($field, "The {$field} must not be greater than {$max}.", $rule);
+                return false;
+            }
+            return true;
+        }
+
+        // String
+        if (is_string($value)) {
+            if (mb_strlen($value) > $max) {
+                $this->addError($field, "The {$field} must not exceed {$max} characters.", $rule);
+                return false;
+            }
+        }
+
         return true;
     }
-
-    // Array
-    if (is_array($value)) {
-        if (count($value) > $max) {
-            $this->addError($field, "The {$field} must not have more than {$max} items.", $rule);
-            return false;
-        }
-        return true;
-    }
-
-    // Numeric
-    if (is_numeric($value)) {
-        if ($value > $max) {
-            $this->addError($field, "The {$field} must not be greater than {$max}.", $rule);
-            return false;
-        }
-        return true;
-    }
-
-    // String
-    if (is_string($value)) {
-        if (mb_strlen($value) > $max) {
-            $this->addError($field, "The {$field} must not exceed {$max} characters.", $rule);
-            return false;
-        }
-    }
-
-    return true;
-}
 
 
     protected function validateBetween(string $field, $rule, $param, $value): bool

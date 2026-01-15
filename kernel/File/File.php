@@ -80,13 +80,13 @@ class File implements FileInterface
         }
 
         $safeName = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', basename($file->name));
-        $targetPath = $path . $safeName;
+        $targetPath = $path . '/' .  $safeName;
 
         if (!move_uploaded_file($file->tmpName, $targetPath)) {
             $this->error = 'Failed to move uploaded file.';
             return false;
         }
-
+        chmod($targetPath, 0777);
         $this->fileName = $safeName;
         return true;
     }

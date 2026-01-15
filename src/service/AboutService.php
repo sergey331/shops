@@ -29,7 +29,7 @@ class AboutService extends BaseService
             return false;
         }
 
-        $data = $this->handleImageUpload("media_path",APP_PATH . '/public/uploads/about/',$data);
+        $data = $this->handleImageUpload("media_path",APP_PATH . '/public/uploads/about',$data);
 
         if ($about) {
             $about->update($data);

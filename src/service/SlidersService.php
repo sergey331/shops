@@ -54,7 +54,7 @@ class SlidersService extends BaseService
             return false;
         }
 
-        $data = $this->handleImageUpload('image_url',APP_PATH . '/public/uploads/sliders/',$data);
+        $data = $this->handleImageUpload('image_url',APP_PATH . '/public/uploads/sliders',$data);
 
         $data['is_show'] = isset($data['is_show']) ? 1 : 0;
 
@@ -74,7 +74,7 @@ class SlidersService extends BaseService
             return false;
         }
 
-        $data = $this->handleImageUpload('image_url',APP_PATH . '/public/uploads/sliders/',$data);
+        $data = $this->handleImageUpload('image_url',APP_PATH . '/public/uploads/sliders',$data);
         $data['is_show'] = isset($data['is_show']) ? 1 : 0;
         $slider->update($data);
         session()->set('success', 'updated');

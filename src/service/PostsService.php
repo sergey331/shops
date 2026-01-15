@@ -150,7 +150,7 @@ class PostsService extends BaseService
             unset($data['tag_id']);
         }
 
-        $data = $this->handleImageUpload("image",APP_PATH . '/public/uploads/posts/',$data);
+        $data = $this->handleImageUpload("image",APP_PATH . '/public/uploads/posts',$data);
 
         if ($post = model('post')->create($data)) {
             foreach ($tag_ids as $tag_id) {
@@ -184,7 +184,7 @@ class PostsService extends BaseService
 
 
 
-        $data = $this->handleImageUpload("image",APP_PATH . '/public/uploads/posts/',$data);
+        $data = $this->handleImageUpload("image",APP_PATH . '/public/uploads/posts',$data);
         $post->update($data);
 
 

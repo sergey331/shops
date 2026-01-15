@@ -51,7 +51,7 @@ class CategoryService extends BaseService
             return false;
         }
 
-        $data = $this->handleImageUpload("logo",APP_PATH . '/public/images/categories/',$data);
+        $data = $this->handleImageUpload("logo",APP_PATH . '/public/images/categories',$data);
 
         model('category')->create($data);
 
@@ -69,7 +69,7 @@ class CategoryService extends BaseService
             return false;
         }
 
-        $data = $this->handleImageUpload("logo",APP_PATH . '/public/images/categories/',$data);
+        $data = $this->handleImageUpload("logo",APP_PATH . '/public/images/categories',$data);
         $category->update($data);
         session()->set('success', 'updated');
         return true;

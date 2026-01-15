@@ -85,7 +85,7 @@ class BooksService extends BaseService
         ],[
             'class' => 'form-control',
             'option_default_label' => "Set Status",
-            'value' => $book->publisher_id ?? ''
+            'value' => $book->status ?? ''
         ]);
 
          $form->setDate('publication_date','Publication Date',[
@@ -179,6 +179,15 @@ class BooksService extends BaseService
                 'tag_id' => $tag
             ]);
         }
+
+        foreach ($images as $image) {
+            $imageName = $this->handleImageUpload($image, APP_PATH . '/public/uploads/books/images');
+            DB::table('book_images')->create([
+                'book_id' => $book->id,
+                'image_path' => $imageName
+            ]);
+        }
+        return true;
     }
 
     private function getTableData($books)
@@ -189,7 +198,7 @@ class BooksService extends BaseService
             "Slug" => ['field' => 'slug'],
             "Description" => ['field' => 'description'],
             "Isbn" => ['field' => 'isbn'],
-            "Language" => ['field' => 'language'],
+            "Language" => ['field' => 'language.name'],
             "Pages" => ['field' => 'pages'],
             "Price" => ['field' => 'price'],
             "Publisher" => ['field' => 'publisher.name'],

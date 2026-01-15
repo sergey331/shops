@@ -2,27 +2,44 @@
 namespace Kernel\Service;
 
 use Kernel\File\File;
+use Kernel\File\FileData;
 use Kernel\Model\interface\ModelInterface;
 
 class BaseService {
-    public function handleImageUpload(string $image_key,string $path, array $data): array
-    {
+   public function handleImageUpload(string|FileData $image, string $path, array $data = []): array|string
+{
+    $file = null;
+    $key  = null;
 
-        if (request()->hasFile($image_key)) {
-            $uploader = new File();
-            $uploader->setFile(request()->file($image_key));
-            $uploader->setPath($path);
+    if ($image instanceof FileData) {
+        $file = $image;
+    } elseif (request()->hasFile($image)) {
+        $file = request()->file($image);
+        $key  = $image;
+    }
 
-            if ($uploader->upload()) {
-                $data[$image_key] = $uploader->getName();
-            }
-        } else {
-            if (isset($data[$image_key])) {
-                unset($data[$image_key]);
-            }
+    if (!$file) {
+        if (is_string($image)) {
+            unset($data[$image]);
         }
         return $data;
     }
+
+    $uploader = new File();
+    $uploader->setFile($file);
+    $uploader->setPath($path);
+
+    if ($uploader->upload()) {
+        if ($key !== null) {
+            $data[$key] = $uploader->getName();
+        } else {
+            $data = $uploader->getName();
+        }
+    }
+
+    return $data;
+}
+
 
     public function deleteImage($key,$path)
     {

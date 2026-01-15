@@ -3,6 +3,7 @@
 namespace Shop\controllers\admin;
 
 use Kernel\Controller\BaseController;
+use Shop\model\Book;
 use Shop\service\BooksService;
 
 class BookController extends BaseController
@@ -41,5 +42,13 @@ class BookController extends BaseController
 
         
         $this->redirect()->to('/admin/books');
+    }
+
+    public function edit(Book $book) 
+    {
+        $forms = $this->bookService->getForms('/admin/books/store',$book);
+        $this->view()->load('Admin.Book.Edit',[
+            'forms' => $forms
+        ], 'admin');
     }
 }

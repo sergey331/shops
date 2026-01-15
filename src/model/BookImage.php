@@ -9,7 +9,6 @@ class BookImage extends Model
 {
     protected string $table = 'book_images';
 
-    protected array $with = ['authors','categories','tags'];
 
     protected array $fillable = [
         'image_path',

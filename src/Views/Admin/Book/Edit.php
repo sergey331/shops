@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title">New Book</h4>
+        <h4 class="card-title">Edit Book</h4>
 
         {{ $forms->render() }}
     </div>
@@ -14,6 +14,5 @@
         todayHighlight: true,
         autoclose: true
       });
-      $("#publication_date").datepicker("setDate", "0");
     }
 </script>

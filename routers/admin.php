@@ -47,5 +47,6 @@ Route::prefix("/admin")->group(function () {
         Route::get('/',[BookController::class,'index']);
         Route::get('/create',[BookController::class,'create']);
         Route::post('/store', [BookController::class,'store']);
+        Route::get('/{book}', [BookController::class,'edit']);
     });
 });

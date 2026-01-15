@@ -12,7 +12,7 @@ class Book extends Model
 {
     protected string $table = 'books';
 
-    protected array $with = ['authors','categories','tags'];
+    protected array $with = ['authors','categories','tags', 'language'];
 
     protected array $fillable = [
         'title',
@@ -32,9 +32,9 @@ class Book extends Model
         'status',
     ];
 
-    public function language(): HasOne   
+    public function language(): BelongsTo   
     {
-        return $this->hasOne(Language::class);
+        return $this->belongsTo(Language::class);
     }
 
     public function publisher(): BelongsTo
