@@ -51,4 +51,11 @@ class BookController extends BaseController
             'forms' => $forms
         ], 'admin');
     }
+
+    public function show(Book $book) 
+    {
+        $this->view()->load('Admin.Book.Show',[
+            'book' => $book
+        ], 'admin');
+    }
 }

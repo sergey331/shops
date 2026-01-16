@@ -13,8 +13,8 @@
     "psr-4": {
       "Shop\\": "src/",
       "Kernel\\": "kernel/",
-      "Migration\\": "migration/",
-      "Seeder\\": "seeders/"
+      "Migration\\": "databases/migration/",
+      "Seeder\\": "databases/seeders/"
     }
   },
   "require": {

@@ -211,6 +211,7 @@ class BooksService extends BaseService
                     return '
                         <a href="/admin/books/'.$id.'" class="btn btn-sm btn-primary">Edit</a>
                         <a href="/admin/books/delete/'.$id.'" class="btn btn-sm btn-danger">Delete</a>
+                        <a href="/admin/books/show/'.$id.'" class="btn btn-sm btn-primary">Show</a>
                     ';
                 },
             ]
