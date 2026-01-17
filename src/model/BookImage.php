@@ -2,10 +2,11 @@
 
 namespace Shop\model;
 
+use JsonSerializable;
 use Kernel\Model\Model;
 use Kernel\Model\Relations\BelongsTo;
 
-class BookImage extends Model
+class BookImage extends Model implements JsonSerializable
 {
     protected string $table = 'book_images';
 
@@ -19,5 +20,10 @@ class BookImage extends Model
     public function book(): BelongsTo   
     {
         return $this->belongsTo(Book::class);
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->data;
     }
 }

@@ -93,7 +93,7 @@ class File implements FileInterface
 
     public function delete($file): bool
     {
-        $path = $this->getPath() . $file;
+        $path = $this->getPath() . '/' . $file;
 
         if (file_exists($path)) {
             unlink($path);

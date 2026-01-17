@@ -84,7 +84,7 @@ class SlidersService extends BaseService
     public function delete(Slider  $slider)
     {
         if ($slider->image_url) {
-            $this->deleteImage("image_url",APP_PATH . '/public/uploads/sliders/');
+            $this->deleteImage($slider->image_url,APP_PATH . '/public/uploads/sliders');
         }
         $slider->delete();
         session()->set('success', 'deleted');

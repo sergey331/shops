@@ -78,7 +78,7 @@ class CategoryService extends BaseService
     public function delete(Category $category)
     {
         if ($category->logo) {
-            $this->deleteImage("logo",APP_PATH . '/public/images/categories/');
+            $this->deleteImage($category->logo,APP_PATH . '/public/images/categories');
         }
         $category->delete();
         session()->set('success', 'deleted');

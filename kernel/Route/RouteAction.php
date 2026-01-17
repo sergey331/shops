@@ -44,21 +44,36 @@ class RouteAction implements RouteActionInterface
     }
 
     $segments = explode('/', trim($url, '/'));
-    $id = end($segments);
+    
+    // numeric values from URL
+    $ids = array_values(array_filter($segments, 'is_numeric'));
 
     foreach ($dynamicRoutes as $router) {
-        preg_match($this->pattern, $router['uri'], $matches);
-        if (!empty($matches)) {
-            // Optional: validate $id format here if needed
-            $router['uri'] = preg_replace($this->pattern, $id, $router['uri']);
-            $param = $this->getParams($matches[1], $id);
-            $router['params'] = array_merge($router['params'], $param);
 
-            if ($router['uri'] === $url) {
-                return $router;
-            }
+        if (!preg_match_all($this->pattern, $router['uri'], $matches)) {
+            continue;
+        }
+
+        if (count($matches[1]) !== count($ids)) {
+            continue;
+        }
+
+        $resolvedUri = $router['uri'];
+
+        foreach ($ids as $id) {
+            $resolvedUri = preg_replace($this->pattern, $id, $resolvedUri, 1);
+        }
+        if ($resolvedUri === $url) {
+            $router['params'] = array_merge(
+                $router['params'] ?? [],
+                $this->getParams($matches[1], $ids)
+            );
+
+            return $router;
         }
     }
+
+
 
     return null;
 }
@@ -80,15 +95,23 @@ class RouteAction implements RouteActionInterface
         return $flat;
     }
 
-    protected function getParams($param,$id)  
+    protected function getParams(array $params, array $ids): array
     {
-        $model = $this->container->get('db')->model($param);
+        $result = [];
 
-        if ($model) {
-            return [$model->find($id)];
+        foreach ($params as $index => $param) {
+            $id = $ids[$index];
+
+            $model = $this->container->get('db')->model($param);
+
+            if ($model) {
+                $result[$param] = $model->find($id);
+            } else {
+                $result[$param] = $id;
+            }
         }
 
-        return [$param => $id];
-
+        return $result;
     }
+
 }

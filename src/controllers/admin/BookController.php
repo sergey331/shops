@@ -4,6 +4,7 @@ namespace Shop\controllers\admin;
 
 use Kernel\Controller\BaseController;
 use Shop\model\Book;
+use Shop\model\BookImage;
 use Shop\service\BooksService;
 
 class BookController extends BaseController
@@ -57,5 +58,17 @@ class BookController extends BaseController
         $this->view()->load('Admin.Book.Show',[
             'book' => $book
         ], 'admin');
+    }
+
+    public function deleteImages(BookImage $bookImage)
+    {
+
+        if (!$this->bookService->removeImage($bookImage)) {
+
+        }
+        $this->response()->json([
+            'status' => true
+        ]);
+        
     }
 }

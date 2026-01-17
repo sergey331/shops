@@ -22,6 +22,7 @@
     <link rel="shortcut icon" href="/assets/images/favicon.png"/>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
 </head>
 <body class="with-welcome-text">
@@ -60,6 +61,8 @@
     <!-- Custom js for this page-->
     <script src="/assets/js/jquery.cookie.js" type="text/javascript"></script>
     <script src="/assets/js/dashboard.js"></script>
+    <script src="/assets/js/admin/book.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 </body>
 </html>

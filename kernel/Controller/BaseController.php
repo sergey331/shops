@@ -8,6 +8,7 @@ use Kernel\Container\Container;
 use Kernel\Controller\interface\BaseControllerInterface;
 use Kernel\Redirect\interface\RedirectInterface;
 use Kernel\Request\interface\RequestInterface;
+use Kernel\Response\interface\ResponseInterface;
 use Kernel\Session\interface\SessionInterface;
 use Kernel\View\interface\ViewInterface;
 
@@ -26,6 +27,11 @@ abstract class BaseController implements BaseControllerInterface
     public function request(): RequestInterface
     {
         return $this->container->get("request");
+    }
+
+    public function response(): ResponseInterface
+    {
+        return $this->container->get('response');
     }
 
     public function session(): SessionInterface

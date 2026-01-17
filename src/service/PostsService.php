@@ -202,7 +202,7 @@ class PostsService extends BaseService
     public function delete(Post $post)
     {
         if ($post->image) {
-            $this->deleteImage("image",APP_PATH . '/public/uploads/posts/');
+            $this->deleteImage($post->image,APP_PATH . '/public/uploads/posts');
         }
         $post->delete();
         session()->set('success', 'deleted');

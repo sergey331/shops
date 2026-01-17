@@ -12,7 +12,7 @@ class Book extends Model
 {
     protected string $table = 'books';
 
-    protected array $with = ['authors','categories','tags', 'language'];
+    protected array $with = ['authors','categories','tags', 'language','publisher','images'];
 
     protected array $fillable = [
         'title',
@@ -30,6 +30,12 @@ class Book extends Model
         'rating',
         'featured',
         'status',
+    ];
+
+    public const STATUS = [
+            'draft' => "Draft",
+            'published' => "Published",
+            'archived' => "Archived"
     ];
 
     public function language(): BelongsTo   

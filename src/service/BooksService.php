@@ -2,13 +2,14 @@
 
 namespace Shop\service;
 
-use Kernel\Databases\DB;
-use Kernel\Service\BaseService;
 use Shop\model\Book;
 use Kernel\Form\Form;
 use Kernel\Table\Table;
-use Kernel\Validator\Validator;
+use Kernel\Databases\DB;
+use Shop\model\BookImage;
 use Shop\rules\BookRules;
+use Kernel\Service\BaseService;
+use Kernel\Validator\Validator;
 
 class BooksService extends BaseService
 {
@@ -78,11 +79,7 @@ class BooksService extends BaseService
         ]);
 
         $form->setSelect('status', 'Status',
-        [
-            'draft' => "Draft",
-            'published' => "Published",
-            'archived' => "Archived"
-        ],[
+        Book::STATUS,[
             'class' => 'form-control',
             'option_default_label' => "Set Status",
             'value' => $book->status ?? ''
@@ -187,6 +184,15 @@ class BooksService extends BaseService
                 'image_path' => $imageName
             ]);
         }
+        return true;
+    }
+
+    public function removeImage(BookImage $bookImage)
+    {
+        if ($bookImage->image_path) {
+            $this->deleteImage($bookImage->image_path,APP_PATH . '/public/uploads/books/images');
+        }
+        $bookImage->delete();
         return true;
     }
 
