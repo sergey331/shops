@@ -50,5 +50,6 @@ Route::prefix("/admin")->group(function () {
         Route::get('/{book}', [BookController::class,'edit']);
         Route::get('/show/{book}', [BookController::class,'show']);
         Route::delete('/image/delete/{bookImage}',[BookController::class,'deleteImages']);
+        Route::post('/image/store',[BookController::class,'imageStore']);
     });
 });

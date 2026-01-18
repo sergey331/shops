@@ -177,13 +177,7 @@ class BooksService extends BaseService
             ]);
         }
 
-        foreach ($images as $image) {
-            $imageName = $this->handleImageUpload($image, APP_PATH . '/public/uploads/books/images');
-            DB::table('book_images')->create([
-                'book_id' => $book->id,
-                'image_path' => $imageName
-            ]);
-        }
+        $this->upload_images($images,$book->id);
         return true;
     }
 
@@ -194,6 +188,25 @@ class BooksService extends BaseService
         }
         $bookImage->delete();
         return true;
+    }
+
+    public function imageStore()
+    {
+        $data = request()->all();
+        $this->upload_images($data['images'],$data['book_id']);
+
+        return model('BookImage')->where(['book_id' => $data['book_id']])->get();
+    }
+
+    private function upload_images(array $images, $book_id) 
+    {
+        foreach ($images as $image) {
+            $imageName = $this->handleImageUpload($image, APP_PATH . '/public/uploads/books/images');
+            DB::table('book_images')->create([
+                'book_id' => $book_id,
+                'image_path' => $imageName
+            ]);
+        }
     }
 
     private function getTableData($books)

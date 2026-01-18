@@ -71,4 +71,17 @@ class BookController extends BaseController
         ]);
         
     }
+
+    public function imageStore() {
+        if ($images = $this->bookService->imageStore()) {
+            $this->response()->json([
+                'status' => true,
+                'images' => $images
+            ]);
+            exit;
+        }
+        $this->response()->json([
+            'status' => false
+        ]);
+    }
 }
