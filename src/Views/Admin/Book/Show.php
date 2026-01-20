@@ -76,6 +76,10 @@
                     {{ Book::STATUS[$book->status] }}
                 </span>
             </div>
+            <div class="col-sm-6 mb-3">
+                <strong>Price:</strong><br>
+                {{ $book->price }}
+            </div>
         </div>
 
         <hr>
@@ -89,12 +93,28 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="d-flex align-items-center justify-content-between mb-5">
-                    <strong>Prices</strong>
+                    <strong>Discount</strong>
                     <button type="button" class="btn btn-primary text-white mb-0" data-bs-toggle="modal"
                         data-bs-target="#discountBook">
                         Add Discount
                     </button>
                 </div>
+                @if($book->discount)
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong>Price:</strong><br>
+                            <span id="discount_show_price" >{{ $book->discount->price }}</span>
+                        </div>
+                        <div class="col-sm-4">
+                            <strong>Started:</strong><br>
+                            <span id="discount_show_started" >{{ $book->discount->started_at }}</span>
+                        </div>
+                        <div class="col-sm-4">
+                            <strong>Finished:</strong><br>
+                            <span id="discount_show_finished" >{{ $book->discount->finished_at ?? '' }}</span>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -203,6 +223,8 @@
                     <input type="hidden" id="book_id" value="{{ $book->id }}">
                     <input type="number" id="discount_price" class="form-control"
                         value="{{ $book->discount->price ?? '' }}" />
+                        <div class="errors" id="price-error"></div>
+
                 </div>
 
                 <div class="form-group">
@@ -215,6 +237,7 @@
                         <input type="text" id="discount_started_at" class="form-control"
                             value="{{ $book->discount->started_at ?? '' }}">
                     </div>
+                    <div class="errors" id="started_at-error"></div>
                 </div>
 
                 <div class="form-group">
@@ -228,6 +251,7 @@
                         <input type="text" id="discount_finished_at" class="form-control"
                             value="{{ $book->discount->finished_at ?? '' }}">
                     </div>
+                    <div class="errors" id="finished_at-error"></div>
                 </div>
             </div>
 
@@ -235,8 +259,8 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     Cancel
                 </button>
-                <button type="button" class="btn btn-danger" id="uploadConfirm">
-                    Upload
+                <button type="button" class="btn btn-danger" id="discountSave">
+                    Save
                 </button>
             </div>
         </div>

@@ -4,13 +4,15 @@ namespace Kernel\Validator;
 
 use Kernel\File\FileData;
 use Kernel\Validator\interface\ValidatorInterface;
+use DateTime;
 
 class Validator implements ValidatorInterface
 {
     protected array $allowedRules = [
         'required', 'email', 'url', 'integer', 'string',
         'max', 'min', 'between', 'confirmed', 'unique',
-        'image', 'mimes', 'nullable', 'decimal', 'array'
+        'image', 'mimes', 'nullable', 'decimal', 'array',
+        'after'
     ];
 
     protected array $rules = [];
@@ -118,6 +120,28 @@ class Validator implements ValidatorInterface
         }
 
         return true;
+    }
+
+    public function validateAfter(string $field, $rule, $param, $value)
+    {
+        $date = $param ? $this->getValue($param) ?? null : date('Y-m-d'); 
+        $message = $param ? "The {$field} datetime must be after {$param} datetime" : "The {$field} datetime cannot be in the past";
+
+        if ($date) {
+            $dateDt = $this->getDateTime($date, 'Y-m-d');
+            $valueDt = $this->getDateTime($value, 'Y-m-d');
+            
+            if ( $dateDt >  $valueDt) {
+                $this->addError($field, $message,$rule);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected function getDateTime($date,$format = 'Y-m-d') 
+    {
+        return DateTime::createFromFormat($format, $date);
     }
 
     protected function addError(string $field, string $default, string $rule): void

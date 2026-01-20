@@ -22,6 +22,6 @@ class Reviews implements MigrationsInterface
 
     public static function down(TableInterface $table): void
     {
-        $table->dropTable('TableInterface');
+        $table->dropTable('reviews');
     }
 }

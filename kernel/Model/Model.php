@@ -3,18 +3,19 @@
 namespace Kernel\Model;
 
 use Exception;
-use Kernel\Databases\Connection;
+use JsonSerializable;
 use Kernel\Hash\Hash;
-use Kernel\Model\interface\ModelInterface;
-use Kernel\Model\Relations\BelongsTo;
-use Kernel\Model\Relations\BelongsToMany;
-use Kernel\Model\Relations\HasMany;
-use Kernel\Model\Relations\HasOne;
-use Kernel\Model\Trait\ConditionsTrait;
 use Kernel\Model\Trait\Pluck;
+use Kernel\Databases\Connection;
+use Kernel\Model\Relations\HasOne;
+use Kernel\Model\Relations\HasMany;
+use Kernel\Model\Relations\BelongsTo;
+use Kernel\Model\Trait\ConditionsTrait;
+use Kernel\Model\Relations\BelongsToMany;
+use Kernel\Model\interface\ModelInterface;
 
 #[\AllowDynamicProperties]
-class Model extends Connection implements ModelInterface
+class Model extends Connection implements ModelInterface, JsonSerializable
 {
     use ConditionsTrait, Pluck;
 
@@ -273,6 +274,10 @@ class Model extends Connection implements ModelInterface
     public function setRelation($key, $value): void
     {
         $this->relations[$key] = $value;
+    }
+    public function jsonSerialize(): mixed
+    {
+        return $this->data;
     }
 
     private function fetchArrayData(array $data): array

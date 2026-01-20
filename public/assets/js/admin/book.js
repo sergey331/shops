@@ -90,29 +90,86 @@ $(document).ready(function () {
         enableOnReadonly: true,
         todayHighlight: true,
         autoclose: true
-      });
+    });
 
-      $('#discount_finished').datepicker({
+    $('#discount_finished').datepicker({
         format: 'yyyy-mm-dd',
         enableOnReadonly: true,
         todayHighlight: true,
         autoclose: true
-      });
+    });
 
+    $("#discountSave").on('click', function () {
+
+        clearErrors();
+
+        const $price = $("#discount_show_price");
+        const $started = $("#discount_show_started");
+        const $finished = $("#discount_show_finished");
+
+        let book_id = $('#book_id').val();
+
+        let data = {
+            price: $('#discount_price').val(),
+            started_at: $('#discount_started_at').val(),
+            finished_at: $('#discount_finished_at').val()
+        };
+
+        $.ajax({
+            url: `/admin/books/discount/${book_id}`,
+            type: "POST",
+            data,
+            dataType: 'json',
+
+            success(res) {
+                if (res.success) {
+                    $price.html(res.discount.price);
+                    $started.html(res.discount.started_at);
+                    $finished.html(res.discount.finished_at);
+
+                    $("#discountBook").modal("hide");
+                    toastr.success("Discount uploaded successfully!");
+                }
+            },
+
+            error(xhr) {
+                showErrors(xhr.responseJSON.errors);
+
+            }
+        });
+    });
+
+
+    function showErrors(errors) {
+        Object.keys(errors).forEach(field => {
+            const el = document.getElementById(`${field}-error`);
+            if (!el) return;
+
+            el.innerHTML = errors[field].join('<br>');
+            el.classList.remove('d-none');
+        });
+    }
+
+    function clearErrors() {
+        document.querySelectorAll('.errors').forEach(el => {
+            el.innerHTML = '';
+            el.classList.add('d-none');
+        });
+    }
 
     function getImageHtml(images) {
         return images.map(image => `
-        <div class="image-box" style="width:150px;height:150px;position:relative">
-            <button class="delete-button" data-image-id="${image.id}">
-                <i class="fa fa-trash"></i>
-            </button>
-            <img
-                src="/uploads/books/images/${image.image_path}"
-                alt=""
-                style="width:100%;height:100%;object-fit:cover"
-            >
-        </div>
-    `).join("");
+            <div class="image-box" style="width:150px;height:150px;position:relative">
+                <button class="delete-button" data-image-id="${image.id}">
+                    <i class="fa fa-trash"></i>
+                </button>
+                <img
+                    src="/uploads/books/images/${image.image_path}"
+                    alt=""
+                    style="width:100%;height:100%;object-fit:cover"
+                >
+            </div>
+        `).join("");
     }
 
     function showConfirm(message, callback) {

@@ -12,7 +12,7 @@ class Book extends Model
 {
     protected string $table = 'books';
 
-    protected array $with = ['authors','categories','tags', 'language','publisher','images'];
+    protected array $with = ['authors','categories','tags', 'language','publisher','images', 'discount'];
 
     protected array $fillable = [
         'title',
@@ -66,5 +66,9 @@ class Book extends Model
     public function images(): HasMany 
     {
         return $this->hasMany(BookImage::class);
+    }
+    public function discount() 
+    {
+        return $this->hasOne(BookDiscount::class);
     }
 }

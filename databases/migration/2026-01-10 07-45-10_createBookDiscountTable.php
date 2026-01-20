@@ -13,8 +13,8 @@ class CreateBookDiscountTable implements MigrationsInterface
         $table->createTable('book_discounts', function (FieldsInterface $field) {
             $field->relations('book_id')->references('id')->on('books')->onDelete('cascade')->onUpdate('cascade');
             $field->decimal('price');
-            $field->datetime('started_at');
-            $field->datetime('finished_at')->nullable();
+            $field->date('started_at');
+            $field->date('finished_at')->nullable();
         });
     }
 

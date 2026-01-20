@@ -72,7 +72,8 @@ class BookController extends BaseController
         
     }
 
-    public function imageStore() {
+    public function imageStore() 
+    {
         if ($images = $this->bookService->imageStore()) {
             $this->response()->json([
                 'status' => true,
@@ -83,5 +84,15 @@ class BookController extends BaseController
         $this->response()->json([
             'status' => false
         ]);
+    }
+
+    public function discount(Book $book) 
+    {
+        $discount = $this->bookService->discount($book);
+        $status = 200;
+        if (!$discount['success']) {
+            $status = 400;
+        }
+        $this->response()->json($discount,$status);
     }
 }

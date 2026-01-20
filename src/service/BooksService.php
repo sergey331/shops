@@ -10,6 +10,7 @@ use Shop\model\BookImage;
 use Shop\rules\BookRules;
 use Kernel\Service\BaseService;
 use Kernel\Validator\Validator;
+use Shop\rules\DiscountRules;
 
 class BooksService extends BaseService
 {
@@ -196,6 +197,30 @@ class BooksService extends BaseService
         $this->upload_images($data['images'],$data['book_id']);
 
         return model('BookImage')->where(['book_id' => $data['book_id']])->get();
+    }
+
+    public function discount(Book $book)
+    {
+
+     $data = request()->all();
+        $validator = Validator::make($data, DiscountRules::rules(), DiscountRules::messages());
+
+        if (!$validator->validate()) {
+            return [
+                'success' => false,
+                'errors' => $validator->errors()
+            ];
+        }
+
+        if ($book->discount) {
+            $book->discount->update(request()->all());
+        } else {
+            $book->discount()->create(request()->all());
+        }
+        return [
+            'success' => true,
+            'discount' => $book->discount()->get()
+        ];
     }
 
     private function upload_images(array $images, $book_id) 
