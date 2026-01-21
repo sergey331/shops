@@ -29,30 +29,30 @@ class BookController extends BaseController
     {
 
         $forms = $this->bookService->getForms('/admin/books/store');
-        $this->view()->load('Admin.Book.Create',[
+        $this->view()->load('Admin.Book.Create', [
             'forms' => $forms
         ], 'admin');
     }
 
-    public function store() 
+    public function store()
     {
-         if (!$this->bookService->store()) {
+        if (!$this->bookService->store()) {
             $this->redirect()->back();
             return;
         }
 
-        
+
         $this->redirect()->to('/admin/books');
     }
 
-    public function edit(Book $book) 
+    public function edit(Book $book)
     {
-        $forms = $this->bookService->getForms('/admin/books/'. $book->id,$book);
-        $this->view()->load('Admin.Book.Edit',[
+        $forms = $this->bookService->getForms('/admin/books/' . $book->id, $book);
+        $this->view()->load('Admin.Book.Edit', [
             'forms' => $forms
         ], 'admin');
     }
-    public function update(Book $book) 
+    public function update(Book $book)
     {
         if (!$this->bookService->update($book)) {
             $this->redirect()->back();
@@ -62,9 +62,9 @@ class BookController extends BaseController
         $this->redirect()->to('/admin/books');
     }
 
-    public function show(Book $book) 
+    public function show(Book $book)
     {
-        $this->view()->load('Admin.Book.Show',[
+        $this->view()->load('Admin.Book.Show', [
             'book' => $book
         ], 'admin');
     }
@@ -78,10 +78,10 @@ class BookController extends BaseController
         $this->response()->json([
             'status' => true
         ]);
-        
+
     }
 
-    public function imageStore() 
+    public function imageStore()
     {
         if ($images = $this->bookService->imageStore()) {
             $this->response()->json([
@@ -95,13 +95,20 @@ class BookController extends BaseController
         ]);
     }
 
-    public function discount(Book $book) 
+    public function discount(Book $book)
     {
         $discount = $this->bookService->discount($book);
         $status = 200;
         if (!$discount['success']) {
             $status = 400;
         }
-        $this->response()->json($discount,$status);
+        $this->response()->json($discount, $status);
+    }
+
+    public function delete(Book $book)
+    {
+        if ($this->bookService->deleteBook($book)) {
+            $this->redirect()->to('/admin/books');
+        }
     }
 }

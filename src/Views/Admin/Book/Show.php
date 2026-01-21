@@ -10,7 +10,7 @@
         <div class="row g-4">
             <div class="col-md-3 ">
                 @if($book->cover_image)
-                <img src="{{ public_path('uploads/books/'. $book->cover_image)}}" alt="Book Cover"
+                <img src="{{ public_path('uploads/books/' . $book->id . '/'. $book->cover_image)}}" alt="Book Cover"
                     class="img-fluid rounded shadow-sm">
                 @endif
             </div>
@@ -102,15 +102,15 @@
                 <div class="row">
                     <div class="col-sm-4">
                         <strong>Price:</strong><br>
-                        <span id="discount_show_price" >{{ $book->discount->price ?? '-' }}</span>
+                        <span id="discount_show_price">{{ $book->discount->price ?? '-' }}</span>
                     </div>
                     <div class="col-sm-4">
                         <strong>Started:</strong><br>
-                        <span id="discount_show_started" >{{ $book->discount->started_at ?? '-' }}</span>
+                        <span id="discount_show_started">{{ $book->discount->started_at ?? '-' }}</span>
                     </div>
                     <div class="col-sm-4">
                         <strong>Finished:</strong><br>
-                        <span id="discount_show_finished" >{{ $book->discount->finished_at ?? '-' }}</span>
+                        <span id="discount_show_finished">{{ $book->discount->finished_at ?? '-' }}</span>
                     </div>
                 </div>
             </div>
@@ -135,7 +135,7 @@
                             <i class="fa fa-trash"></i>
                         </button>
                         <img style="width: 100%;height: 100%;object-fit:cover"
-                            src="{{ public_path('uploads/books/images/'. $image->image_path)}}" alt="">
+                            src="{{ public_path('uploads/books/' . $book->id . '/images/'. $image->image_path)}}" alt="">
                     </div>
                     @endforeach
                     @endif
@@ -146,9 +146,11 @@
         <hr>
         <!-- Action Buttons -->
         <div class="d-flex justify-content-end gap-2">
-            <a href="#" class="btn btn-secondary">Back</a>
-            <a href="#" class="btn btn-primary">Edit Book</a>
-            <a href="#" class="btn btn-danger">Delete</a>
+            <a href="/admin/books" class="btn btn-secondary">Back</a>
+            <a href="/admin/books/{{ $book->id }}" class="btn btn-primary">Edit Book</a>
+            <form action="/admin/books/delete/{{ $book->id }}" method="POST">
+                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
         </div>
     </div>
 
@@ -221,7 +223,7 @@
                     <input type="hidden" id="book_id" value="{{ $book->id }}">
                     <input type="number" id="discount_price" class="form-control"
                         value="{{ $book->discount->price ?? '' }}" />
-                        <div class="errors" id="price-error"></div>
+                    <div class="errors" id="price-error"></div>
 
                 </div>
 
