@@ -99,22 +99,20 @@
                         Add Discount
                     </button>
                 </div>
-                @if($book->discount)
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <strong>Price:</strong><br>
-                            <span id="discount_show_price" >{{ $book->discount->price }}</span>
-                        </div>
-                        <div class="col-sm-4">
-                            <strong>Started:</strong><br>
-                            <span id="discount_show_started" >{{ $book->discount->started_at }}</span>
-                        </div>
-                        <div class="col-sm-4">
-                            <strong>Finished:</strong><br>
-                            <span id="discount_show_finished" >{{ $book->discount->finished_at ?? '' }}</span>
-                        </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <strong>Price:</strong><br>
+                        <span id="discount_show_price" >{{ $book->discount->price ?? '-' }}</span>
                     </div>
-                @endif
+                    <div class="col-sm-4">
+                        <strong>Started:</strong><br>
+                        <span id="discount_show_started" >{{ $book->discount->started_at ?? '-' }}</span>
+                    </div>
+                    <div class="col-sm-4">
+                        <strong>Finished:</strong><br>
+                        <span id="discount_show_finished" >{{ $book->discount->finished_at ?? '-' }}</span>
+                    </div>
+                </div>
             </div>
         </div>
 

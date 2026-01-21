@@ -47,10 +47,19 @@ class BookController extends BaseController
 
     public function edit(Book $book) 
     {
-        $forms = $this->bookService->getForms('/admin/books/store',$book);
+        $forms = $this->bookService->getForms('/admin/books/'. $book->id,$book);
         $this->view()->load('Admin.Book.Edit',[
             'forms' => $forms
         ], 'admin');
+    }
+    public function update(Book $book) 
+    {
+        if (!$this->bookService->update($book)) {
+            $this->redirect()->back();
+            return;
+        }
+
+        $this->redirect()->to('/admin/books');
     }
 
     public function show(Book $book) 

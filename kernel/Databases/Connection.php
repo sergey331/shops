@@ -7,9 +7,14 @@ use PDO;
 
 class Connection implements ConnectionInterface
 {
-    protected PDO $connection;
+    protected static ?PDO $pdo = null;
+
     public function __construct()
     {
+        if (self::$pdo !== null) {
+            return;
+        }
+
         $host = config('db.host');
         $port = config('db.port');
         $database = config('db.database');
@@ -18,33 +23,46 @@ class Connection implements ConnectionInterface
         $driver = config('db.driver');
 
         try {
-            $this->connection = new PDO(
-                "{$driver}:host={$host};port={$port};dbname={$database}",
+            self::$pdo = new PDO(
+                "{$driver}:host={$host};port={$port};dbname={$database};charset=utf8mb4",
                 $user,
-                $password
+                $password,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_PERSISTENT => true, // IMPORTANT
+                ]
             );
-            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\PDOException $exception) {
-            echo "Database connection failed: " . $exception->getMessage();
+            die("Database connection failed: " . $exception->getMessage());
         }
+    }
+
+    protected function getConnection(): PDO
+    {
+        return self::$pdo;
     }
 
     public function query($query,$data = [])
     {
         try {
+            $pdo = $this->getConnection();
+
             if (empty($data)) {
-                return $this->connection->query($query);
+                return $pdo->query($query);
             }
-            $smtp = $this->connection->prepare($query);
-            $smtp->execute($data);
-            return $smtp;
+
+            $stmt = $pdo->prepare($query);
+            $stmt->execute($data);
+            return $stmt;
+
         } catch (\PDOException $exception) {
-            echo $exception->getMessage();
+            throw $exception; // DO NOT echo in production
         }
     }
 
     public function getLastId(): false|string
     {
-        return $this->connection->lastInsertId();
+        return self::$pdo->lastInsertId();
     }
 }

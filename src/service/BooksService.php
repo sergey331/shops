@@ -117,13 +117,12 @@ class BooksService extends BaseService
 
         $form->setCheckbox('stock','Stock',[
             'class' => 'form-check-input',
-            'checked' => isset($book->stock) ? (bool)$book->stock : false,
+            'checked' => $book->stock ? (bool)$book->stock : false,
             'value' => 1
         ]);
-
         $form->setCheckbox('featured','Featured',[
             'class' => 'form-check-input',
-            'checked' => isset($book->featured) ? (bool)$book->featured : false,
+            'checked' => $book->featured ? (bool)$book->featured : false,
             'value' => 1
         ]);
         
@@ -153,8 +152,8 @@ class BooksService extends BaseService
         unset($data['category_id']);
         unset($data['tag_id']);
 
-        $data['stock'] = isset($data['stock']) ? (bool) $data['stock'] : false;
-        $data['featured'] = isset($data['featured']) ? (bool) $data['featured'] : false;
+        $data['stock']    = !empty($data['stock']) ? 1 : 0;
+        $data['featured'] = !empty($data['featured']) ? 1 : 0;
 
         $book = model('Book')->create($data);
 
@@ -182,6 +181,60 @@ class BooksService extends BaseService
         return true;
     }
 
+    public function update(Book $book) 
+    {
+        $data = request()->all();
+
+        $validator = Validator::make($data, BookRules::rules(), BookRules::messages());
+
+        if (!$validator->validate()) {
+            session()->set('errors', $validator->errors());
+            return false;
+        }
+
+        $data = $this->handleImageUpload('cover_image', APP_PATH . '/public/uploads/books',$data);
+
+        $authors = $data['author_id'];
+        $images = is_array($data['images']) ? $data['images'] : [];
+        $categories = $data['category_id'];
+        $tags = $data['tag_id'];
+
+        unset($data['author_id']);
+        unset($data['images']);
+        unset($data['category_id']);
+        unset($data['tag_id']);
+
+        $data['stock']    = !empty($data['stock']) ? 1 : 0;
+$data['featured'] = !empty($data['featured']) ? 1 : 0;
+
+        $book->update($data);
+
+        DB::table('book_author')->where(['book_id' => $book->id])->delete();
+        foreach ($authors as $author) {
+            DB::table('book_author')->create([
+                'book_id' => $book->id,
+                'author_id' => $author
+            ]);
+        }
+        DB::table('book_category')->where(['book_id' => $book->id])->delete();
+        foreach ($categories as $category) {
+            DB::table('book_category')->create([
+                'book_id' => $book->id,
+                'category_id' => $category
+            ]);
+        }
+
+        DB::table('book_tag')->where(['book_id' => $book->id])->delete();
+        foreach ($tags as $tag) {
+            DB::table('book_tag')->create([
+                'book_id' => $book->id,
+                'tag_id' => $tag
+            ]);
+        }
+
+        $this->upload_images($images,$book->id);
+        return true;
+    }
     public function removeImage(BookImage $bookImage)
     {
         if ($bookImage->image_path) {
@@ -253,9 +306,9 @@ class BooksService extends BaseService
                 'callback' => function($row) {
                     $id = $row->id;
                     return '
-                        <a href="/admin/books/'.$id.'" class="btn btn-sm btn-primary">Edit</a>
+                        <a href="/admin/books/'.$id.'" class="btn btn-sm btn-primary text-white">Edit</a>
                         <a href="/admin/books/delete/'.$id.'" class="btn btn-sm btn-danger">Delete</a>
-                        <a href="/admin/books/show/'.$id.'" class="btn btn-sm btn-primary">Show</a>
+                        <a href="/admin/books/show/'.$id.'" class="btn btn-sm btn-primary text-white">Show</a>
                     ';
                 },
             ]
