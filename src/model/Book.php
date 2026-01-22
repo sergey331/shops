@@ -12,7 +12,7 @@ class Book extends Model
 {
     protected string $table = 'books';
 
-    protected array $with = ['authors','categories','tags', 'language','publisher','images', 'discount'];
+    protected array $with = ['authors','categories','tags', 'language','publisher','images', 'discount','currency'];
 
     protected array $fillable = [
         'title',
@@ -30,6 +30,7 @@ class Book extends Model
         'rating',
         'featured',
         'status',
+        'currency_id'
     ];
 
     public const STATUS = [
@@ -41,6 +42,11 @@ class Book extends Model
     public function language(): BelongsTo   
     {
         return $this->belongsTo(Language::class);
+    }
+
+     public function currency(): BelongsTo   
+    {
+        return $this->belongsTo(Currency::class);
     }
 
     public function publisher(): BelongsTo

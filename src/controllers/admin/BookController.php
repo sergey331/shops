@@ -36,7 +36,7 @@ class BookController extends BaseController
 
     public function store()
     {
-        if (!$this->bookService->store()) {
+        if (!$this->bookService->updateOrCreate()) {
             $this->redirect()->back();
             return;
         }
@@ -54,7 +54,7 @@ class BookController extends BaseController
     }
     public function update(Book $book)
     {
-        if (!$this->bookService->update($book)) {
+        if (!$this->bookService->updateOrCreate($book)) {
             $this->redirect()->back();
             return;
         }

@@ -15,6 +15,11 @@ use Shop\rules\DiscountRules;
 
 class BooksService extends BaseService
 {
+
+    public function getFilreredBooks()
+    {
+        return model('Book')->paginate();
+    }
     public function getBooks()
     {
         $books = model('Book')->with(['publisher', 'authors', 'categories'])->paginate();
@@ -41,6 +46,12 @@ class BooksService extends BaseService
         $form->setNumber('price', 'Price', [
             'class' => 'form-control',
             'value' => $book->price ?? ''
+        ]);
+
+        $form->setSelect('currency_id', 'Currency', model('Currency')->get(), [
+            'class' => 'form-control',
+            'option_default_label' => "Select Currency",
+            'value' => $book->currency_id ?? ''
         ]);
 
         $form->setInput('isbn', 'Isbn', [
@@ -144,130 +155,84 @@ class BooksService extends BaseService
         return $form;
     }
 
-    public function store()
+    public function updateOrCreate(?Book $book = null): bool
     {
         $data = request()->all();
+        $rules = $book ? BookEditRules::rules() : BookRules::rules();
 
-        $validator = Validator::make($data, BookRules::rules());
-
+        $validator = Validator::make($data, $rules);
         if (!$validator->validate()) {
             session()->set('errors', $validator->errors());
             return false;
         }
 
-        $oldPath = APP_PATH . '/public/uploads/books';
-        $data = $this->handleImageUpload('cover_image', $oldPath, $data);
+        // Paths
+        $basePath = APP_PATH . '/public/uploads/books';
+        $bookPath = $book ? $basePath . '/' . $book->id : $basePath;
 
-        $authors = $data['author_id'];
-        $images = $data['images'];
-        $categories = $data['category_id'];
-        $tags = $data['tag_id'];
+        // Remove old cover image if updating
+        if (
+            $book &&
+            request()->hasFile('cover_image') &&
+            !empty($book->cover_image)
+        ) {
+            $oldImage = $bookPath . '/' . $book->cover_image;
+            if (file_exists($oldImage)) {
+                unlink($oldImage);
+            }
+        }
 
-        unset($data['author_id']);
-        unset($data['images']);
-        unset($data['category_id']);
-        unset($data['tag_id']);
+        // Upload cover image
+        $data = $this->handleImageUpload('cover_image', $bookPath, $data);
 
-        $data['stock'] = !empty($data['stock']) ? 1 : 0;
+        // Extract relations
+        $authors    = $data['author_id']   ?? [];
+        $categories = $data['category_id'] ?? [];
+        $tags       = $data['tag_id']      ?? [];
+        $images     = is_array($data['images'] ?? null) ? $data['images'] : [];
+
+        // Remove non-book fields
+        unset(
+            $data['author_id'],
+            $data['category_id'],
+            $data['tag_id'],
+            $data['images']
+        );
+
+        // Normalize booleans
+        $data['stock']    = !empty($data['stock']) ? 1 : 0;
         $data['featured'] = !empty($data['featured']) ? 1 : 0;
 
-        $book = model('Book')->create($data);
+        if (!$book) {
+            // Create
+            $book = model('Book')->create($data);
 
-        $newPath = APP_PATH . '/public/uploads/books/' . $book->id;
+            $newPath = $basePath . '/' . $book->id;
+            if (!is_dir($newPath)) {
+                mkdir($newPath, 0755, true);
+            }
 
-        if (!is_dir($newPath)) {
-            mkdir($newPath, 0755, true);
+            if (!empty($data['cover_image'])) {
+                rename(
+                    $basePath . '/' . $data['cover_image'],
+                    $newPath . '/' . $data['cover_image']
+                );
+            }
+        } else {
+            // Update
+            $book->update($data);
+            DB::table('book_author')->where(['book_id' =>  $book->id])->delete();
+            DB::table('book_category')->where(['book_id' =>  $book->id])->delete();
+            DB::table('book_tag')->where(['book_id' =>  $book->id])->delete();
         }
 
-        if (!empty($data['cover_image'])) {
-            rename(
-                $oldPath . '/' . $data['cover_image'],
-                $newPath . '/' . $data['cover_image']
-            );
-        }
-        foreach ($authors as $author) {
-            DB::table('book_author')->create([
-                'book_id' => $book->id,
-                'author_id' => $author
-            ]);
-        }
-        foreach ($categories as $category) {
-            DB::table('book_category')->create([
-                'book_id' => $book->id,
-                'category_id' => $category
-            ]);
-        }
-
-        foreach ($tags as $tag) {
-            DB::table('book_tag')->create([
-                'book_id' => $book->id,
-                'tag_id' => $tag
-            ]);
-        }
-
+        // Save relations & images
+        $this->saveRelatedTable($book, $authors, $categories, $tags);
         $this->upload_images($images, $book->id);
+
         return true;
     }
 
-    public function update(Book $book)
-    {
-        $data = request()->all();
-
-        $validator = Validator::make($data, BookEditRules::rules());
-
-        if (!$validator->validate()) {
-            session()->set('errors', $validator->errors());
-            return false;
-        }
-        $path = APP_PATH . '/public/uploads/books/'. $book->id;
-
-        if (request()->hasFile('cover_image') && file_exists($path . '/' . $book->cover_image)) {
-            unlink($path . '/' . $book->cover_image);
-        }
-
-        $data = $this->handleImageUpload('cover_image', $path, $data);
-
-        $authors = $data['author_id'];
-        $images = is_array($data['images']) ? $data['images'] : [];
-        $categories = $data['category_id'];
-        $tags = $data['tag_id'];
-
-        unset($data['author_id']);
-        unset($data['images']);
-        unset($data['category_id']);
-        unset($data['tag_id']);
-
-        $data['stock'] = !empty($data['stock']) ? 1 : 0;
-        $data['featured'] = !empty($data['featured']) ? 1 : 0;
-
-        $book->update($data);
-
-        DB::table('book_author')->where(['book_id' => $book->id])->delete();
-        foreach ($authors as $author) {
-            DB::table('book_author')->create([
-                'book_id' => $book->id,
-                'author_id' => $author
-            ]);
-        }
-        DB::table('book_category')->where(['book_id' => $book->id])->delete();
-        foreach ($categories as $category) {
-            DB::table('book_category')->create([
-                'book_id' => $book->id,
-                'category_id' => $category
-            ]);
-        }
-
-        DB::table('book_tag')->where(['book_id' => $book->id])->delete();
-        foreach ($tags as $tag) {
-            DB::table('book_tag')->create([
-                'book_id' => $book->id,
-                'tag_id' => $tag
-            ]);
-        }
-
-        $this->upload_images($images, $book->id);
-        return true;
-    }
     public function removeImage(BookImage $bookImage)
     {
         if ($bookImage->image_path) {
@@ -309,9 +274,9 @@ class BooksService extends BaseService
         ];
     }
 
-    public function deleteBook(Book $book) 
+    public function deleteBook(Book $book)
     {
-        $this->deleteDir(APP_PATH . '/public/uploads/books/'. $book->id);
+        $this->deleteDir(APP_PATH . '/public/uploads/books/' . $book->id);
         $book->delete();
         return true;
     }
@@ -323,6 +288,28 @@ class BooksService extends BaseService
             DB::table('book_images')->create([
                 'book_id' => $book_id,
                 'image_path' => $imageName
+            ]);
+        }
+    }
+    private function saveRelatedTable($book, $authors, $categories, $tags): void
+    {
+        foreach ($authors as $author) {
+            DB::table('book_author')->create([
+                'book_id' => $book->id,
+                'author_id' => $author
+            ]);
+        }
+        foreach ($categories as $category) {
+            DB::table('book_category')->create([
+                'book_id' => $book->id,
+                'category_id' => $category
+            ]);
+        }
+
+        foreach ($tags as $tag) {
+            DB::table('book_tag')->create([
+                'book_id' => $book->id,
+                'tag_id' => $tag
             ]);
         }
     }
@@ -338,6 +325,7 @@ class BooksService extends BaseService
             "Language" => ['field' => 'language.name'],
             "Pages" => ['field' => 'pages'],
             "Price" => ['field' => 'price'],
+            'Currency' => ['field' => 'currency.code'],
             "Publisher" => ['field' => 'publisher.name'],
             "Authors" => ['field' => 'authors.*.name'],
             "Categories" => ['field' => 'categories.*.name'],

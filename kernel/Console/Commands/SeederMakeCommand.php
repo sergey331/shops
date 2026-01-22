@@ -40,7 +40,7 @@ PHP;
 
 
 
-        $filename = __DIR__ . "/../../databases/seeders/$this->name.php";
+        $filename = __DIR__ . "/../../../databases/seeders/$this->name.php";
 
         if (file_exists($filename)) {
             echo "Seeder file already exists: $filename" . PHP_EOL;
