@@ -4,6 +4,7 @@ namespace Kernel\Response\interface;
 interface ResponseInterface
 {
     public function json($data = [], int $status = 200): void;
+    public function html($data = '', int $status = 200): void;
 
     public function success(
         string $message = 'Success',

@@ -164,6 +164,23 @@ trait ConditionsTrait
         return $this;
     }
 
+    public function whereOp(string $field, string $op, $value): static
+    {
+        $this->modelWhere->whereOp($field,$op,$value);
+        return $this;
+    }
+
+    public function orWhereOp(string $field, string $op, $value): static
+    {
+        $this->modelWhere->orWhereOp($field,$op,$value);;
+        return $this;
+    }
+
+    public function havingRaw(string $sql, array $data = []): static
+    {
+        $this->havingRaw($sql,$data);
+        return $this;
+    }
     private function addWhereExistsBelongsToMany($relation, callable $callback)
     {
         $relatedQuery = $relation->getQueryBuilder();

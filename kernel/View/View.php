@@ -16,4 +16,10 @@ class View implements ViewInterface
         $template = new Template($this->container);
         $template->load($path, $data, $layout);
     }
+
+    public function getHtml($path, $data): false|string
+    {
+        $template = new Template($this->container);
+        return $template->getHtml($path, $data);
+    }
 }

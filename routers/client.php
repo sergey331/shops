@@ -12,6 +12,7 @@ use Shop\controllers\ShopController;
 
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/shop', [ShopController::class, 'index']);
+Route::get('/shop/filter', [ShopController::class, 'filter']);
 Route::get('/about', [AboutController::class, 'index']);
 Route::get('/blog', [BlogController::class, 'index']);
 Route::get('/blog/{Post}', [BlogController::class, 'show']);

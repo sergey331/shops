@@ -2,6 +2,7 @@
 
 namespace Shop\service;
 
+use Exception;
 use Shop\model\Book;
 use Kernel\Form\Form;
 use Kernel\Table\Table;
@@ -16,9 +17,45 @@ use Shop\rules\DiscountRules;
 class BooksService extends BaseService
 {
 
-    public function getFilreredBooks()
+    /**
+     * @throws Exception
+     */
+    public function getFilteredBooks()
     {
-        return model('Book')->paginate();
+        $query = model('Book');
+        if (request()->has('search')) {
+            $search = request()->input('search');
+            $query->whereLike([
+                'title' => "%$search%"
+            ])->orWhereLike([
+                'slug' => "%$search%"
+            ])->orWhereLike([
+                'isbn' => "%$search%"
+            ]);
+        }
+
+        if (request()->has('categories')) {
+            $categories = request()->input('categories');
+            $query->whereHas('categories',function ($q) use ($categories) {
+                $q->whereIn(['categories.id' => $categories]);
+            });
+        }
+
+        if (request()->has('authors')) {
+            $authors = request()->input('authors');
+            $query->whereHas('authors',function ($q) use ($authors) {
+                $q->whereIn(['authors.id' => $authors]);
+            });
+        }
+
+        if (request()->has('tags')) {
+            $tags = request()->input('tags');
+            $query->whereHas('tags',function ($q) use ($tags) {
+                $q->whereIn(['tags.id' => $tags]);
+            });
+        }
+
+        return $query->paginate();
     }
     public function getBooks()
     {

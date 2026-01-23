@@ -39,6 +39,21 @@ class ModelWhere implements ModelWhereInterface
     protected array $whereHas = [];
     public array $orWhereHas = [];
 
+    protected array $whereOp = [];
+    protected array $orWhereOp = [];
+
+    public function whereOp(string $field, string $op, $value): static
+    {
+        $this->whereOp[] = compact('field', 'op', 'value');
+        return $this;
+    }
+
+    public function orWhereOp(string $field, string $op, $value): static
+    {
+        $this->orWhereOp[] = compact('field', 'op', 'value');
+        return $this;
+    }
+
     public function setWhereLike($likes): static
     {
         $this->wheresLike = array_merge($this->wheresLike ?? [],$likes);
@@ -275,6 +290,20 @@ class ModelWhere implements ModelWhereInterface
             $parts = array_map(fn($f) => "$f=?", array_keys($this->orWheres));
             $or[] = '(' . implode(' OR ', $parts) . ')';
             $data = array_merge($data, array_values($this->orWheres));
+        }
+
+        foreach ($this->whereOp as $h) {
+            $parts[] = "{$h['field']} {$h['op']} ?";
+            $and[] = '(' . implode(' AND ', $parts) . ')';
+            $data[]  = $h['value'];
+        }
+
+        if (!empty($this->orWhereOp)) {
+            foreach ($this->orWhereOp as $h) {
+                $parts[] = "{$h['field']} {$h['op']} ?";
+                $or[] = '(' . implode(' OR ', $parts) . ')';
+                $data[] = $h['value'];
+            }
         }
 
         /* ----------------------------------------------------

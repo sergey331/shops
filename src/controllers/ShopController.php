@@ -8,12 +8,19 @@ use Shop\service\BooksService;
 
 class ShopController extends BaseController
 {
+    private BooksService $booksService;
+
+    public function __construct()
+    {
+        $this->booksService = new BooksService();
+    }
+
     /**
      * @throws Exception
      */
     public function index(): void
     {
-        $books = (new BooksService())->getFilreredBooks();
+        $books = $this->booksService->getFilteredBooks();
 
         $authors = model('Author')->get();
         $categories = model('Category')->get();
@@ -26,5 +33,15 @@ class ShopController extends BaseController
             'tags' => $tags
         ]);
 
+    }
+
+    public function filter()
+    {
+        $books = $this->booksService->getFilteredBooks();
+        $this->response()->html(
+            $this->view()->getHtml('Shop.Books',[
+                'books' => $books
+            ])
+        );
     }
 }

@@ -26,6 +26,21 @@ class Template implements TemplateInterface
         $content = ob_get_clean();
         $this->renderLayout($layout,  $content);
     }
+
+    public function getHtml($path, $data = [])
+    {
+        $viewPath = $this->resolvePath($path);
+        if (!file_exists($viewPath)) {
+            throw new \RuntimeException("View not found: {$viewPath}");
+        }
+        $this->data = $this->prepareData($data);
+        extract($this->data);
+
+        ob_start();
+        $content = file_get_contents($viewPath);
+        eval('?>' . $this->compileTemplate($content));
+        return ob_get_clean();
+    }
     
     private function compileTemplate(string $template): string
     {

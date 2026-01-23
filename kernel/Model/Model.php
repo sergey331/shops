@@ -88,7 +88,6 @@ class Model extends Connection implements ModelInterface, JsonSerializable
         $result = $this->query($query, $this->modelWhere->getWhereData());
 
         $data = $this->fetchArrayData($result->fetchAll(\PDO::FETCH_ASSOC));
-
         $this->paginator->setResponse([
             'data' => $data,
             'total' => $total,

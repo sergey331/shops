@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="copyright">
-                <p>© Copyright 2025 Bookly. TailwindCSS Template by: <a href="https://templatesjungle.com/" target="_blank"
+                <p>© Copyright {{ date('Y') }} Bookly. TailwindCSS Template by: <a href="https://templatesjungle.com/" target="_blank"
                                                                         class="underline">TemplatesJungle</a></p>
             </div>
         </div>
