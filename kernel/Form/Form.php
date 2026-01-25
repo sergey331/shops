@@ -22,6 +22,12 @@ class Form {
         return $this;
     } 
 
+    public function setHidden(string $name,string $label, array $attrs = []) 
+    {
+        $this->formFields->setField(FormFields::FIELD_HIDDEN,$name,$label,$attrs);
+        return $this;
+    } 
+
     public function setNumber(string $name,string $label, array $attrs = []) 
     {
         $this->formFields->setField(FormFields::FIELD_NUMBER,$name,$label,$attrs);

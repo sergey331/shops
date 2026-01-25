@@ -7,6 +7,7 @@ use Shop\controllers\admin\CategoryController;
 use Shop\controllers\admin\PostController;
 use Shop\controllers\admin\SlidersController;
 use Shop\controllers\admin\BookController;
+use Shop\controllers\admin\SettingController;
 
 Route::prefix("/admin")->group(function () {
     Route::get('/', [AdminController::class, 'index']);
@@ -54,5 +55,11 @@ Route::prefix("/admin")->group(function () {
         Route::post('/image/store',[BookController::class,'imageStore']);
         Route::post('/discount/{book}',[BookController::class,'discount']);
         Route::post('/delete/{book}',[BookController::class,'delete']);
+    });
+
+    Route::group(['prefix' => '/setting'], function () {
+        Route::get('/', [SettingController::class, 'index']);
+        Route::get('/{setting}', [SettingController::class, 'edit']);
+        Route::post('/edit/{setting}', [SettingController::class, 'save']);
     });
 });

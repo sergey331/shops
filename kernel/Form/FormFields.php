@@ -15,6 +15,7 @@ class FormFields
     public const FIELD_EMAIL = 'email';
     public const FIELD_DATE = 'date';
     public const FIELD_PASSWORD = 'password';
+    public const FIELD_HIDDEN = 'hidden';
     const ALLOWED_TYPE = [
         'input',
         'textarea',
@@ -25,7 +26,8 @@ class FormFields
         'email',
         'password',
         'number',
-        'date'
+        'date',
+        'hidden'
     ];
     private array $fields = [];
 

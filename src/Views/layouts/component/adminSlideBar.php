@@ -53,5 +53,12 @@
                 <span class="menu-title">About</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/setting">
+                <i class="menu-icon mdi mdi mdi-cog-outline"></i>
+                
+                <span class="menu-title">Setting</span>
+            </a>
+        </li>
     </ul>
 </nav>

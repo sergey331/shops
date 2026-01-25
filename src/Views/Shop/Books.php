@@ -25,7 +25,7 @@ use Kernel\Model\Paginator;
                             {{ $book->price . ' ' . $book->currency->symbol }}
                         </span>
             <div class="card-concern absolute left-0 right-0 flex justify-center gap-2 opacity-0">
-                <button type="button" class="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-700">
+                <button type="button" data-book_id="{{ $book->id }}" class="addcart p-2 bg-gray-800 text-white rounded-full hover:bg-gray-700">
                     <svg class="w-8 h-8 p-1">
                         <use xlink:href="#cart"></use>
                     </svg>

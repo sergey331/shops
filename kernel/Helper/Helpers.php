@@ -6,6 +6,7 @@ use Kernel\Cookie\Cookie;
 use Kernel\Redirect\Redirect;
 use Kernel\Request\Request;
 use Kernel\Session\Session;
+use Shop\service\SettingService;
 
 function container(): Container
 {
@@ -61,4 +62,14 @@ function public_path($path): string
 function config($key,$default = null)
 {
     return container()->get('config')->get($key,$default);
+}
+
+function setting()
+{
+    return (new SettingService())->getSetting();
+}
+
+function cart()
+{
+    return container()->get('cart');
 }

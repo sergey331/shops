@@ -2,6 +2,7 @@
 
 use Kernel\App\App;
 use Kernel\Auth\Auth;
+use Kernel\Cart\Cart;
 use Kernel\Config\Config;
 use Kernel\Container\Container;
 use Kernel\Databases\DbModel;
@@ -24,6 +25,7 @@ $container->set('redirect', fn() => new Redirect());
 $container->set('db', fn() => new DbModel());
 $container->set('config', fn() => new Config());
 $container->set('response', fn() => new Response());
+$container->set('cart', fn() => new Cart());
 
 // Services that need the container
 $container->set('auth', fn() => new Auth());

@@ -21,3 +21,4 @@ Route::get('/contact', [ContactController::class, 'index']);
 Route::get('/product', [FrontProductController::class, 'index']);
 Route::get('/cart', [CartController::class, 'index']);
 Route::get('/checkout', [CheckoutController::class, 'index']);
+Route::post('/cart/add',[CartController::class,'add']);

@@ -8,26 +8,24 @@ class Response implements ResponseInterface
 {
     public function json($data = [], int $status = 200): void
     {
-        if (ob_get_length()) {
+        // Clean ALL output buffers safely
+        while (ob_get_level() > 0) {
             ob_end_clean();
         }
 
         http_response_code($status);
         header('Content-Type: application/json; charset=utf-8');
 
-        $json = json_encode(
-            $data,
-            JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
-        );
+        $json = json_encode($data, JSON_UNESCAPED_UNICODE);
 
         if ($json === false) {
-            echo json_encode([
+            $json = json_encode([
                 'status' => false,
                 'error' => json_last_error_msg()
             ]);
-            exit;
         }
 
+        header('Content-Length: ' . strlen($json));
         echo $json;
         exit;
     }
@@ -53,10 +51,9 @@ class Response implements ResponseInterface
 
     public function success(
         string $message = 'Success',
-        array  $data = [],
-        int    $status = 200
-    ): void
-    {
+        array $data = [],
+        int $status = 200
+    ): void {
         $this->json([
             'status' => true,
             'message' => $message,
@@ -66,10 +63,9 @@ class Response implements ResponseInterface
 
     public function error(
         string $message = 'Error',
-        int    $status = 400,
-        array  $errors = []
-    ): void
-    {
+        int $status = 400,
+        array $errors = []
+    ): void {
         $this->json([
             'status' => false,
             'message' => $message,

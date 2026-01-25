@@ -20,7 +20,8 @@
                     <li><a class="text-dark hover:text-primary font-heading font-medium" href="/about">About</a></li>
                     <li><a class="text-dark hover:text-primary font-heading font-medium" href="/shop">Shop</a></li>
                     <li><a class="text-dark hover:text-primary font-heading font-medium" href="/blog">Blogs</a></li>
-                    <li><a class="text-dark hover:text-primary font-heading font-medium" href="/contact">Contact</a></li>
+                    <li><a class="text-dark hover:text-primary font-heading font-medium" href="/contact">Contact</a>
+                    </li>
                 </ul>
             </div>
 
@@ -56,19 +57,23 @@
                         <ul class="space-y-4 mb-4">
                             <li class="flex justify-between">
                                 <div>
-                                    <h5 class="font-medium"><a href="single-product.html" class="hover:text-primary">The Emerald
+                                    <h5 class="font-medium"><a href="single-product.html" class="hover:text-primary">The
+                                            Emerald
                                             Crown</a></h5>
                                     <p class="text-xs text-gray-500">Special discounted price.</p>
-                                    <a href="#" class="text-sm font-medium text-primary hover:underline block mt-1">Add to cart</a>
+                                    <a href="#" class="text-sm font-medium text-primary hover:underline block mt-1">Add
+                                        to cart</a>
                                 </div>
                                 <span class="text-primary">$2000</span>
                             </li>
                             <li class="flex justify-between">
                                 <div>
-                                    <h5 class="font-medium"><a href="single-product.html" class="hover:text-primary">The Last
+                                    <h5 class="font-medium"><a href="single-product.html" class="hover:text-primary">The
+                                            Last
                                             Enchantment</a></h5>
                                     <p class="text-xs text-gray-500">Perfect for enlightened people.</p>
-                                    <a href="#" class="text-sm font-medium text-primary hover:underline block mt-1">Add to cart</a>
+                                    <a href="#" class="text-sm font-medium text-primary hover:underline block mt-1">Add
+                                        to cart</a>
                                 </div>
                                 <span class="text-primary">$400</span>
                             </li>
@@ -78,10 +83,11 @@
                             </li>
                         </ul>
                         <div class="space-y-2">
-                            <a href="#" class="block w-full bg-dark text-white py-2 text-center rounded hover:bg-opacity-90">Add
+                            <a href="#"
+                                class="block w-full bg-dark text-white py-2 text-center rounded hover:bg-opacity-90">Add
                                 all to cart</a>
                             <a href="/cart"
-                               class="block w-full bg-primary text-white py-2 text-center rounded hover:bg-opacity-90">View
+                                class="block w-full bg-primary text-white py-2 text-center rounded hover:bg-opacity-90">View
                                 cart</a>
                         </div>
                     </div>
@@ -93,40 +99,47 @@
                         <svg class="w-5 h-5">
                             <use xlink:href="#cart"></use>
                         </svg>
-                        <span class="text-xs ml-1">(2)</span>
+                        <span class="text-xs ml-1 price_count">({{ count(cart()->get()) }})</span>
                     </a>
                     <div class="absolute right-0 w-72 bg-white shadow-lg rounded-md p-4 z-50 hidden group-hover:block">
                         <div class="flex justify-between items-center mb-4">
                             <span class="text-primary font-medium">Your cart</span>
-                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">2</span>
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full price_count">({{
+                                count(cart()->get()) }})</span>
                         </div>
-                        <ul class="space-y-4 mb-4">
-                            <li class="flex justify-between">
-                                <div>
-                                    <h5 class="font-medium"><a href="single-product.html" class="hover:text-primary">Secrets of the
-                                            Alchemist</a></h5>
-                                    <p class="text-xs text-gray-500">High quality in good price.</p>
-                                </div>
-                                <span class="text-primary">$870</span>
-                            </li>
-                            <li class="flex justify-between">
-                                <div>
-                                    <h5 class="font-medium"><a href="single-product.html" class="hover:text-primary">Quest for the
-                                            Lost City</a></h5>
-                                    <p class="text-xs text-gray-500">Professional Quest for the Lost City.</p>
-                                </div>
-                                <span class="text-primary">$600</span>
-                            </li>
-                            <li class="flex justify-between border-t pt-2">
-                                <span class="font-bold">Total (USD)</span>
-                                <strong>$1470</strong>
-                            </li>
+                        <ul class="space-y-4 mb-4" id="cartData">
+                            @empty(cart()->get())
+                                <li>
+                                    <span class="text-primary text-center font-medium">Your cart is empty</span>
+                                </li>
+                            @else
+                                @foreach(cart()->get() as $cart)
+                                    <li class="flex justify-between">
+                                        <div>
+                                            <h5 class="font-medium">
+                                                <a href="single-product.html" class="hover:text-primary">
+                                                    {{ $cart->getBook()->title }}
+                                                </a>
+                                            </h5>
+                                            <p class="text-xs text-gray-500">Quantity - {{ $cart->getQuantity() }}</p>
+                                        </div>
+                                        <span class="text-primary">{{ $cart->getBook()->currency->synbol . '' . $cart->getSubtotal() }}</span>
+                                    </li>
+                                @endforeach
+                                <li class="flex justify-between border-t pt-2">
+                                    <span class="font-bold">Total ({{ $cart->getBook()->currency->code }})</span>
+                                    <strong>{{ cart()->total() }}</strong>
+                                </li>
+                          
+                            @endempty
                         </ul>
                         <div class="space-y-2">
                             <a href="/cart"
-                               class="block w-full bg-dark text-white py-2 text-center rounded hover:bg-opacity-90">View Cart</a>
+                                class="block w-full bg-dark text-white py-2 text-center rounded hover:bg-opacity-90">View
+                                Cart</a>
                             <a href="/checkout"
-                               class="block w-full bg-primary text-white py-2 text-center rounded hover:bg-opacity-90">Go to
+                                class="block w-full bg-primary text-white py-2 text-center rounded hover:bg-opacity-90">Go
+                                to
                                 checkout</a>
                         </div>
                     </div>
@@ -136,8 +149,7 @@
     </div>
 
     <!-- Mobile Menu (Offcanvas) -->
-    <div
-        class="fixed block md:hidden inset-y-0 right-0 w-full max-w-xs bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50"
+    <div class="fixed block md:hidden inset-y-0 right-0 w-full max-w-xs bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50"
         :class="{'translate-x-0': mobileMenuOpen, 'translate-x-full': !mobileMenuOpen}">
         <div class="flex justify-between items-center p-4 border-b">
             <a href="/">

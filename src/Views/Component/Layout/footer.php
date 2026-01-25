@@ -95,8 +95,8 @@
                 <div>
                     <h5 class="font-bold pb-2 capitalize">Contact Us</h5>
                     <p class="mb-2">Do you have any queries or suggestions? <a href="mailto:"
-                                                                               class="underline">yourinfo@gmail.com</a></p>
-                    <p>If you need support? Just give us a call. <a href="#" class="underline">+55 111 222 333 44</a></p>
+                                                                               class="underline">{{ setting()->email ?? '' }}</a></p>
+                    <p>If you need support? Just give us a call. <a href="#" class="underline">{{ setting()->phone ?? '' }}</a></p>
                 </div>
             </div>
         </div>

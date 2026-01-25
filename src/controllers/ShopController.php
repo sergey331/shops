@@ -27,7 +27,9 @@ class ShopController extends BaseController
         $tags = model('Tag')->get();
         $this->view()->load('Shop.Index', [
             'title' => 'Shop',
-            'books' => $books,
+            'booksData' => $this->view()->getHtml('Shop.Books',[
+                'books' => $books
+            ]),
             'authors' => $authors,
             'categories' => $categories,
             'tags' => $tags

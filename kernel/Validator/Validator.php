@@ -12,7 +12,7 @@ class Validator implements ValidatorInterface
         'required', 'email', 'url', 'integer', 'string',
         'max', 'min', 'between', 'confirmed', 'unique',
         'image', 'mimes', 'nullable', 'decimal', 'array',
-        'after'
+        'after','phone'
     ];
 
     protected array $rules = [];
@@ -121,6 +121,20 @@ class Validator implements ValidatorInterface
 
         return true;
     }
+
+    public function validatePhone(string $field, $rule, $param, $value): bool
+{
+    // Remove common separators
+    $clean = preg_replace('/[\s\-\(\)]/', '', $value);
+
+    // Must be digits, may start with +
+    if (!preg_match('/^\+?\d{7,15}$/', $clean)) {
+        $this->addError($field, "The {$field} field is incorrect format.", $rule);
+        return false;
+    }
+
+    return true;
+}
 
     public function validateAfter(string $field, $rule, $param, $value)
     {

@@ -159,7 +159,7 @@ class Table
                 }
 
                 if (isset($col['data']) && $col['data']['type'] === 'image') {
-                    $value = "<img src='". $col['data']['path'] ."/" . $value . "' width='60' height='60' />";
+                    $value = !empty($value) ?  "<img src='". $col['data']['path'] ."/" . $value . "' width='60' height='60' />" : "";
                 }
 
                 $html .= '<td' . $this->attrs($attrs) . '>' . $value . '</td>';
