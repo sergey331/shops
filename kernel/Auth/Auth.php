@@ -3,6 +3,9 @@
 namespace Kernel\Auth;
 
 use Kernel\Auth\interface\AuthInterface;
+use Kernel\Cart\Cart;
+use Kernel\Cart\DbCartStorage;
+use Kernel\Cart\SessionCartStorage;
 use Kernel\Hash\Hash;
 
 class Auth implements AuthInterface
@@ -173,5 +176,22 @@ class Auth implements AuthInterface
     private function expireTime(): int
     {
         return (int) config('auth.session_expire', 2592000);
+    }
+
+    public function setCart(): void
+    {
+        $sessionCart = new Cart(
+            new SessionCartStorage()
+        );
+
+        $dbCart = new Cart(
+            new DbCartStorage()
+        );
+
+        foreach ($sessionCart->get() as $item) {
+            $dbCart->add($item->getBookId(), $item->getQty());
+        }
+
+        session()->remove('cart');
     }
 }

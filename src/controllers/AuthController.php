@@ -1,8 +1,11 @@
 <?php 
 namespace Shop\controllers;
 
+use Kernel\Cart\DbCartStorage;
+use Kernel\Cart\SessionCartStorage;
 use Kernel\Controller\BaseController;
 use Kernel\Validator\Validator;
+use Kernel\Cart\Cart;
 use Shop\rules\AuthRule;
 
 
@@ -38,6 +41,7 @@ class AuthController extends BaseController
         if ($this->auth()->isAdmin()) {
             $this->redirect()->to('/admin');
         }
+        $this->auth()->setCart();
         $this->redirect()->to('/');
     }
 

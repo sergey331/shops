@@ -21,7 +21,6 @@
                 <div class="detail md:pl-12 mt-12 lg:mt-0">
                     <div class="display-header">
 
-                        <?php $about->content ?>
                         <a href="/shop"
                            class="btn mt-6 inline-block px-6 py-3 bg-primary text-white rounded-md transition">
                             Go to shop

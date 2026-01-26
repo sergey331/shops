@@ -15,4 +15,6 @@ interface AuthInterface
     public function user();
 
     public function logout(): void;
+
+    public function setCart(): void;
 }

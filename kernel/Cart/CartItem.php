@@ -1,66 +1,56 @@
 <?php
 namespace Kernel\Cart;
 
-use JsonSerializable;
-use Kernel\Cart\Interface\CartItemInterface;
+use Shop\model\Book;
 
-
-class CartItem implements JsonSerializable
+class CartItem
 {
     private int $bookId;
-    private int $quantity;
-    private float $price;
-    private ?object $book = null;
+    private int $qty;
+    private ?Book $book = null;
 
-    public function __construct(int $bookId, int $quantity, float $price)
+    public function __construct(int $bookId, int $qty)
     {
         $this->bookId = $bookId;
-        $this->quantity = $quantity;
-        $this->price = $price;
+        $this->qty = $qty;
     }
 
     public function getBookId(): int
     {
         return $this->bookId;
     }
-    public function getQuantity(): int
+
+    public function getQty(): int
     {
-        return $this->quantity;
-    }
-    public function getPrice(): float
-    {
-        return $this->price;
-    }
-    public function getSubtotal(): float
-    {
-        return $this->price * $this->quantity;
+        return $this->qty;
     }
 
-    public function increaseQuantity(int $by = 1): void
+    public function setQty(int $qty): void
     {
-        $this->quantity += $by;
-    }
-    public function setQuantity(int $qty): void
-    {
-        $this->quantity = $qty;
+        $this->qty = $qty;
     }
 
-    public function setBook(?object $book): void
+    public function increase(int $qty): void
+    {
+        $this->qty += $qty;
+    }
+
+    public function setBook(?Book $book): void
     {
         $this->book = $book;
     }
-    public function getBook(): ?object
+
+    public function getBook(): ?Book
     {
         return $this->book;
     }
-    public function jsonSerialize(): array
+
+    public function getSubtotal(): float
     {
-        return [
-            'book_id' => $this->bookId,
-            'quantity' => $this->quantity,
-            'price' => $this->price,
-            'subtotal' => $this->price * $this->quantity,
-            'book' => $this->book
-        ];
+        if (!$this->book) {
+            return 0.0;
+        }
+
+        return $this->book->price * $this->qty;
     }
 }

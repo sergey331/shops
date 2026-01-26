@@ -21,17 +21,31 @@ class CartController extends BaseController
     {
         $this->view()->load('Cart.Index', [
             'title' => 'Cart',
+            'cartContent' => $this->view()->getHtml('Component.Cart.CartContent',[])
         ]);
 
     }
 
     public function add()
     {
-        if ($this->cartService->save()) {
+        if ($cart = $this->cartService->save()) {
             $this->response()->json([
                 'success' => true,
-                'quantity' => count(cart()->get()),
-                'cartHtml' => $this->view()->getHtml('Component.Cart.Index', [])
+                'quantity' => count($cart->get()),
+                'cartHtml' => $this->view()->getHtml('Component.Cart.Index', [
+                    'cart' => $cart
+                ])
+            ]);
+        }
+    }
+
+    public function update()
+    {
+        if ($cart = $this->cartService->update()) {
+            $this->response()->json([
+                'success' => true,
+                'quantity' => count($cart->get()),
+                'cartContent' => $this->view()->getHtml('Component.Cart.CartContent', [])
             ]);
         }
     }

@@ -2,84 +2,63 @@
 
 namespace Kernel\Cart;
 
+use Kernel\Cart\interface\CartStorageInterface;
+
 class Cart
 {
-    private array $cart;
+    /** @var CartItem[] */
+    private array $cart = [];
 
-    public function __construct()
-    {
-        if (!session()->has('cart')) {
-            session()->set('cart', []);
-        }
-
-        $this->cart = session()->get('cart');
+    public function __construct(
+        private readonly CartStorageInterface $storage
+    ) {
+        $this->cart = $this->storage->load();
     }
 
-    public function add(CartItem $cartItem): void
+    public function add(int $bookId, int $qty = 1): void
     {
-        foreach ($this->cart as $item) {
-            if ($item->getBookId() === $cartItem->getBookId()) {
-                $item->increaseQuantity($cartItem->getQuantity());
-                return;
-            }
+        if (!isset($this->cart[$bookId])) {
+            $this->cart[$bookId] = new CartItem($bookId, 0);
         }
 
-        $this->cart[] = $cartItem;
+        $this->cart[$bookId]->increase($qty);
+        $this->save();
     }
 
-    public function update(CartItem $cartItem): void
+    public function update(int $bookId, int $qty): void
     {
-        foreach ($this->cart as $item) {
-            if ($item->getBookId() === $cartItem->getBookId()) {
-                $item->setQuantity($cartItem->getQuantity());
-                return;
-            }
+        if ($qty <= 0) {
+            unset($this->cart[$bookId]);
+        } else {
+            $this->cart[$bookId]->setQty($qty);
         }
+
+        $this->save();
     }
 
-    // Return cart with books loaded (single query)
     public function get(): array
     {
-
         foreach ($this->cart as $item) {
             $book = model('Book')->find($item->getBookId());
-            $item->setBook($book ?? null);
+            $item->setBook($book ?: null);
         }
 
         return $this->cart;
     }
 
-    // Total using stored price
+    private function save(): void
+    {
+        $this->storage->save($this->cart);
+    }
+
     public function total(): float
     {
         $total = 0.0;
-        foreach ($this->cart as $item) {
-            $total += $item->getSubtotal(); // uses stored price
+
+        foreach ($this->get() as $item) {
+            $total += $item->getSubtotal();
         }
+
         return $total;
     }
-
-    public function remove(int $bookId): void
-    {
-        foreach ($this->cart as $key => $item) {
-            if ($item->getBookId() === $bookId) {
-                unset($this->cart[$key]);
-                // Re-index numeric array if needed
-                $this->cart = array_values($this->cart);
-                return;
-            }
-        }
-    }
-
-    public function clear(): void
-    {
-        $this->cart = [];
-    }
-
-    public function __destruct()
-    {
-        session()->set('cart', $this->cart);
-    }
-
-
 }

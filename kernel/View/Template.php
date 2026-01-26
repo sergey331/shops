@@ -2,6 +2,9 @@
 
 namespace Kernel\View;
 
+use Kernel\Cart\Cart;
+use Kernel\Cart\DbCartStorage;
+use Kernel\Cart\SessionCartStorage;
 use Kernel\Container\Container;
 use Kernel\View\interface\TemplateInterface;
 
@@ -119,9 +122,12 @@ class Template implements TemplateInterface
 
     private function prepareData(array $data = []): array
     {
+        $cartStorage = auth()->check() ? new DbCartStorage() : new SessionCartStorage();
+        $cart = new Cart($cartStorage);
         return array_merge($data, [
             'session' => $this->container->get('session'),
             'auth'    => $this->container->get('auth'),
+            'cart'    => $cart
         ]);
     }
 

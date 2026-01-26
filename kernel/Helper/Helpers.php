@@ -68,8 +68,3 @@ function setting()
 {
     return (new SettingService())->getSetting();
 }
-
-function cart()
-{
-    return container()->get('cart');
-}
