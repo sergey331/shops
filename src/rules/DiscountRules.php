@@ -12,7 +12,8 @@ class DiscountRules implements interface\RulesInterface
         return [
             'price'             => 'required|integer',
             'started_at'        => 'required|after',
-            'finished_at'       => 'nullable|after:started_at'
+            'finished_at'       => 'nullable|after:started_at',
+            'type'              => 'required'
         ];
     }
 

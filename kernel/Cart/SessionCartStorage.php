@@ -14,8 +14,8 @@ class SessionCartStorage implements CartStorageInterface
 
         foreach ($cart as $bookId => $row) {
             $items[$bookId] = new CartItem(
-                (int)$bookId,
-                (int)$row['qty']
+                (int) $bookId,
+                (int) $row['qty']
             );
         }
 
@@ -33,5 +33,15 @@ class SessionCartStorage implements CartStorageInterface
         }
 
         session()->set('cart', $cart);
+    }
+
+    public function remove(int $bookId): void
+    {
+        $cart = session()->get('cart');
+
+        if (isset($cart[$bookId])) {
+            unset($cart[$bookId]);
+            session()->set('cart', $cart);
+        }
     }
 }

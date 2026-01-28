@@ -11,4 +11,6 @@ interface CartStorageInterface
 
     /** @param CartItem[] $items */
     public function save(array $items): void;
+
+    public function remove(int $bookId): void;
 }

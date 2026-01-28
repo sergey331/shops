@@ -75,6 +75,8 @@ class Book extends Model
     }
     public function discount() 
     {
-        return $this->hasOne(BookDiscount::class);
+        return $this->hasOne(BookDiscount::class)
+        ->whereOp('finished_at','>', date('Y-m-d'))
+        ->whereOp('started_at','<=', date('Y-m-d'));
     }
 }

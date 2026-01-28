@@ -30,4 +30,15 @@ class CartService
 
         return $cart;
     }
+
+    public function remove()
+    {
+        $book_id = request()->input('book_id');
+        $cartStorage = auth()->check() ? new DbCartStorage() : new SessionCartStorage();
+
+        $cart = new Cart($cartStorage);
+        $cart->remove($book_id);
+
+        return $cart;
+    }
 }

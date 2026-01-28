@@ -23,3 +23,4 @@ Route::get('/cart', [CartController::class, 'index']);
 Route::get('/checkout', [CheckoutController::class, 'index']);
 Route::post('/cart/add',[CartController::class,'add']);
 Route::post('/cart/update',[CartController::class,'update']);
+Route::post('/cart/remove',[CartController::class,'remove']);

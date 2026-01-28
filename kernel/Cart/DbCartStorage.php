@@ -58,4 +58,14 @@ class DbCartStorage implements CartStorageInterface
             ]);
         }
     }
+
+    public function remove(int $bookId): void
+    {
+       model('CartItem')
+            ->where([
+                'cart_id' => $this->cartId,
+                'book_id' => $bookId
+            ])
+            ->delete();
+    }
 }

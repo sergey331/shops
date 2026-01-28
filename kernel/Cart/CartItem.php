@@ -45,12 +45,29 @@ class CartItem
         return $this->book;
     }
 
-    public function getSubtotal(): float
+    public function getSubtotal()
     {
         if (!$this->book) {
             return 0.0;
         }
 
-        return $this->book->price * $this->qty;
+        return formatNumber($this->getPrice() * $this->qty);
+    }
+
+    private function getPrice()
+    {
+        $finalPrice = 0;
+        if ($this->book->discount) {
+            if ($this->book->discount->type === "percentage") {
+                $finalPrice = $this->book->price - ($this->book->price * $this->book->discount->price / 100);
+            } else if ($this->book->discount->type === "fixed") {
+                $finalPrice = $this->book->price - $this->book->discount->price;
+            }
+
+            $finalPrice = $finalPrice < 0 ? 0 : $finalPrice;
+        } else {
+            $finalPrice = $this->book->price;
+        }
+        return $finalPrice;
     }
 }

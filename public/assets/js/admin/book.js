@@ -106,13 +106,15 @@ $(document).ready(function () {
         const $price = $("#discount_show_price");
         const $started = $("#discount_show_started");
         const $finished = $("#discount_show_finished");
+        const $type =     $("#discount_show_type");
 
         let book_id = $('#book_id').val();
 
         let data = {
             price: $('#discount_price').val(),
             started_at: $('#discount_started_at').val(),
-            finished_at: $('#discount_finished_at').val()
+            finished_at: $('#discount_finished_at').val(),
+            type: $('#discount_type').val()
         };
 
         $.ajax({
@@ -126,7 +128,7 @@ $(document).ready(function () {
                     $price.html(res.discount.price);
                     $started.html(res.discount.started_at);
                     $finished.html(res.discount.finished_at);
-
+                    $type.html(res.discount.type)
                     $("#discountBook").modal("hide");
                     toastr.success("Discount uploaded successfully!");
                 }

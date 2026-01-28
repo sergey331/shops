@@ -293,19 +293,16 @@ class ModelWhere implements ModelWhereInterface
         }
 
         foreach ($this->whereOp as $h) {
-            $parts[] = "{$h['field']} {$h['op']} ?";
-            $and[] = '(' . implode(' AND ', $parts) . ')';
-            $data[]  = $h['value'];
-        }
+    $and[] = "({$h['field']} {$h['op']} ?)";
+    $data[] = $h['value'];
+}
 
-        if (!empty($this->orWhereOp)) {
-            foreach ($this->orWhereOp as $h) {
-                $parts[] = "{$h['field']} {$h['op']} ?";
-                $or[] = '(' . implode(' OR ', $parts) . ')';
-                $data[] = $h['value'];
-            }
-        }
-
+// OR WHERE field OP ?
+foreach ($this->orWhereOp as $h) {
+    $or[] = "({$h['field']} {$h['op']} ?)";
+    $data[] = $h['value'];
+}
+// dd($data);
         /* ----------------------------------------------------
          | 7) WHERE != (AND)
          ---------------------------------------------------- */

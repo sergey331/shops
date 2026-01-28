@@ -4,6 +4,7 @@ namespace Shop\controllers\admin;
 
 use Kernel\Controller\BaseController;
 use Shop\model\Book;
+use Shop\model\BookDiscount;
 use Shop\model\BookImage;
 use Shop\service\BooksService;
 
@@ -65,7 +66,8 @@ class BookController extends BaseController
     public function show(Book $book)
     {
         $this->view()->load('Admin.Book.Show', [
-            'book' => $book
+            'book' => $book,
+            'discountTypes' => BookDiscount::TYPES
         ], 'admin');
     }
 

@@ -100,15 +100,19 @@
                     </button>
                 </div>
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <strong>Price:</strong><br>
                         <span id="discount_show_price">{{ $book->discount->price ?? '-' }}</span>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
+                        <strong>Type:</strong><br>
+                        <span id="discount_show_type" class="text-capitalize">{{ $book->discount->type ?? '-' }}</span>
+                    </div>
+                    <div class="col-sm-3">
                         <strong>Started:</strong><br>
                         <span id="discount_show_started">{{ $book->discount->started_at ?? '-' }}</span>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <strong>Finished:</strong><br>
                         <span id="discount_show_finished">{{ $book->discount->finished_at ?? '-' }}</span>
                     </div>
@@ -225,6 +229,16 @@
                         value="{{ $book->discount->price ?? '' }}" />
                     <div class="errors" id="price-error"></div>
 
+                </div>
+
+                <div class="form-group">
+                    <label for="discount_type">Type</label>
+                    <select id="discount_type" class="form-control">
+                        <option value="">Select Type</option>
+                        @foreach($discountTypes as $k => $v)
+                            <option value="{{ $k }}">{{ $v }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="form-group">

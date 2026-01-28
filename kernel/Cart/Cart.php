@@ -36,6 +36,11 @@ class Cart
         $this->save();
     }
 
+    public function remove($bookId): void 
+    {   
+        $this->storage->remove($bookId);
+    }
+
     public function get(): array
     {
         foreach ($this->cart as $item) {
@@ -51,7 +56,7 @@ class Cart
         $this->storage->save($this->cart);
     }
 
-    public function total(): float
+    public function total()
     {
         $total = 0.0;
 
@@ -59,6 +64,6 @@ class Cart
             $total += $item->getSubtotal();
         }
 
-        return $total;
+        return formatNumber($total);
     }
 }
