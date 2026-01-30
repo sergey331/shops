@@ -6,6 +6,7 @@ use Kernel\Console\Commands\ControllerMakeCommand;
 use Kernel\Console\Commands\MigrationMakeCommand;
 use Kernel\Console\Commands\ModelMakeCommand;
 use Kernel\Console\Commands\SeederMakeCommand;
+use Kernel\Console\Commands\ServiceMakeCommand;
 use Kernel\Console\interface\MakeInterface;
 
 class Make implements MakeInterface
@@ -39,6 +40,10 @@ class Make implements MakeInterface
     private function model(): void
     {
         (new ModelMakeCommand($this->argument))->make();
+    }
+    private function service(): void
+    {
+        (new ServiceMakeCommand($this->argument))->make();
     }
 
 }

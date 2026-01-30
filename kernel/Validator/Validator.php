@@ -241,7 +241,7 @@ class Validator implements ValidatorInterface
         }
 
         // Numeric
-        if (is_numeric($value)) {
+        if (is_int($value)) {
             if ($value > $max) {
                 $this->addError($field, "The {$field} must not be greater than {$max}.", $rule);
                 return false;

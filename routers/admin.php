@@ -4,6 +4,7 @@ use Kernel\Route\Route;
 use Shop\controllers\admin\AboutController as AdminAboutController;
 use Shop\controllers\admin\AdminController;
 use Shop\controllers\admin\CategoryController;
+use Shop\controllers\admin\DiscountController;
 use Shop\controllers\admin\PostController;
 use Shop\controllers\admin\SlidersController;
 use Shop\controllers\admin\BookController;
@@ -61,5 +62,9 @@ Route::prefix("/admin")->group(function () {
         Route::get('/', [SettingController::class, 'index']);
         Route::get('/{setting}', [SettingController::class, 'edit']);
         Route::post('/edit/{setting}', [SettingController::class, 'save']);
+    });
+
+    Route::group(['prefix' => '/discounts'], function () {
+        Route::get('/',[DiscountController::class,'index']);
     });
 });
