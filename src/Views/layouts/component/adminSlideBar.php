@@ -16,6 +16,7 @@
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href="/admin/categories">Categories</a></li>
                     <li class="nav-item"> <a class="nav-link" href="/admin/books">Books</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="/admin/discounts">Discounts</a></li>
                 </ul>
             </div>
         </li>

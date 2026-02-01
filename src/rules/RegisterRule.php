@@ -4,7 +4,7 @@ namespace Shop\rules;
 
 use Shop\rules\interface\RulesInterface;
 
-class RegisterRule implements interface\RulesInterface
+class RegisterRule implements RulesInterface
 {
 
     public static function rules(): array

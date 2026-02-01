@@ -12,7 +12,7 @@ use Shop\rules\BookRules;
 use Kernel\Service\BaseService;
 use Kernel\Validator\Validator;
 use Shop\rules\BookEditRules;
-use Shop\rules\DiscountRules;
+use Shop\rules\BookDiscountRules;
 
 class BooksService extends BaseService
 {
@@ -291,7 +291,7 @@ class BooksService extends BaseService
     {
 
         $data = request()->all();
-        $validator = Validator::make($data, DiscountRules::rules(), DiscountRules::messages());
+        $validator = Validator::make($data, BookDiscountRules::rules());
 
         if (!$validator->validate()) {
             return [

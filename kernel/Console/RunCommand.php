@@ -25,6 +25,7 @@ class RunCommand implements RunCommandInterface
         'make:controller'=> [self::class, 'handleMake'],
         'make:model'     => [self::class, 'handleMake'],
         'make:service'   => [self::class, 'handleMake'],
+        'make:rule'   => [self::class, 'handleMake'],
     ];
 
     /**

@@ -66,5 +66,8 @@ Route::prefix("/admin")->group(function () {
 
     Route::group(['prefix' => '/discounts'], function () {
         Route::get('/',[DiscountController::class,'index']);
+        Route::get('/create',[DiscountController::class,'create']);
+        Route::post('/store', [DiscountController::class,'store']);
+        Route::get('/show/{discount}',[DiscountController::class,'show']);
     });
 });

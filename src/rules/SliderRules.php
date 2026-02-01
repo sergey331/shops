@@ -4,7 +4,7 @@ namespace Shop\rules;
 
 use Shop\rules\interface\RulesInterface;
 
-class SliderRules implements interface\RulesInterface
+class SliderRules implements RulesInterface
 {
 
     public static function rules(): array

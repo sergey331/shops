@@ -5,6 +5,7 @@ namespace Kernel\Console;
 use Kernel\Console\Commands\ControllerMakeCommand;
 use Kernel\Console\Commands\MigrationMakeCommand;
 use Kernel\Console\Commands\ModelMakeCommand;
+use Kernel\Console\Commands\RuleMakeCommand;
 use Kernel\Console\Commands\SeederMakeCommand;
 use Kernel\Console\Commands\ServiceMakeCommand;
 use Kernel\Console\interface\MakeInterface;
@@ -46,4 +47,8 @@ class Make implements MakeInterface
         (new ServiceMakeCommand($this->argument))->make();
     }
 
+    private function rule()
+    {
+        (new RuleMakeCommand($this->argument))->make();
+    }
 }

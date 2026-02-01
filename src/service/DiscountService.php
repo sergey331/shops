@@ -2,35 +2,121 @@
 namespace Shop\service;
 
 use Kernel\Form\Form;
+use Kernel\Table\Table;
+use Shop\model\Discount;
+use Shop\rules\DiscountRule;
 use Kernel\Service\BaseService;
-use Shop\model\Disacount;
+use Kernel\Validator\Validator;
 
 class DiscountService extends BaseService
 {
-    public function getDiscountForm($url,?Disacount $discount = null)
-    {
-        $form = new Form($url,'POST');
 
-        $form->setInput('name','Name',[
+
+    public function getDiscountsData()
+    {
+        $discounts = model('Discount')->with(['targets'])->paginate();
+        return [
+            'discounts' => $discounts,
+            'tableData' => $this->getTableData($discounts)
+        ];
+    }
+
+    public function storeOrUpdate(?Discount $discount = null)
+    {
+        $data = request()->all();
+       
+        $validator = Validator::make($data,DiscountRule::rules());
+
+        if (!$validator->validate()) {
+            session()->set('errors',$validator->errors());
+            return false;
+        }
+
+        if ($data['min_order_amount'] === '') {
+            unset($data['min_order_amount']);
+        }
+
+        if ($data['finished_at'] === '') {
+            unset($data['finished_at']);
+        }
+
+        if ($discount) {
+            $discount->update($data);
+        } else {
+            model('Discount')->create($data);
+        }
+
+        return true;
+    } 
+    public function getDiscountForm($url, ?Discount $discount = null)
+    {
+        $errors = session()->getCLean('errors') ?? [];
+        $form = new Form($url, 'POST',errors: $errors);
+
+        $form->setInput('name', 'Name', [
             'class' => 'form-control',
             'value' => $discount->name ?? ''
         ]);
 
-        $form->setTextarea('description','Description',[
+        $form->setSelect('type', 'Type',
+        Discount::TYPES, [
             'class' => 'form-control',
-            'value' => $discount->description ?? ''
+            'value' => $discount->type ?? ''
         ]);
 
-        $form->setDate('started_at', "Start",[
+        $form->setNumber('min_order_amount', 'Min order amount', [
+            'class' => 'form-control',
+            'value' => $discount->min_order_amount ?? ''
+        ]);
+
+        $form->setNumber('value', 'Value', [
+            'class' => 'form-control',
+            'value' => $discount->value ?? ''
+        ]);
+
+        $form->setDate('started_at', "Start", [
             'class' => 'form-control',
             'value' => $discount->publication_date ?? ''
         ]);
 
-        $form->setCheckbox('is_active','Active',[
+        $form->setDate('finished_at', "Finish", [
+            'class' => 'form-control',
+            'value' => $discount->finished_at ?? ''
+        ]);
+
+        $form->setCheckbox('is_active', 'Active', [
             'class' => 'form-check-input',
-            'checked' => (bool) $discount->is_active,
+            'checked' => (bool) ($discount->is_active ?? false),
             'value' => 1
         ]);
         return $form;
     }
+    private function getTableData($discounts)
+    {
+        $table = new Table($discounts->data, [
+            "#" => ['field' => 'id'],
+            "Name" => ['field' => 'name'],
+            "Type" => ['field' => 'type'],
+            "Value" => ['field' => 'value'],
+            "Min order amount" => ['field' => 'min_order_amount'],
+            "Started at" => ['field' => 'started_at'],
+            'Finished at' => ['field' => 'finished_at'],
+            "Actions" => [
+                'callback' => function ($row) {
+                    $id = $row->id;
+                    return '
+                        <form action="/admin/discounts/delete/' . $id . '" method="POST"> 
+                            <button type="submit"  class="btn btn-sm btn-danger">Delete</button>
+                        </form> 
+                        <a href="/admin/discounts/show/' . $id . '" class="btn btn-sm btn-primary text-white">Show</a>
+                    ';
+                },
+            ]
+        ]);
+
+        $table
+            ->setTableAttributes(['class' => 'table']);
+        return $table;
+    }
+
 }
