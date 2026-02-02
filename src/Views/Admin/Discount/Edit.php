@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title">New discount</h4>
+        <h4 class="card-title">Edit discount</h4>
 
         {{ $forms->render() }}
     </div>

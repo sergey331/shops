@@ -67,6 +67,10 @@ class SettingService extends BaseService
             'class' => 'form-control',
             'value' => $setting->phone ?? ''
         ]);
+        $form->setNumber('default_discount_days', 'Default discount days', [
+            'class' => 'form-control',
+            'value' => $setting->default_discount_days ?? ''
+        ]);
 
         $form->setFile('logo', 'Logo', [
             'class' => 'form-control'
@@ -83,6 +87,7 @@ class SettingService extends BaseService
             "Email" => ['field' => 'email'],
             "Phone" => ['field' => 'phone'],
             "Address" => ['field' => 'address'],
+            "Default discount days" => ['field' => 'default_discount_days'],
             "Logo" => ['field' => 'logo', 'data' => ['type' => 'image', 'path' => "/uploads/setting"]],
             "Actions" => [
                 'callback' => function ($row) {

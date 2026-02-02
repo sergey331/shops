@@ -13,7 +13,8 @@ class SettingRules implements RulesInterface
             'email'         => 'required|email',
             'phone'         => 'required|phone',
             'logo'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'address'       => 'required'
+            'address'       => 'required',
+            'default_discount_days' => 'required|integer'
         ];
     }
 

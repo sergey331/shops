@@ -371,11 +371,13 @@ class BooksService extends BaseService
                 'callback' => function ($row) {
                     $id = $row->id;
                     return '
-                        <a href="/admin/books/' . $id . '" class="btn btn-sm btn-primary text-white">Edit</a>
-                        <form action="/admin/books/delete/' . $id . '" method="POST"> 
-                        <button type="submit"  class="btn btn-sm btn-danger">Delete</button>
-                        </form> 
-                        <a href="/admin/books/show/' . $id . '" class="btn btn-sm btn-primary text-white">Show</a>
+                        <div class="d-flex gap-1">
+                            <a href="/admin/books/' . $id . '" class="btn btn-sm btn-primary text-white">Edit</a>
+                            <form action="/admin/books/delete/' . $id . '" method="POST"> 
+                            <button type="submit"  class="btn btn-sm btn-danger">Delete</button>
+                            </form> 
+                            <a href="/admin/books/show/' . $id . '" class="btn btn-sm btn-primary text-white">Show</a>
+                        </div>    
                     ';
                 },
             ]

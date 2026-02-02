@@ -4,6 +4,7 @@ namespace Shop\service;
 use Kernel\Form\Form;
 use Kernel\Table\Table;
 use Shop\model\Discount;
+use Shop\model\DiscountTarget;
 use Shop\rules\DiscountRule;
 use Kernel\Service\BaseService;
 use Kernel\Validator\Validator;
@@ -14,7 +15,7 @@ class DiscountService extends BaseService
 
     public function getDiscountsData()
     {
-        $discounts = model('Discount')->with(['targets'])->paginate();
+        $discounts = model('Discount')->paginate();
         return [
             'discounts' => $discounts,
             'tableData' => $this->getTableData($discounts)
@@ -47,7 +48,16 @@ class DiscountService extends BaseService
         }
 
         return true;
-    } 
+    }
+
+    public function delete(Discount $discount): true
+    {
+        $discount->delete();
+        return true;
+    }
+
+
+
     public function getDiscountForm($url, ?Discount $discount = null)
     {
         $errors = session()->getCLean('errors') ?? [];
@@ -76,7 +86,7 @@ class DiscountService extends BaseService
 
         $form->setDate('started_at', "Start", [
             'class' => 'form-control',
-            'value' => $discount->publication_date ?? ''
+            'value' => $discount->started_at ?? ''
         ]);
 
         $form->setDate('finished_at', "Finish", [
@@ -105,10 +115,12 @@ class DiscountService extends BaseService
                 'callback' => function ($row) {
                     $id = $row->id;
                     return '
-                        <form action="/admin/discounts/delete/' . $id . '" method="POST"> 
-                            <button type="submit"  class="btn btn-sm btn-danger">Delete</button>
-                        </form> 
-                        <a href="/admin/discounts/show/' . $id . '" class="btn btn-sm btn-primary text-white">Show</a>
+                        <div class="d-flex gap-1">
+                            <a href="/admin/discounts/edit/' . $id . '" class="btn btn-sm btn-primary text-white">Edit</a>Fv
+                            <form action="/admin/discounts/delete/' . $id . '" method="POST"> 
+                                <button type="submit"  class="btn btn-sm btn-danger">Delete</button>
+                            </form> 
+                        </div>
                     ';
                 },
             ]
@@ -118,5 +130,4 @@ class DiscountService extends BaseService
             ->setTableAttributes(['class' => 'table']);
         return $table;
     }
-
 }

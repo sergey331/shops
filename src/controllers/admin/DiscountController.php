@@ -32,8 +32,21 @@ class DiscountController extends BaseController
         $this->redirect()->to('/admin/discounts');
     }
 
-    public function show(Discount $discount)
+    public function edit(Discount $discount)
     {
-        
+        $this->view()->load('Admin.Discount.Edit', ['forms' => $this->discountService->getDiscountForm('/admin/discounts/update/'.$discount->id, $discount)], 'admin');
+
+    }
+    public function update(Discount $discount)
+    {
+        if (!$this->discountService->storeOrUpdate($discount)) {
+            $this->redirect()->back();
+        }
+
+        $this->redirect()->to('/admin/discounts');
+    }
+    public function delete(Discount $discount) {
+        $this->discountService->delete($discount);
+        $this->redirect()->to('/admin/discounts');
     }
 }

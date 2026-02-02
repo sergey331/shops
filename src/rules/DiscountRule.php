@@ -9,8 +9,8 @@ class DiscountRule implements RulesInterface
     {
         return [
             'name' => 'required',
-            'value' => 'required|integer',
-            'min_order_amount' => 'nullable|integer',
+            'value' => 'required|decimal',
+            'min_order_amount' => 'nullable|decimal',
             'started_at' => 'required|after',
             'finished_at' => 'nullable|after:started_at',
             'type' => 'required'

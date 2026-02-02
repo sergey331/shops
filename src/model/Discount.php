@@ -20,9 +20,4 @@ class Discount extends Model
         'is_active',
         'value'
     ];
-
-    public function targets(): HasMany 
-    {
-        return $this->hasMany(DiscountTarget::class);
-    }
 }

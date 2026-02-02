@@ -1,5 +1,6 @@
-<section id="limited-offer" class="py-28 bg-counter bg-cover bg-no-repeat bg-center">
-    <div class="container mx-auto px-4 h-full">
+<section id="limited-offer" class="py-28 bg-counter bg-cover bg-no-repeat bg-center flex">
+    @foreach ($discounts as $discount)
+    <div class="container mx-auto my-2 px-4 h-full">
         <div class="flex flex-col md:flex-row items-center h-full">
             <!-- Image Column -->
             <div class="w-full md:w-1/2 text-center">
@@ -42,4 +43,5 @@
             </div>
         </div>
     </div>
+    @endforeach
 </section>

@@ -14,7 +14,7 @@ class Disacount implements MigrationsInterface
             $field->id();
             $field->string('name');
             $field->enum('type', ['percentage', 'fixed']);
-            $field->decimal('value', 10, 2);
+            $field->decimal('value');
             $field->decimal('min_order_amount')->nullable();
             $field->date('started_at');
             $field->date('finished_at')->nullable();

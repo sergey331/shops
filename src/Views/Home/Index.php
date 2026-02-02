@@ -5,8 +5,9 @@
 
 @include('Component.Home.best_selling')
 
-@include('Component.Home.limited_offer')
-
+@count ($discounts)
+    @include('Component.Home.limited_offer')
+@endcount
 @include('Component.Home.items_listing')
 
 @count($categories)

@@ -88,12 +88,12 @@ class Route implements RouteInterface
 
     private static function addRoute(string $method, string $uri, $action, array $params): void
     {
-        self::$routers[] = [
-            'method' => strtoupper($method),
-            'uri' => self::formatUri($uri),
-            'action' => $action,
-            'params' => $params,
-            'group' => self::$is_group ? ['middleware' => self::$currentMiddleware] : [],
-        ];
+        self::$routers[] =  new RouteConfig(
+            strtoupper($method),
+            self::formatUri($uri),
+            $action,
+            $params,
+            self::$is_group ? ['middleware' => self::$currentMiddleware] : []
+        );
     }
 }

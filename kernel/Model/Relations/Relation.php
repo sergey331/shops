@@ -5,6 +5,7 @@ namespace Kernel\Model\Relations;
 use Kernel\Databases\Connection;
 use Kernel\Model\Model;
 use Kernel\Model\ModelWhere;
+use Kernel\Model\Paginator;
 use Kernel\Model\QueryBuilder;
 use Kernel\Model\Trait\ConditionsTrait;
 use ReflectionClass;

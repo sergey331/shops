@@ -38,12 +38,12 @@ class Routers implements RoutersInterface
      */
     private function match(): void
     {
-        /** @var RouteAction $route */
+        /** @var RouteConfig $route */
         $route = $this->container->get('routeAction')->getAction($this->routes);
 
-        if (!empty($route['group']['middleware'])) {
+        if (!empty($route->getGroup()['middleware'])) {
             
-            $middlewares = (array) $route['group']['middleware'];
+            $middlewares = (array) $route->getGroup()['middleware'];
             foreach ($middlewares as $middlewareClass) {
                 $resolver = new RouteMiddleware();
                 $middleware = $resolver->getMiddleware($middlewareClass);
@@ -58,8 +58,8 @@ class Routers implements RoutersInterface
             }
         }
         if ($route) {
-            $action = $route['action'];
-            $params = $route['params'] ?? [];
+            $action = $route->getAction();
+            $params = $route->getParams() ?? [];
 
             if (is_array($action)) {
                 [$controller, $method] = $action;

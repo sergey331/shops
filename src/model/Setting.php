@@ -10,6 +10,7 @@ class Setting extends Model
         'email',
         'phone',
         'address',
-        'logo'
+        'logo',
+        'default_discount_days'
     ];
 }
