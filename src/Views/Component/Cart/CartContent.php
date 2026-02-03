@@ -29,7 +29,7 @@
                                     {{ $book->title }}
                                 </a>
                             </h5>
-                            <div class="text-primary font-light">{{ $book->currency->symbol . '' . $book->price }}</div>
+                            <div class="text-primary font-light">{{ setting()->currency->symbol . '' . $book->price }}</div>
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                     <div class="flex flex-col md:flex-row items-center">
                         <!-- Subtotal -->
                         <div class="w-full md:w-2/12">
-                            <span class="text-2xl font-light text-primary">{{ $book->currency->symbol . '' . $c->getSubtotal() }}</span>
+                            <span class="text-2xl font-light text-primary">{{ setting()->currency->symbol . '' . $c->getSubtotal() }}</span>
                         </div>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                         <th class="py-2 text-left font-medium">Total</th>
                         <td class="py-2 text-right">
                             <span class="text-primary font-light ps-5">
-                                <span>{{ $book->currency->symbol }}</span>{{ $cart->total() }}
+                                <span>{{ setting()->currency->symbol }}</span>{{ $cart->total() }}
                             </span>
                         </td>
                     </tr>

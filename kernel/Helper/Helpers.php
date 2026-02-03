@@ -71,7 +71,6 @@ function setting()
 
 function getBookPrice($book): mixed
 {
-    $html = "";
     if ($book->discount) {
         if ($book->discount->type === "percentage") {
             $finalPrice = $book->price - ($book->price * $book->discount->price / 100);
@@ -80,22 +79,22 @@ function getBookPrice($book): mixed
         }
 
         $finalPrice = $finalPrice < 0 ? 0 : $finalPrice;
-        $html = '<div class="price  font-bold text-lg"><span class="line-through">' . formatNumber($book->price) . ' ' . $book->currency->symbol . '</span> ' . formatNumber($finalPrice) . ' ' . $book->currency->symbol . '</div>';
+        $html = '<div class="price  font-bold text-lg"><span class="line-through">' . formatNumber($book->price) . ' ' . setting()->currency->symbol . '</span> ' . formatNumber($finalPrice) . ' ' . $book->currency->symbol . '</div>';
     } else {
-        $html = '<div class="price  font-bold text-lg">' . formatNumber($book->price) . ' ' . $book->currency->symbol . '</div>';
+        $html = '<div class="price  font-bold text-lg">' . formatNumber($book->price) . ' ' . setting()->currency->symbol . '</div>';
     }
 
     return $html;
 }
 
-function showDiscount($discount, $symbol)
+function showDiscount($discount, $symbol, $key = 'price')
 {
     $text = '';
 
     if ($discount->type === "percentage") {
-        $text = formatNumber($discount->price) . "% off";
+        $text = formatNumber($discount->{$key}) . "% off";
     } else if ($discount->type === "fixed") {
-        $text = $symbol . "" . formatNumber($discount->price) . " off";
+        $text = $symbol . "" . formatNumber($discount->{$key}) . " off";
     }
     return $text;
 }

@@ -49,6 +49,18 @@ class CartController extends BaseController
             ]);
         }
     }
+    public function edit()
+    {
+        if ($cart = $this->cartService->update()) {
+            $this->response()->json([
+                'success' => true,
+                'quantity' => count($cart->get()),
+                'cartHtml' => $this->view()->getHtml('Component.Cart.Index', [
+                    'cart' => $cart
+                ])
+            ]);
+        }
+    }
 
     public function remove()
     {

@@ -4,7 +4,7 @@ namespace Kernel\Route;
 
 use Kernel\Route\interface\RouteConfigInterface;
 
-readonly class RouteConfig implements RouteConfigInterface
+class RouteConfig implements RouteConfigInterface
 {
     public function __construct(
         private string $method = '',
@@ -33,6 +33,11 @@ readonly class RouteConfig implements RouteConfigInterface
     public function getGroup(): array
     {
         return $this->group;
+    }
+
+    public function setParams(array $params): void
+    {
+        $this->params = $params;
     }
 
     public function getParams(): array

@@ -12,7 +12,7 @@ class Book extends Model
 {
     protected string $table = 'books';
 
-    protected array $with = ['authors','categories','tags', 'language','publisher','images', 'discount','currency'];
+    protected array $with = ['authors', 'categories', 'tags', 'language', 'publisher', 'images', 'discount'];
 
     protected array $fillable = [
         'title',
@@ -29,24 +29,18 @@ class Book extends Model
         'publication_date',
         'rating',
         'featured',
-        'status',
-        'currency_id'
+        'status'
     ];
 
     public const STATUS = [
-            'draft' => "Draft",
-            'published' => "Published",
-            'archived' => "Archived"
+        'draft' => "Draft",
+        'published' => "Published",
+        'archived' => "Archived"
     ];
 
-    public function language(): BelongsTo   
+    public function language(): BelongsTo
     {
         return $this->belongsTo(Language::class);
-    }
-
-     public function currency(): BelongsTo   
-    {
-        return $this->belongsTo(Currency::class);
     }
 
     public function publisher(): BelongsTo
@@ -56,27 +50,28 @@ class Book extends Model
 
     public function authors(): BelongsToMany
     {
-        return $this->belongsToMany(Author::class,'book_author');
+        return $this->belongsToMany(Author::class, 'book_author');
     }
 
     public function categories(): BelongsToMany
     {
-        return $this->belongsToMany( Category::class, 'book_category');
+        return $this->belongsToMany(Category::class, 'book_category');
     }
 
-    public function tags(): BelongsToMany 
+    public function tags(): BelongsToMany
     {
-        return $this->belongsToMany( Tag::class, 'book_tag');
+        return $this->belongsToMany(Tag::class, 'book_tag');
     }
 
-    public function images(): HasMany 
+    public function images(): HasMany
     {
         return $this->hasMany(BookImage::class);
     }
-    public function discount() 
+
+    public function discount()
     {
         return $this->hasOne(BookDiscount::class)
-        ->whereOp('finished_at','>', date('Y-m-d'))
-        ->whereOp('started_at','<=', date('Y-m-d'));
+            ->whereOp('finished_at', '>', date('Y-m-d'))
+            ->whereOp('started_at', '<=', date('Y-m-d'));
     }
 }

@@ -47,7 +47,7 @@ document.querySelectorAll('[data-tab-target]').forEach(tab => {
 
     "use strict";
 
-    var searchPopup = function() { 
+    var searchPopup = function() {
       // open search box
       $('#header-nav').on('click', '.search-button', function(e) {
         $('.search-popup').toggleClass('is-visible');
@@ -56,7 +56,7 @@ document.querySelectorAll('[data-tab-target]').forEach(tab => {
       $('#header-nav').on('click', '.btn-close-search', function(e) {
         $('.search-popup').toggleClass('is-visible');
       });
-      
+
       $(".search-popup-trigger").on("click", function(b) {
           b.preventDefault();
           $(".search-popup").addClass("is-visible"),
@@ -88,14 +88,14 @@ document.querySelectorAll('[data-tab-target]').forEach(tab => {
           seconds
         };
       }
-  
+
       function initializeClock(id, endtime) {
         const clock = document.getElementById(id);
         const daysSpan = clock.querySelector('.days');
         const hoursSpan = clock.querySelector('.hours');
         const minutesSpan = clock.querySelector('.minutes');
         const secondsSpan = clock.querySelector('.seconds');
-  
+
         function updateClock() {
           const t = getTimeRemaining(endtime);
           daysSpan.innerHTML = t.days;
@@ -109,10 +109,31 @@ document.querySelectorAll('[data-tab-target]').forEach(tab => {
         updateClock();
         const timeinterval = setInterval(updateClock, 1000);
       }
-  
-      $('#countdown-clock').each(function(){
-        const deadline = new Date(Date.parse(new Date()) + 28 * 24 * 60 * 60 * 1000);
-        initializeClock('countdown-clock', deadline);
+
+      $('.countdown-clock').each(function(){
+          const dateOnly = $(this).data('date');
+          const daysCount = $(this).data('days');
+
+          let finishDate;
+
+          if (dateOnly) {
+              finishDate = new Date(dateOnly + 'T23:59:59');
+          } else if (daysCount) {
+              finishDate = new Date();
+              finishDate.setDate(finishDate.getDate() + parseInt(daysCount));
+              finishDate.setHours(23, 59, 59); // end of day
+          } else {
+              finishDate = new Date();
+              finishDate.setDate(finishDate.getDate() + 28);
+              finishDate.setHours(23, 59, 59);
+          }
+
+          // Check if finished
+          if (finishDate <= new Date()) {
+              $(this).text('DISCOUNT ENDED');
+              return;
+          }
+          initializeClock(this.id, finishDate);
       });
     }
 
@@ -173,7 +194,7 @@ document.querySelectorAll('[data-tab-target]').forEach(tab => {
         });
 
       var productSwiper = new Swiper(".product-swiper", {
-        spaceBetween: 20,        
+        spaceBetween: 20,
         navigation: {
           nextEl: ".product-slider-button-next",
           prevEl: ".product-slider-button-prev",
@@ -192,7 +213,7 @@ document.querySelectorAll('[data-tab-target]').forEach(tab => {
             slidesPerView: 5,
           }
         },
-      });      
+      });
 
       var testimonialSwiper = new Swiper(".testimonial-swiper", {
         slidesPerView: 1,
@@ -203,8 +224,13 @@ document.querySelectorAll('[data-tab-target]').forEach(tab => {
         },
       });
 
-      var thumb_slider = new Swiper(".thumb-swiper", {
-        slidesPerView: 1,
+      var thumb_slider = new Swiper('.thumb-swiper', {
+          direction: 'vertical',
+          slidesPerView: '4',
+          spaceBetween: 10,
+          freeMode: true,
+          watchSlidesProgress: true,
+          mousewheel: true,
       });
       var large_slider = new Swiper(".large-swiper", {
         spaceBetween: 10,
@@ -227,4 +253,31 @@ document.querySelectorAll('[data-tab-target]').forEach(tab => {
       preloader.classList.add("hide-preloader");
     });
 
+    document.addEventListener('DOMContentLoaded', function () {
+        const swiper = new Swiper('.limited-offer-swiper', {
+            loop: true,
+            spaceBetween: 30,
+            slidesPerView: 1,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            breakpoints: {
+                768: {
+                    slidesPerView: 2, // can change to 2 if you want
+                },
+                1024: {
+                    slidesPerView: 1,
+                },
+            },
+        });
+    });
 })(jQuery);

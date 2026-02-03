@@ -13,6 +13,7 @@ class Discount extends Model
     ];
     protected array $fillable = [
         'name',
+        'description',
         'type',
         'min_order_amount',
         'started_at',

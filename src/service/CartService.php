@@ -11,11 +11,12 @@ class CartService
     public function save()
     {
         $book_id = request()->input('book_id');
+        $qty = request()->input('qty');
 
         $cartStorage = auth()->check() ? new DbCartStorage() : new SessionCartStorage();
 
         $cart = new Cart($cartStorage);
-        $cart->add($book_id, 1);
+        $cart->add($book_id, $qty);
 
         return $cart;
     }

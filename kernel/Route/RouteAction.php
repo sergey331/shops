@@ -8,121 +8,112 @@ use Kernel\Route\interface\RouteActionInterface;
 
 class RouteAction implements RouteActionInterface
 {
-    protected string $pattern = '/\{([^}]+)\}/';
     private RouteConfig|null $route = null;
+
+    /** @var RouteConfig[] */
     private array $staticRoutes = [];
+
+    /** @var array<int, array{route: RouteConfig, regex: string, params: array}> */
     private array $dynamicRoutes = [];
-    private string $method = '';
-    private string $url = '';
+
+    private string $method;
+    private string $url;
+
     public function __construct(
         protected Container $container
     ) {
+        /** @var RequestInterface $request */
         $request = $this->container->get('request');
+
         $this->method = $request->getMethod();
-        $this->url = $request->getUri();
+        $this->url    = $this->normalizeUrl($request->getUri());
     }
 
-    public function getAction(array $routers)
+    public function getAction(array $routers): ?RouteConfig
     {
-        /* @var RequestInterface $request */
-
         $this->flattenRoutes($routers);
-
         $this->resolveRoute();
+
         return $this->route;
+    }
+
+    private function normalizeUrl(string $url): string
+    {
+        return $url !== '/' ? rtrim($url, '/') : '/';
     }
 
     protected function flattenRoutes(array $routers): void
     {
-        $flatRouters = [];
+        foreach ($routers as $routerGroup) {
+            $routes = is_array($routerGroup) ? $routerGroup : [$routerGroup];
 
-        foreach ($routers as $router) {
-            if (is_array($router) && isset($router[0]) && is_array($router[0])) {
-                foreach ($router as $route) {
-                    $flatRouters[] = $route;
+            foreach ($routes as $route) {
+                /** @var RouteConfig $route */
+                if ($route->getMethod() !== $this->method) {
+                    continue;
                 }
-            } else {
-                $flatRouters[] = $router;
-            }
-        }
 
-        foreach ($flatRouters as $router) {
-            /** @var RouteConfig $router */
-            if ($router->getMethod() !== $this->method) {
-                continue;
-            }
-            if (!str_contains($router->getUri(), '{')) {
-                $this->setStaticRoute($router);
-            } else {
-                $this->setDynamicRoute($router);
+                $uri = $this->normalizeUrl($route->getUri());
+
+                if (!str_contains($uri, '{')) {
+                    $this->staticRoutes[$uri] = $route;
+                } else {
+                    $this->registerDynamicRoute($route, $uri);
+                }
             }
         }
     }
 
-    private function setDynamicRoute($router): void
+    private function registerDynamicRoute(RouteConfig $route, string $uri): void
     {
-        $this->dynamicRoutes[] = $router;
+        preg_match_all('/\{([^}]+)\}/', $uri, $matches);
+
+        $paramNames = $matches[1];
+
+        $regex = preg_replace(
+            '/\{[^}]+\}/',
+            '([^\/]+)',
+            $uri
+        );
+
+        $this->dynamicRoutes[] = [
+            'route'  => $route,
+            'regex'  => '#^' . $regex . '$#',
+            'params' => $paramNames,
+        ];
     }
-    private function setStaticRoute($router): void
-    {
-        $this->staticRoutes[$router->getUri()] = $router;
-    }
+
     private function resolveRoute(): void
     {
-        $url = strlen($this->url) > 1 ? rtrim($this->url, '/') : $this->url;
-        if (isset($this->staticRoutes[$url])) {
-            $this->route = $this->staticRoutes[$url];
+        /** Static routes (O(1)) */
+        if (isset($this->staticRoutes[$this->url])) {
+            $this->route = $this->staticRoutes[$this->url];
             return;
         }
 
-        $segments = explode('/', trim($url, '/'));
-
-        // numeric values from URL
-        $ids = array_values(array_filter($segments, 'is_numeric'));
-
-        foreach ($this->dynamicRoutes as $router) {
-
-            if (!preg_match_all($this->pattern, $router['uri'], $matches)) {
+        /** Dynamic routes */
+        foreach ($this->dynamicRoutes as $item) {
+            if (!preg_match($item['regex'], $this->url, $matches)) {
                 continue;
             }
-
-            if (count($matches[1]) !== count($ids)) {
-                continue;
-            }
-
-            $resolvedUri = $router['uri'];
-
-            foreach ($ids as $id) {
-                $resolvedUri = preg_replace($this->pattern, $id, $resolvedUri, 1);
-            }
-            if ($resolvedUri === $url) {
-                $router['params'] = array_merge(
-                    $router['params'] ?? [],
-                    $this->getParams($matches[1], $ids)
-                );
-
-                $this->route = $router;
-            }
+            array_shift($matches);
+            $params = $this->resolveParams($item['params'], $matches);
+            $item['route']->setParams($params);
+            $this->route = $item['route'];
+            return;
         }
     }
 
-    protected function getParams(array $params, array $ids): array
+    private function resolveParams(array $names, array $values): array
     {
         $result = [];
+        $db = $this->container->get('db');
+        foreach ($names as $index => $name) {
+            $value = $values[$index];
 
-        foreach ($params as $index => $param) {
-            $id = $ids[$index];
-
-            $model = $this->container->get('db')->model($param);
-
-            if ($model) {
-                $result[$param] = $model->find($id);
-            } else {
-                $result[$param] = $id;
-            }
+            $model = $db->model($name);
+            $result[$name] = $model ? $model->find($value) : $value;
         }
-
         return $result;
     }
-
 }

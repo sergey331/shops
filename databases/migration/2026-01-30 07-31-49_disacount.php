@@ -13,6 +13,7 @@ class Disacount implements MigrationsInterface
         $table->createTable('discounts', function (FieldsInterface $field) {
             $field->id();
             $field->string('name');
+            $field->text('description')->nullable();
             $field->enum('type', ['percentage', 'fixed']);
             $field->decimal('value');
             $field->decimal('min_order_amount')->nullable();

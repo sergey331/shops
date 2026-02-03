@@ -4,20 +4,18 @@ namespace Kernel\Route;
 
 use Exception;
 use Kernel\Container\Container;
-use Kernel\Route\interface\MiddlewareInterface;
 use Kernel\Route\interface\RoutersInterface;
 
 class Routers implements RoutersInterface
 {
     protected array $routes = [];
-    protected string $method;
-
+    protected ?RouteConfig $route = null;
     protected Container $container;
 
     public function __construct(Container $container)
     {
-        $this->getRoutes();
         $this->container = $container;
+        $this->routes = Route::getRoutes();
     }
 
     /**
@@ -25,60 +23,67 @@ class Routers implements RoutersInterface
      */
     public function dispatch(): void
     {
-        $this->match();
+        $this->resolveRoute();
+        $this->handleRequest();
     }
 
-    private function getRoutes(): void
+    private function resolveRoute(): void
     {
-        $this->routes = Route::getRoutes();
+        $this->route = $this->container
+            ->get('routeAction')
+            ->getAction($this->routes);
     }
 
     /**
      * @throws Exception
      */
-    private function match(): void
+    private function handleRequest(): void
     {
-        /** @var RouteConfig $route */
-        $route = $this->container->get('routeAction')->getAction($this->routes);
-
-        if (!empty($route->getGroup()['middleware'])) {
-            
-            $middlewares = (array) $route->getGroup()['middleware'];
-            foreach ($middlewares as $middlewareClass) {
-                $resolver = new RouteMiddleware();
-                $middleware = $resolver->getMiddleware($middlewareClass);
-
-                if (class_exists($middleware)) {
-                    /* @var MiddlewareInterface $middleware */
-                    if (!(new $middleware($this->container))->handle()) {
-                        echo "You not have permission for this action";
-                        exit(500);
-                    }
-                }
-            }
+        if (!$this->route) {
+            $this->abort404();
+            return;
         }
-        if ($route) {
-            $action = $route->getAction();
-            $params = $route->getParams() ?? [];
 
-            if (is_array($action)) {
-                [$controller, $method] = $action;
-                $controller = new $controller();
-                $newParams = [];
-                foreach ($params as $key => $value) {
-                    if ($key !== 'middleware') {
-                        $newParams[] = $value;
-                    }
-                }
-                call_user_func([$controller, 'setContainer'], $this->container);
-                call_user_func([$controller, $method],...$newParams);
-            } else if (is_callable($action)) {
-                call_user_func($action);
-            } else {
-                $this->container->get('views')->load("404.404");
-            }
-        } else {
-            $this->container->get('views')->load("404.404");
+        $this->handleMiddleware();
+
+        $controller = new RouteController(
+            $this->route->getAction(),
+            $this->route->getParams() ?? [],
+            $this->container
+        );
+
+        $controller->resolve();
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function handleMiddleware(): void
+    {
+        $group = $this->route->getGroup();
+
+        if (empty($group['middleware'])) {
+            return;
         }
+
+        $middlewares = (array) $group['middleware'];
+
+        $resolver = new RouteMiddleware($middlewares);
+
+        if (!$resolver->resolve($this->container)) {
+            $this->abort403();
+        }
+    }
+
+    private function abort404(): void
+    {
+        $this->container->get('views')->load('404.404');
+        exit;
+    }
+
+    private function abort403(): void
+    {
+        $this->container->get('views')->load('403.403');
+        exit;
     }
 }

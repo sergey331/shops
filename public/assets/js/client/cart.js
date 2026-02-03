@@ -1,13 +1,39 @@
+toastr.options = {
+    "debug": false,
+    "newestOnTop": true,
+    "positionClass": "toast-top-center",
+    "preventDuplicates": true,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "3000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+};
 document.addEventListener('click', async (e) => {
     const btn = e.target.closest('.addcart');
-    if (!btn) return;
+    const add_to_cart = e.target.closest('.add_to_cart');
+    if (btn) {
+        let bookId = btn.dataset.book_id;
+        if (!bookId) return;
+        await addCart(bookId)
+    } else if (add_to_cart) {
+        let bookId = add_to_cart.dataset.book_id;
+        let qty = document.getElementById('quantity').value ?? '1';
+        if (!bookId) return;
+        await updateCartInProductPage(bookId,qty)
+    }
+});
 
-    const bookId = btn.dataset.book_id;
-    if (!bookId) return;
-
+async function addCart(bookId,qty = '1')
+{
     try {
         const formData = new FormData();
         formData.append('book_id', bookId);
+        formData.append('qty', qty);
 
         const res = await fetch('/cart/add', {
             method: 'POST',
@@ -20,11 +46,11 @@ document.addEventListener('click', async (e) => {
 
         document.querySelectorAll('.price_count')
             .forEach(el => el.textContent = `(${data.quantity})`);
-
+        toastr.success('Book added to cart')
     } catch (err) {
         console.error('Cart error:', err);
     }
-});
+}
 
 const cartContent = document.getElementById('cartContent');
 if (cartContent) {
@@ -70,6 +96,23 @@ async function updateCart(input) {
     });
     const data = await res.json();
     cartContent.innerHTML = data.cartContent;
+    toastr.success('Cart updated successfully')
+}
+
+async function updateCartInProductPage(bookId,qty) {
+    const formData = new FormData();
+    formData.append('book_id', bookId);
+    formData.append('qty', qty);
+    const res = await fetch('/cart/edit', {
+        method: 'POST',
+        body: formData
+    });
+    const data = await res.json();
+    document.getElementById('cartData').innerHTML = data.cartHtml;
+
+    document.querySelectorAll('.price_count')
+        .forEach(el => el.textContent = `(${data.quantity})`);
+    toastr.success('Cart updated successfully')
 }
 
 
@@ -82,4 +125,5 @@ async function removeCart(bookId) {
     });
     const data = await res.json();
     cartContent.innerHTML = data.cartContent;
+    toastr.success('Book deleted in cart')
 }

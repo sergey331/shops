@@ -29,10 +29,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
           rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
 
 </head>
 <body>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 @include('Component.Layout.svg')
 @include('Component.Layout.preloader')
 @include('Component.Layout.search_popup')
@@ -45,7 +48,7 @@
 <hr class="my-0">
 
 @include('Component.Layout.footer_bottom')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <!-- Swiper.js -->
 <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
@@ -53,5 +56,6 @@
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
 <script src="/js/plugins.js"></script>
 <script type="text/javascript" src="/js/script.js"></script>
+
 </body>
 </html>

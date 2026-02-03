@@ -85,12 +85,6 @@ class BooksService extends BaseService
             'value' => $book->price ?? ''
         ]);
 
-        $form->setSelect('currency_id', 'Currency', model('Currency')->get(), [
-            'class' => 'form-control',
-            'option_default_label' => "Select Currency",
-            'value' => $book->currency_id ?? ''
-        ]);
-
         $form->setInput('isbn', 'Isbn', [
             'class' => 'form-control',
             'value' => $book->isbn ?? ''
@@ -362,7 +356,6 @@ class BooksService extends BaseService
             "Language" => ['field' => 'language.name'],
             "Pages" => ['field' => 'pages'],
             "Price" => ['field' => 'price'],
-            'Currency' => ['field' => 'currency.code'],
             "Publisher" => ['field' => 'publisher.name'],
             "Authors" => ['field' => 'authors.*.name'],
             "Categories" => ['field' => 'categories.*.name'],

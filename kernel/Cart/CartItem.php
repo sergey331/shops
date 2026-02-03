@@ -50,8 +50,7 @@ class CartItem
         if (!$this->book) {
             return 0.0;
         }
-
-        return formatNumber($this->getPrice() * $this->qty);
+        return $this->getPrice() * $this->qty;
     }
 
     private function getPrice()

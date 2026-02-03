@@ -4,7 +4,7 @@ namespace Kernel\Route\interface;
 
 interface RouteMiddlewareInterface
 {
-    public function __construct();
+    public function __construct(array $selectedMiddleware);
 
-    public function getMiddleware($name);
+    public function resolve($container): bool;
 }

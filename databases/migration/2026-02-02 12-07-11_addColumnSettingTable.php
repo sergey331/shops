@@ -12,6 +12,7 @@ class AddColumnSettingTable implements MigrationsInterface
     {
         $table->updateAlterTable('settings', function (FieldsInterface $field) {
             $field->int('default_discount_days')->nullable();
+            $field->int('currency_id')->nullable();
         });
     }
 
@@ -19,6 +20,7 @@ class AddColumnSettingTable implements MigrationsInterface
     {
         $table->updateAlterTable('settings', function (FieldsInterface $field) {
             $field->dropColumn('default_discount_days');
+            $field->dropColumn('currency_id');
         });
     }
 }

@@ -72,6 +72,12 @@ class SettingService extends BaseService
             'value' => $setting->default_discount_days ?? ''
         ]);
 
+        $form->setSelect('currency_id', 'Currency', model('Currency')->get(), [
+            'class' => 'form-control',
+            'option_default_label' => "Select Currency",
+            'value' => $book->currency_id ?? ''
+        ]);
+
         $form->setFile('logo', 'Logo', [
             'class' => 'form-control'
         ]);
@@ -88,12 +94,13 @@ class SettingService extends BaseService
             "Phone" => ['field' => 'phone'],
             "Address" => ['field' => 'address'],
             "Default discount days" => ['field' => 'default_discount_days'],
+            "Currency" => ['field' => 'currency.name'],
             "Logo" => ['field' => 'logo', 'data' => ['type' => 'image', 'path' => "/uploads/setting"]],
             "Actions" => [
                 'callback' => function ($row) {
                     $id = $row->id;
                     return '
-                        <a href="/admin/setting/' . $id . '" class="btn btn-sm btn-primary">Edit</a>
+                        <a href="/admin/setting/' . $id . '" class="btn btn-sm btn-primary text-white">Edit</a>
                     ';
                 }
             ]

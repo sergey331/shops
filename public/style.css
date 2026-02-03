@@ -34,7 +34,7 @@
     height: var(--swiper-pagination-bullet-height, var(--swiper-pagination-bullet-size, 15px));
   }
 
-  /* 4.4 Product
+  /* 4.4 Book
 /*----------------------------------------------*/
   .card-concern{
     bottom: 150px;
@@ -874,4 +874,13 @@
     outline: none;
   }
 
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE & Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

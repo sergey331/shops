@@ -12,13 +12,13 @@ use Kernel\Model\Paginator;
             @if($book->discount)
             <div class="absolute top-4 left-4">
                 <p class="bg-primary py-1 px-3 text-sm text-white rounded-lg">
-                    {{ showDiscount($book->discount,$book->currency->symbol) }}
+                    {{ showDiscount($book->discount,setting()->currency->symbol) }}
                 </p>
             </div>
             @endif
             <img src="{{ public_path('/uploads/books/' . $book->id . '/'. $book->cover_image) }}" class="w-full min-h-[320px] shadow-sm" alt="House of Sky Breath">
             <h6 class="mt-4 mb-1 font-bold text-lg">
-                <a href="single-product.html" class="hover:text-primary">
+                <a href="/book/{{ $book->id }}" class="hover:text-primary">
                     {{ $book->title }}
                 </a>
             </h6>

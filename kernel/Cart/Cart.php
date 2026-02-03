@@ -27,6 +27,9 @@ class Cart
 
     public function update(int $bookId, int $qty): void
     {
+        if (!isset($this->cart[$bookId])) {
+            $this->cart[$bookId] = new CartItem($bookId, 0);
+        }
         if ($qty <= 0) {
             unset($this->cart[$bookId]);
         } else {

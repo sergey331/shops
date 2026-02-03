@@ -22,6 +22,14 @@ class DiscountService extends BaseService
         ];
     }
 
+    public function getDiscounts()
+    {
+        return model('discount')
+            ->where(['is_active' => true])
+            ->whereOp('started_at', '<=', date('Y-m-d'))
+            ->get();
+    }
+
     public function storeOrUpdate(?Discount $discount = null)
     {
         $data = request()->all();
@@ -38,8 +46,11 @@ class DiscountService extends BaseService
         }
 
         if ($data['finished_at'] === '') {
-            unset($data['finished_at']);
+            $daysToAdd = setting()->default_discount_days ?? 30;
+            $data['finished_at'] = date("Y-m-d",strtotime($data['started_at'] . " + $daysToAdd days" ));
         }
+
+        $data['is_active'] = !empty($data['is_active']) ? 1 : 0;
 
         if ($discount) {
             $discount->update($data);
@@ -66,6 +77,10 @@ class DiscountService extends BaseService
         $form->setInput('name', 'Name', [
             'class' => 'form-control',
             'value' => $discount->name ?? ''
+        ]);
+        $form->setTextarea('description', 'Description', [
+            'class' => 'form-control',
+            'value' => $discount->description ?? ''
         ]);
 
         $form->setSelect('type', 'Type',
@@ -106,6 +121,7 @@ class DiscountService extends BaseService
         $table = new Table($discounts->data, [
             "#" => ['field' => 'id'],
             "Name" => ['field' => 'name'],
+            "Description" => ['field' => 'description'],
             "Type" => ['field' => 'type'],
             "Value" => ['field' => 'value'],
             "Min order amount" => ['field' => 'min_order_amount'],
@@ -116,7 +132,7 @@ class DiscountService extends BaseService
                     $id = $row->id;
                     return '
                         <div class="d-flex gap-1">
-                            <a href="/admin/discounts/edit/' . $id . '" class="btn btn-sm btn-primary text-white">Edit</a>Fv
+                            <a href="/admin/discounts/edit/' . $id . '" class="btn btn-sm btn-primary text-white">Edit</a>
                             <form action="/admin/discounts/delete/' . $id . '" method="POST"> 
                                 <button type="submit"  class="btn btn-sm btn-danger">Delete</button>
                             </form> 

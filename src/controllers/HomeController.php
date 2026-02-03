@@ -4,6 +4,7 @@ namespace Shop\controllers;
 
 use Exception;
 use Kernel\Controller\BaseController;
+use Shop\service\DiscountService;
 
 class HomeController extends BaseController
 {
@@ -16,7 +17,7 @@ class HomeController extends BaseController
         $this->view()->load('Home.Index', [
             'sliders' => model('slider')->where(['is_show' => 1])->get(),
             'categories' => model('category')->get(),
-            'discounts' => model('discount')->get()
+            'discounts' => (new DiscountService())->getDiscounts()
         ]);
     }
 }
