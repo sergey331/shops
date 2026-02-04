@@ -75,7 +75,7 @@ class SettingService extends BaseService
         $form->setSelect('currency_id', 'Currency', model('Currency')->get(), [
             'class' => 'form-control',
             'option_default_label' => "Select Currency",
-            'value' => $book->currency_id ?? ''
+            'value' => $setting->currency_id ?? ''
         ]);
 
         $form->setFile('logo', 'Logo', [

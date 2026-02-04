@@ -9,7 +9,7 @@
                     <div class="swiper-slide content-center">
                         <div class="w-full shadow">
                             <div class="card mb-4 border-0 rounded-lg relative">
-                                <a href="/shop" class="block">
+                                <a href="/shop?categories[]={{ $category->id }}" class="block">
                                     <img src="/images/categories/{{$category->logo}}" class="w-full rounded-lg h-[200px]" style="object-fit: contain" alt="cart item">
                                     <h6 class="absolute bottom-0 bg-primary m-4 py-2 px-3 rounded-lg">
                                         <a href="/shop" class="text-white">{{ $category->name }}</a>

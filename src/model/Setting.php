@@ -8,13 +8,18 @@ class Setting extends Model
 {
     protected string $table = 'settings';
     protected array $with = ['currency'];
+    const  THEME = [
+        'light' => 'Light',
+        'dark' => "Dark"
+    ];
     protected array $fillable = [
         'email',
         'phone',
         'address',
         'logo',
         'default_discount_days',
-        'currency_id'
+        'currency_id',
+        'theme'
     ];
 
     public function currency(): BelongsTo
