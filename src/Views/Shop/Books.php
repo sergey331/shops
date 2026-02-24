@@ -22,7 +22,6 @@ use Kernel\Model\Paginator;
                     {{ $book->title }}
                 </a>
             </h6>
-
             {{ getBookPrice($book) }}
             <div class="card-concern absolute left-0 right-0 flex justify-center gap-2 opacity-0">
                 <button type="button" data-book_id="{{ $book->id }}" class="addcart p-2 bg-gray-800 text-white rounded-full hover:bg-gray-700">
@@ -30,11 +29,21 @@ use Kernel\Model\Paginator;
                         <use xlink:href="#cart"></use>
                     </svg>
                 </button>
-                <a href="#" class="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-700">
-                    <svg class="w-8 h-8 p-1">
-                        <use xlink:href="#heart"></use>
-                    </svg>
-                </a>
+                @auth
+                    @if (checkInWishlist($book->id))
+                        <button data-book_id="{{ $book->id }}" data-wishremove='1' class="addWishlist p-2 bg-gray-800 text-white rounded-full hover:bg-gray-700">
+                            <svg class="w-8 h-8 p-1" stroke="red">
+                                <use xlink:href="#heart"></use>
+                            </svg>
+                        </button>
+                    @else
+                        <button data-book_id="{{ $book->id }}" data-wishremove='0' class="addWishlist p-2 bg-gray-800 text-white rounded-full hover:bg-gray-700">
+                            <svg class="w-8 h-8 p-1">
+                                <use xlink:href="#heart"></use>
+                            </svg>
+                        </button>
+                    @endif
+                @endauth
             </div>
         </div>
         @endforeach

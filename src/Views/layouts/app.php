@@ -56,6 +56,8 @@
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
 <script src="/js/plugins.js"></script>
 <script type="text/javascript" src="/js/script.js"></script>
-
+@auth
+<script src="{{public_path('/assets/js/client/wishlist.js')}}"></script>
+@endauth
 </body>
 </html>

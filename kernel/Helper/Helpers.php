@@ -7,6 +7,7 @@ use Kernel\Redirect\Redirect;
 use Kernel\Request\Request;
 use Kernel\Session\Session;
 use Shop\service\SettingService;
+use Shop\service\Wishlist;
 
 function container(): Container
 {
@@ -103,4 +104,11 @@ function formatNumber($number) {
     return ($number == intval($number))
         ? number_format($number, 0)
         : number_format($number, 2);
+}
+
+function checkInWishlist($bookId)
+{
+    $wishlist = (new Wishlist())->getByBookId($bookId);
+    return !empty($wishlist);
+
 }

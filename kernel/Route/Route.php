@@ -71,7 +71,7 @@ class Route implements RouteInterface
     public static function prefix(string $prefix): self
     {
         self::$is_prefix = true;
-        self::$currentPrefix .= rtrim($prefix, '/');
+        self::$currentPrefix = rtrim($prefix, '/');
         return new self();
     }
 

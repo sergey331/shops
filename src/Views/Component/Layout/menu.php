@@ -41,47 +41,21 @@
                     </svg>
                 </a>
 
+                @auth
                 <!-- Wishlist Dropdown -->
                 <div class="relative group">
                     <a href="#" class="text-dark hover:text-primary flex items-center">
                         <svg class="w-5 h-5">
                             <use xlink:href="#heart"></use>
                         </svg>
-                        <span class="text-xs ml-1">(2)</span>
+                        <span class="text-xs ml-1">(<span class="wishCount"></span>)</span>
                     </a>
                     <div class="absolute right-0 w-72 bg-white shadow-lg rounded-md p-4 z-50 hidden group-hover:block">
                         <div class="flex justify-between items-center mb-4">
                             <span class="text-primary font-medium">Your wishlist</span>
-                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">2</span>
+                            <span class="wishCount bg-primary text-white text-xs px-2 py-1 rounded-full"></span>
                         </div>
-                        <ul class="space-y-4 mb-4">
-                            <li class="flex justify-between">
-                                <div>
-                                    <h5 class="font-medium"><a href="single-product.html" class="hover:text-primary">The
-                                            Emerald
-                                            Crown</a></h5>
-                                    <p class="text-xs text-gray-500">Special discounted price.</p>
-                                    <a href="#" class="text-sm font-medium text-primary hover:underline block mt-1">Add
-                                        to cart</a>
-                                </div>
-                                <span class="text-primary">$2000</span>
-                            </li>
-                            <li class="flex justify-between">
-                                <div>
-                                    <h5 class="font-medium"><a href="single-product.html" class="hover:text-primary">The
-                                            Last
-                                            Enchantment</a></h5>
-                                    <p class="text-xs text-gray-500">Perfect for enlightened people.</p>
-                                    <a href="#" class="text-sm font-medium text-primary hover:underline block mt-1">Add
-                                        to cart</a>
-                                </div>
-                                <span class="text-primary">$400</span>
-                            </li>
-                            <li class="flex justify-between border-t pt-2">
-                                <span class="font-bold">Total (USD)</span>
-                                <strong>$2400</strong>
-                            </li>
-                        </ul>
+                        <div id="wishContent"></div>
                         <div class="space-y-2">
                             <a href="#"
                                 class="block w-full bg-dark text-white py-2 text-center rounded hover:bg-opacity-90">Add
@@ -92,7 +66,7 @@
                         </div>
                     </div>
                 </div>
-
+                @endauth
                 <!-- Cart Dropdown -->
                 <div class="relative group" id="cartData">
                     <a href="/cart" class="text-dark hover:text-primary flex items-center">

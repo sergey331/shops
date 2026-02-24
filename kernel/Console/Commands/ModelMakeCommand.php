@@ -6,10 +6,12 @@ class ModelMakeCommand
 {
     protected string $content = '';
     protected string $name = '';
+    protected string $arg = '';
 
-    public function __construct($name)
+    public function __construct($name,$arg = '')
     {
         $this->name = $name;
+        $this->arg = $arg;
         $className = ucfirst($name);
         $this->content = <<<PHP
 <?php
@@ -30,10 +32,6 @@ PHP;
         if (!$this->name) {
             exit(1);
         }
-
-
-
-
         $filename = __DIR__ . "/../../../src/model/$this->name.php";
 
         if (file_exists($filename)) {
@@ -42,6 +40,9 @@ PHP;
         }
         if (file_put_contents($filename, $this->content)) {
             echo "Model created successfully: $filename" . PHP_EOL;
+            if (!empty($this->arg) && $this->arg === '-m') {
+                (new MigrationMakeCommand($this->name))->make();
+            }
         } else {
             echo "Failed to write model file!" . PHP_EOL;
             exit(1);

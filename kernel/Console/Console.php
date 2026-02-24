@@ -19,10 +19,15 @@ class Console implements ConsoleInterface
     public function run(): void
     {
         $command = $_SERVER['argv'][1] ?? '';
-        $argument = $_SERVER['argv'][2] ?? '';
+        $arg1 = $_SERVER['argv'][2] ?? '';
+        $arg2 = $_SERVER['argv'][3] ?? '';
         $this->command->setCommand($command);
-        if (!empty($argument)) {
-            $this->command->setArgument($argument);
+        if (!empty($arg1)) {
+            $this->command->setArg1($arg1);
+        }
+
+        if (!empty($arg2)) {
+            $this->command->setArg2($arg2);
         }
         $this->command->run();
     }

@@ -9,7 +9,8 @@ use Kernel\Seeder\RunSeed;
 
 class RunCommand implements RunCommandInterface
 {
-    private string $argument = '';
+    private string $arg1 = '';
+    private string $arg2 = '';
     private string $command = '';
 
     /**
@@ -59,9 +60,14 @@ class RunCommand implements RunCommandInterface
     /**
      * Sets optional argument.
      */
-    public function setArgument(string $argument): void
+    public function setArg1(string $arg1): void
     {
-        $this->argument = $argument;
+        $this->arg1 = $arg1;
+    }
+
+    public function setArg2(string $arg2): void
+    {
+        $this->arg2 = $arg2;
     }
 
     /**
@@ -94,17 +100,17 @@ class RunCommand implements RunCommandInterface
 
     private function handleMake(?string $arg): void
     {
-        if (empty($this->argument)) {
+        if (empty($this->arg1)) {
             throw new Exception("Missing argument for make command");
         }
 
-        $make = new Make($arg, $this->argument);
+        $make = new Make($arg, $this->arg1,$this->arg2);
         $make->run();
     }
 
     private function handleSeed(): void
     {
-        $seed = new RunSeed($this->argument);
+        $seed = new RunSeed($this->arg1);
         $seed->seed();
     }
 
@@ -120,7 +126,7 @@ class RunCommand implements RunCommandInterface
 
     private function handleMigrateReset(): void
     {
-        (new Migration())->resetMigration($this->argument);
+        (new Migration())->resetMigration($this->arg1);
     }
 
     private function handleMigrateRollback(): void

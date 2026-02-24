@@ -14,7 +14,8 @@ class Make implements MakeInterface
 {
     public function __construct(
         protected string $type,
-        protected string $argument,
+        protected string $arg1,
+        protected string $arg2,
     ){
     }
 
@@ -25,30 +26,30 @@ class Make implements MakeInterface
 
     private function controller(): void
     {
-        (new ControllerMakeCommand($this->argument))->make();
+        (new ControllerMakeCommand($this->arg1))->make();
     }
     
     private function seed(): void
     {
-        (new SeederMakeCommand($this->argument))->make();
+        (new SeederMakeCommand($this->arg1))->make();
     }
 
     private function migration(): void
     {
-        (new MigrationMakeCommand($this->argument))->make();
+        (new MigrationMakeCommand($this->arg1))->make();
     }
 
     private function model(): void
     {
-        (new ModelMakeCommand($this->argument))->make();
+        (new ModelMakeCommand($this->arg1,$this->arg2))->make();
     }
     private function service(): void
     {
-        (new ServiceMakeCommand($this->argument))->make();
+        (new ServiceMakeCommand($this->arg1))->make();
     }
 
     private function rule()
     {
-        (new RuleMakeCommand($this->argument))->make();
+        (new RuleMakeCommand($this->arg1))->make();
     }
 }

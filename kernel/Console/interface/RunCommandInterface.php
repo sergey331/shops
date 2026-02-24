@@ -24,5 +24,6 @@ interface RunCommandInterface
     /**
      * Sets optional argument.
      */
-    public function setArgument(string $argument): void;
+    public function setArg1(string $arg1): void;
+    public function setArg2(string $arg2): void;
 }
