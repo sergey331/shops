@@ -32,5 +32,7 @@ Route::get('/checkout', [CheckoutController::class, 'index']);
 
 Route::prefix('/wishlist')->group(function () {
     Route::get('/', [WishListController::class,'index']);
+    Route::get('/get', [WishListController::class,'get']);
     Route::post('/save', [WishListController::class,'save']);
+    Route::post('/remove', [WishListController::class,'remove']);
 });

@@ -6,6 +6,8 @@ use Shop\controllers\admin\AdminController;
 use Shop\controllers\admin\CategoryController;
 use Shop\controllers\admin\DiscountController;
 use Shop\controllers\admin\PostController;
+use Shop\controllers\admin\ShippingMethodController;
+use Shop\controllers\admin\ShippingMethodItemsController;
 use Shop\controllers\admin\SlidersController;
 use Shop\controllers\admin\BookController;
 use Shop\controllers\admin\SettingController;
@@ -71,5 +73,23 @@ Route::prefix("/admin")->group(function () {
         Route::post('/delete/{discount}',[DiscountController::class,'delete']);
         Route::get('/edit/{discount}',[DiscountController::class,'edit']);
         Route::post('/update/{discount}',[DiscountController::class,'update']);
+    });
+
+    Route::group(['prefix' => '/shipping-methods'], function () {
+        Route::get('/', [ShippingMethodController::class, 'index']);
+        Route::get('/create', [ShippingMethodController::class, 'create']);
+        Route::post('/store', [ShippingMethodController::class, 'store']);
+        Route::get('/{ShippingMethod}', [ShippingMethodController::class, 'edit']);
+        Route::post('/{ShippingMethod}', [ShippingMethodController::class, 'update']);
+        Route::get('/delete/{ShippingMethod}', [ShippingMethodController::class, 'delete']);
+
+        Route::group(['prefix' => '/items'], function () {
+            Route::get('/{ShippingMethod}', [ShippingMethodItemsController::class, 'index']);
+            Route::get('/create/{ShippingMethod}', [ShippingMethodItemsController::class, 'create']);
+            Route::post('/store', [ShippingMethodItemsController::class, 'store']);
+            Route::get('/{ShippingMethod}/{ShippingMethodItem}', [ShippingMethodItemsController::class, 'edit']);
+            Route::post('/{ShippingMethodItem}', [ShippingMethodItemsController::class, 'update']);
+            Route::get('/delete/{ShippingMethod}/{ShippingMethodItem}', [ShippingMethodItemsController::class, 'delete']);
+        });
     });
 });

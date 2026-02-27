@@ -46,6 +46,7 @@ class FormHtml
         'email'    => [$this, 'renderInputHtml'],
         'password' => [$this, 'renderInputHtml'],
         'number'   => [$this, 'renderInputHtml'],
+        'hidden'   => [$this, 'renderInputHtml'],
     ];
 
     $html = $this->renderFormOpen();

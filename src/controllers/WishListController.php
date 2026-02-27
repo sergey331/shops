@@ -14,12 +14,20 @@ class WishListController extends BaseController
         $this->wishlist = new Wishlist();
     }
 
-    public function index(): void
+    public function index()
+    {
+
+        $this->view()->load('Wishlist.Index',[
+            'title' => 'Wishlist',
+            'wishlistContent' => $this->view()->getHtml("Component.Wishlist.Index", ['wishlists' => $this->wishlist->list()])
+        ]);
+    }
+    public function get(): void
     {
         $wishlists = $this->wishlist->list() ?? [];
         $this->response()->json([
             'count' => count($wishlists),
-            'wishlistContent' => $this->view()->getHtml("Component.WishList.index", ['wishlists' => $wishlists])
+            'wishlistContent' => $this->view()->getHtml("Component.Wishlist.Layout", ['wishlists' => $wishlists])
         ]);
     }
 
@@ -29,5 +37,10 @@ class WishListController extends BaseController
         $this->response()->json([
             'success' => true
         ]);
+    }
+    public function remove(): void
+    {
+        $this->wishlist->remove();
+      $this->redirect()->back();
     }
 }

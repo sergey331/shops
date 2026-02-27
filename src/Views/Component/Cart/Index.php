@@ -20,7 +20,7 @@
         <li class="flex justify-between">
             <div>
                 <h5 class="font-medium">
-                    <a href="single-product.html" class="hover:text-primary">
+                    <a href="/book/{{ $c->getBook()->id }}" class="hover:text-primary">
                         {{ $c->getBook()->title }}
                     </a>
                 </h5>

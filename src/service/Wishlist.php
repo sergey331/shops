@@ -32,4 +32,10 @@ class Wishlist extends BaseService
             model('WishList')->create($data);
         }
     }
+
+    public function remove()
+    {
+        $id = request()->input('id');
+        model('WishList')->where(['id' => $id])->delete();
+    }
 }

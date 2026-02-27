@@ -45,7 +45,7 @@ async function addWishlist(bookId,btn)
     }
 }
 async function getWishList() {
-    const res = await fetch('/wishlist');
+    const res = await fetch('/wishlist/get');
     const data = await res.json();
     document.querySelector('#wishContent').innerHTML = data.wishlistContent
     document.querySelectorAll('.wishCount').forEach(item => {

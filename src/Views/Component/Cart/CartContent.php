@@ -25,7 +25,7 @@
                         </div>
                         <div class="w-full md:w-3/5">
                             <h5 class="mt-2 font-medium">
-                                <a href="single-product.html" class="text-xl hover:text-primary">
+                                <a href="/book/{{ $book->id }}"  class="text-xl hover:text-primary">
                                     {{ $book->title }}
                                 </a>
                             </h5>
