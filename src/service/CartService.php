@@ -2,7 +2,6 @@
 namespace Shop\service;
 
 use Kernel\Cart\Cart;
-use Kernel\Cart\CartItem;
 use Kernel\Cart\DbCartStorage;
 use Kernel\Cart\SessionCartStorage;
 

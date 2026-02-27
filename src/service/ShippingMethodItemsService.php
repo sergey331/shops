@@ -9,7 +9,6 @@ use Kernel\Validator\Validator;
 use Shop\model\ShippingMethod;
 use Shop\model\ShippingMethodItem;
 use Shop\rules\ShippingMethodItemRules;
-use Shop\rules\ShippingMethodRules;
 
 class ShippingMethodItemsService extends BaseService
 {
