@@ -11,12 +11,12 @@ class BelongsTo extends Relation
     protected mixed $relatedClass;
     protected string $foreignKey;
 
-    public function __construct(Model $parent, string $relatedClass)
+    public function __construct(Model $parent, string $relatedClass,$foreignKey)
     {
         parent::__construct($parent,$relatedClass);
         $this->parent = $parent;
         $this->relatedClass = new $relatedClass();
-        $this->foreignKey = strtolower((new ReflectionClass($this->relatedClass))->getShortName()) . '_id';
+        $this->foreignKey = $foreignKey !== ''? $foreignKey : strtolower((new ReflectionClass($this->relatedClass))->getShortName()) . '_id';
     }
 
     public function get()

@@ -13,7 +13,7 @@ class RuleMakeCommand
         $className = ucfirst($name);
         $this->content = <<<PHP
 <?php
-namespace Shop\\Shop\rules;
+namespace Shop\\rules;
 
 use Shop\\rules\\interface\\RulesInterface;
 

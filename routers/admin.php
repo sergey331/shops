@@ -5,6 +5,7 @@ use Shop\controllers\admin\AboutController as AdminAboutController;
 use Shop\controllers\admin\AdminController;
 use Shop\controllers\admin\CategoryController;
 use Shop\controllers\admin\DiscountController;
+use Shop\controllers\admin\GeoZoneController;
 use Shop\controllers\admin\PostController;
 use Shop\controllers\admin\ShippingMethodController;
 use Shop\controllers\admin\ShippingMethodItemsController;
@@ -91,5 +92,14 @@ Route::prefix("/admin")->group(function () {
             Route::post('/{ShippingMethodItem}', [ShippingMethodItemsController::class, 'update']);
             Route::get('/delete/{ShippingMethod}/{ShippingMethodItem}', [ShippingMethodItemsController::class, 'delete']);
         });
+    });
+
+    Route::group(['prefix' => '/geo-zones'], function () {
+        Route::get('/', [GeoZoneController::class, 'index']);
+        Route::get('/create', [GeoZoneController::class, 'create']);
+        Route::post('/store', [GeoZoneController::class, 'store']);
+        Route::get('/{GeoZone}', [GeoZoneController::class, 'edit']);
+        Route::post('/{GeoZone}', [GeoZoneController::class, 'update']);
+        Route::get('/delete/{GeoZone}', [GeoZoneController::class, 'delete']);
     });
 });

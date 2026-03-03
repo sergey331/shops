@@ -231,9 +231,9 @@ class Model extends Connection implements ModelInterface, JsonSerializable
     }
 
     // Relationships
-    protected function belongsTo($model): BelongsTo
+    protected function belongsTo($model, $foreignKey = ''): BelongsTo
     {
-        return new BelongsTo($this, $model);
+        return new BelongsTo($this, $model,$foreignKey);
     }
 
     protected function belongsToMany($model, $relatedTable): BelongsToMany
@@ -241,9 +241,9 @@ class Model extends Connection implements ModelInterface, JsonSerializable
         return new BelongsToMany($this, $model, $relatedTable);
     }
 
-    protected function hasMany($model): HasMany
+    protected function hasMany($model, $foreignKey = ''): HasMany
     {
-        return new HasMany($this, $model);
+        return new HasMany($this, $model, $foreignKey);
     }
 
     protected function hasOne($model): HasOne

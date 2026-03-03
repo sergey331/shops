@@ -14,12 +14,12 @@ class HasMany extends Relation
     protected string $foreignKey;
 
     private Paginator $paginator;
-    public function __construct(Model $parent, string $relatedClass)
+    public function __construct(Model $parent, string $relatedClass, string $foreignKey)
     {
         parent::__construct($parent,$relatedClass);
         $this->parent = $parent;
         $this->relatedClass = new $relatedClass();
-        $this->foreignKey = strtolower((new ReflectionClass($parent))->getShortName()) . '_id';
+        $this->foreignKey = $foreignKey !== '' ? $foreignKey : strtolower((new ReflectionClass($parent))->getShortName()) . '_id';
         $this->paginator = new Paginator();
     }
 

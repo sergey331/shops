@@ -28,11 +28,17 @@ Route::prefix('/cart')->group(function () {
     Route::post('/edit',[CartController::class,'edit']);
     Route::post('/remove',[CartController::class,'remove']);
 });
-Route::get('/checkout', [CheckoutController::class, 'index']);
+
 
 Route::prefix('/wishlist')->group(function () {
     Route::get('/', [WishListController::class,'index']);
     Route::get('/get', [WishListController::class,'get']);
     Route::post('/save', [WishListController::class,'save']);
     Route::post('/remove', [WishListController::class,'remove']);
+});
+Route::prefix('/checkout')->group(function () {
+    Route::get('/', [CheckoutController::class, 'index']);
+    Route::get('/step-1', [CheckoutController::class, 'step1']);
+    Route::post('/save-step-1', [CheckoutController::class, 'saveStep1']);
+    Route::post('/save-personal-info', [CheckoutController::class, 'savePersonalInfo']);
 });

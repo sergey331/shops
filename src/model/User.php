@@ -15,7 +15,10 @@ class User extends Model
         'password',
         'avatar',
         'is_admin',
-        'remember_token'
+        'remember_token',
+        'first_name',
+        'last_name',
+        'address_id',
     ];
 
     public function wishLists(): HasMany

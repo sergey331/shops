@@ -30,6 +30,7 @@
             <div class="collapse" id="order-basic">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href="/admin/shipping-methods">Shipping Methods</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="/admin/geo-zones">Geo Zones</a></li>
                 </ul>
             </div>
         </li>
