@@ -11,8 +11,7 @@ interface ContainerInterface
 {
     public function __construct();
 
-    public function set($name, $service, $shared = false): void;
-
+    public function set($name, $service): void;
     /**
      * @throws Exception
      */

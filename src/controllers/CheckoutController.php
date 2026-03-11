@@ -38,4 +38,9 @@ class CheckoutController extends BaseController
     {
         $this->response()->json($this->orderService->savePersonalInfo());
     }
+
+    public function savePaymentMethod(): void
+    {
+        $this->response()->json($this->orderService->savePaymentMethod());
+    }
 }

@@ -46,7 +46,8 @@ class Route implements RouteInterface
 
             if (isset($params['middleware']) || !empty( self::$currentMiddleware)) {
                 self::$is_group = true;
-                self::$currentMiddleware = array_merge(self::$currentMiddleware, $params['middleware'] ?? []);
+
+                self::$currentMiddleware = $params['middleware'] ?? self::$currentMiddleware;
             }
 
             $callback();

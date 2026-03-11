@@ -11,7 +11,6 @@ use Kernel\Container\interface\ContainerInterface;
 class Container implements ContainerInterface
 {
     private array $services = [];
-    private array $shared = [];
 
     public static Container $application;
 
@@ -20,12 +19,9 @@ class Container implements ContainerInterface
         self::$application = $this;
     }
     // Register a service, with an optional shared flag
-    public function set($name, $service, $shared = false): void
+    public function set($name, $service): void
     {
         $this->services[$name] = $service;
-        if ($shared) {
-            $this->shared[$name] = $name;
-        }
     }
 
     /**
@@ -33,10 +29,6 @@ class Container implements ContainerInterface
      */
     public function get($name)
     {
-        // Check if it's a shared service and return the same instance
-        if (isset($this->shared[$name])) {
-            return $this->services[$name];
-        }
 
         if (isset($this->services[$name])) {
             if ($this->services[$name] instanceof Closure) {

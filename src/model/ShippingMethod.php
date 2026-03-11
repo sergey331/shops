@@ -7,6 +7,7 @@ use Kernel\Model\Relations\HasMany;
 class ShippingMethod extends Model
 {
     protected string $table = 'shipping_methods';
+    protected array $with = ['items'];
     protected array $fillable = [
         'code',
         'name',
@@ -16,6 +17,6 @@ class ShippingMethod extends Model
 
     public function items(): HasMany
     {
-        return $this->hasMany(ShippingMethodItem::class);
+        return $this->hasMany(ShippingMethodItem::class,'shipping_method_id');
     }
 }

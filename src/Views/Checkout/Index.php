@@ -4,7 +4,7 @@
         <div>
             <!-- Billing Details -->
             <div class="w-full">
-                <h3 class="text-xl font-semibold mb-6">Billing Details</h3>
+                <h3 class="text-xl font-semibold mb-6">Checkout</h3>
                 <div class="space-y-4" id="order-content"></div>
             </div>
         </div>

@@ -6,15 +6,16 @@ use Kernel\Migration\interface\FieldsInterface;
 use Kernel\Migration\interface\MigrationsInterface;
 use Kernel\Migration\interface\TableInterface;
 
-class OrderHistory implements MigrationsInterface
+class OrderBook implements MigrationsInterface
 {
     public static function up(TableInterface $table): void
     {
-        $table->createTable('order_histories', function (FieldsInterface $field) {
+        $table->createTable('order_books', function (FieldsInterface $field) {
             $field->id();
-            $field->boolean('notify')->default(0);
-            $field->string('comment');
-            $field->int('status_id');
+            $field->int('book_id');
+            $field->string('name');
+            $field->decimal('price');
+            $field->int('quantity');
             $field->relations('order_id')->references('id')->on('orders')->onDelete('cascade')->onUpdate('cascade');
             $field->createdTimestamp();
         });
@@ -22,6 +23,6 @@ class OrderHistory implements MigrationsInterface
 
     public static function down(TableInterface $table): void
     {
-        $table->dropTable('order_histories');
+        $table->dropTable('order_books');
     }
 }

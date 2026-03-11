@@ -1,6 +1,7 @@
 <?php
 
 use Kernel\Auth\Auth;
+use Kernel\Cart\Cart;
 use Kernel\Container\Container;
 use Kernel\Cookie\Cookie;
 use Kernel\Redirect\Redirect;
@@ -65,12 +66,17 @@ function config($key, $default = null)
     return container()->get('config')->get($key, $default);
 }
 
+function cart(): Cart
+{
+    return container()->get('cart');
+}
+
 function setting()
 {
     return (new SettingService())->getSetting();
 }
 
-function getBookPrice($book): mixed
+function getBookPrice($book,$count = 1): mixed
 {
     if ($book->discount) {
         if ($book->discount->type === "percentage") {
@@ -79,10 +85,11 @@ function getBookPrice($book): mixed
             $finalPrice = $book->price - $book->discount->price;
         }
 
-        $finalPrice = $finalPrice < 0 ? 0 : $finalPrice;
+
+        $finalPrice = $finalPrice < 0 ? 0 : $finalPrice * $count;
         $html = '<div class="price  font-bold text-lg"><span class="line-through">' . formatNumber($book->price) . ' ' . setting()->currency->symbol . '</span> ' . formatNumber($finalPrice) . ' ' . $book->currency->symbol . '</div>';
     } else {
-        $html = '<div class="price  font-bold text-lg">' . formatNumber($book->price) . ' ' . setting()->currency->symbol . '</div>';
+        $html = '<div class="price  font-bold text-lg">' . formatNumber($book->price * $count) . ' ' . setting()->currency->symbol . '</div>';
     }
 
     return $html;

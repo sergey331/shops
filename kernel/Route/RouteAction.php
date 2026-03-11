@@ -85,6 +85,7 @@ class RouteAction implements RouteActionInterface
 
     private function resolveRoute(): void
     {
+
         /** Static routes (O(1)) */
         if (isset($this->staticRoutes[$this->url])) {
             $this->route = $this->staticRoutes[$this->url];

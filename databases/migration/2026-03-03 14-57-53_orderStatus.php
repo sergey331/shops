@@ -2,6 +2,7 @@
 
 namespace Migration;
 
+use Kernel\Migration\interface\FieldsInterface;
 use Kernel\Migration\interface\MigrationsInterface;
 use Kernel\Migration\interface\TableInterface;
 
@@ -9,11 +10,14 @@ class OrderStatus implements MigrationsInterface
 {
     public static function up(TableInterface $table): void
     {
-        // Your migration logic here
+        $table->createTable('order_statuses', function (FieldsInterface $field) {
+            $field->id();
+            $field->string('name');
+        });
     }
 
     public static function down(TableInterface $table): void
     {
-        // Your rollback logic here
+        $table->dropTable('order_statuses');
     }
 }

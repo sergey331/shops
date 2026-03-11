@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-50 flex justify-center p-6">
     <div class="w-full bg-white rounded-xl shadow p-8">
-        <h1 class="text-2xl font-bold mb-6">Checkout</h1>
+        <h1 class="text-2xl font-bold mb-6">Choose payment method</h1>
         <div class="space-y-3 mb-8">
             @foreach($payments as $payment)
             <label class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer">

@@ -2,8 +2,6 @@
 namespace Shop\service;
 
 use Kernel\Cart\Cart;
-use Kernel\Cart\DbCartStorage;
-use Kernel\Cart\SessionCartStorage;
 
 class CartService
 {
@@ -12,33 +10,22 @@ class CartService
         $book_id = request()->input('book_id');
         $qty = request()->input('qty');
 
-        $cartStorage = auth()->check() ? new DbCartStorage() : new SessionCartStorage();
+        cart()->add($book_id, $qty);
 
-        $cart = new Cart($cartStorage);
-        $cart->add($book_id, $qty);
-
-        return $cart;
+        return cart();
     }
-    public function update()
+    public function update(): Cart
     {
         $book_id = request()->input('book_id');
         $qty = request()->input('qty');
-        $cartStorage = auth()->check() ? new DbCartStorage() : new SessionCartStorage();
-
-        $cart = new Cart($cartStorage);
-        $cart->update($book_id, $qty);
-
-        return $cart;
+        cart()->update($book_id, $qty);
+        return cart();
     }
 
-    public function remove()
+    public function remove(): Cart
     {
         $book_id = request()->input('book_id');
-        $cartStorage = auth()->check() ? new DbCartStorage() : new SessionCartStorage();
-
-        $cart = new Cart($cartStorage);
-        $cart->remove($book_id);
-
-        return $cart;
+        cart()->remove($book_id);
+        return cart();
     }
 }
