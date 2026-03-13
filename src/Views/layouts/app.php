@@ -41,7 +41,7 @@
 @include('Component.Layout.search_popup')
 @include('Component.Layout.header')
 
-<?= $content ?>
+{{ $content }}
 
 @include('Component.Layout.footer')
 

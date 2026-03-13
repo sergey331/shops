@@ -6,5 +6,5 @@ interface ViewInterface
 {
     public function load($path, $data = [],$layout = 'app'): void;
 
-    public function getHtml($path,$data);
+    public function getHtml($path,$data = []);
 }

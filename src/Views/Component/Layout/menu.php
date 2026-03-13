@@ -78,20 +78,14 @@
                                         <span class="text-primary">{{ setting()->currency->symbol . '' . $c->getSubtotal() }}</span>
                                     </li>
                                 @endforeach
-                                <li class="flex justify-between border-t pt-2">
-                                    <span class="font-bold">Total ({{ setting()->currency->code }})</span>
-                                    <strong>{{ $cart->total() }}</strong>
-                                </li>
                           
                             @endempty
                         </ul>
                         @if(!empty($cart->get()))
-                            <div class="space-y-2">
-                                <a href="/cart"
-                                    class="block w-full bg-dark text-black py-2 text-center rounded hover:bg-opacity-90">View
+                            <div class="flex gap-2 align-items-center">
+                                <a href="/cart" class="block w-full bg-primary text-white py-2 text-center rounded hover:bg-opacity-90">View
                                     Cart</a>
-                                <a href="/checkout"
-                                    class="block w-full bg-primary text-white py-2 text-center rounded hover:bg-opacity-90">Go
+                                <a href="/checkout" class="block w-full bg-primary text-white py-2 text-center rounded hover:bg-opacity-90">Go
                                     to
                                     checkout</a>
                             </div>

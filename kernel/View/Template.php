@@ -30,7 +30,7 @@ class Template implements TemplateInterface
         $this->renderLayout($layout,  $content);
     }
 
-    public function getHtml($path, $data = [])
+    public function getHtml($path, $data)
     {
         $viewPath = $this->resolvePath($path);
         if (!file_exists($viewPath)) {
@@ -52,6 +52,8 @@ class Template implements TemplateInterface
             // Auth
             '/@auth/'       => '<?php if ($auth->user()): ?>',
             '/@endauth/'    => '<?php endif; ?>',
+            '/@guest/'       => '<?php if (!$auth->user()): ?>',
+            '/@endguest/'    => '<?php endif; ?>',
 
             // Loops
             '/@foreach\s*\((.*)\)/' => '<?php foreach ($1): ?>',

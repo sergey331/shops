@@ -111,10 +111,26 @@
                 <tbody>
 
                     <tr class="border-b border-gray-200 py-2">
+                        <th class="py-2 text-left font-medium">Subtotal</th>
+                        <td class="py-2 text-right">
+                            <span class="text-primary font-light ps-5">
+                                <span>{{ setting()->currency->symbol }}</span>{{ $totals['subtotal'] }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-gray-200 py-2">
+                        <th class="py-2 text-left font-medium">Discount</th>
+                        <td class="py-2 text-right">
+                            <span class="text-primary font-light ps-5">
+                                <span>{{ setting()->currency->symbol }}</span>{{ $totals['discounted'] }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-gray-200 py-2">
                         <th class="py-2 text-left font-medium">Total</th>
                         <td class="py-2 text-right">
                             <span class="text-primary font-light ps-5">
-                                <span>{{ setting()->currency->symbol }}</span>{{ $cart->total() }}
+                                <span>{{ setting()->currency->symbol }}</span>{{ $totals['total'] }}
                             </span>
                         </td>
                     </tr>
@@ -124,9 +140,8 @@
 
         <!-- Buttons -->
         <div class="flex flex-wrap gap-3 mb-8">
-            <button class="px-6 py-3 bg-gray-200 hover:bg-gray-300 rounded-md transition">Update Cart</button>
-            <button class="px-6 py-3 bg-gray-200 hover:bg-gray-300 rounded-md transition">Continue Shopping</button>
-            <button class="px-6 py-3 bg-primary text-white rounded-md transition">Proceed to checkout</button>
+            <a href="/cart" class="px-6 py-3 bg-gray-200 hover:bg-gray-300 rounded-md transition">Continue Shopping</a>
+            <a href="/checkout" class="px-6 py-3 bg-primary text-white rounded-md transition">Proceed to checkout</a>
         </div>
     </div>
 </div>

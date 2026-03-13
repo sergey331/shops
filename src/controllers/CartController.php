@@ -5,6 +5,7 @@ namespace Shop\controllers;
 use Exception;
 use Kernel\Controller\BaseController;
 use Shop\service\CartService;
+use Shop\service\DiscountService;
 
 class CartController extends BaseController
 {
@@ -21,7 +22,9 @@ class CartController extends BaseController
     {
         $this->view()->load('Cart.Index', [
             'title' => 'Cart',
-            'cartContent' => $this->view()->getHtml('Component.Cart.CartContent',[])
+            'cartContent' => $this->view()->getHtml('Component.Cart.CartContent',[
+                'totals' => new DiscountService()->getTotals()
+            ])
         ]);
 
     }
@@ -45,7 +48,9 @@ class CartController extends BaseController
             $this->response()->json([
                 'success' => true,
                 'quantity' => count($cart->get()),
-                'cartContent' => $this->view()->getHtml('Component.Cart.CartContent', [])
+                'cartContent' => $this->view()->getHtml('Component.Cart.CartContent', [
+                    'totals' => new DiscountService()->getTotals()
+                ])
             ]);
         }
     }
@@ -68,7 +73,9 @@ class CartController extends BaseController
             $this->response()->json([
                 'success' => true,
                 'quantity' => count($cart->get()),
-                'cartContent' => $this->view()->getHtml('Component.Cart.CartContent', [])
+                'cartContent' => $this->view()->getHtml('Component.Cart.CartContent', [
+                    'totals' => new DiscountService()->getTotals()
+                ])
             ]);
         }
     }

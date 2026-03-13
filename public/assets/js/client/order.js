@@ -4,6 +4,7 @@ document.addEventListener('click', async (e) => {
     const saveNext1 = e.target.closest('#saveNext1');
     const savePersonalInfo = e.target.closest('#savePersonalInfo');
     const savePayment = e.target.closest('#savePayment');
+    const confirmOrder = e.target.closest('#confirmOrder');
     if (saveNext1) {
         await saveStep1()
     } else if (savePersonalInfo) {
@@ -11,6 +12,8 @@ document.addEventListener('click', async (e) => {
         await personalInfo();
     } else if (savePayment) {
         await  savePaymentMethod();
+    } else if (confirmOrder) {
+        await  confirms();
     }
 })
 
@@ -39,6 +42,10 @@ async function saveStep1() {
     const checkout_type = document.querySelector('input[name="checkout_type"]:checked').value;
     formData.append('checkout_type', checkout_type)
     await send('/checkout/save-step-1',formData)
+}
+async function confirms() {
+    let formData = new FormData();
+
 }
 async function savePaymentMethod() {
     let formData = new FormData();

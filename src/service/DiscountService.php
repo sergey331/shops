@@ -116,6 +116,43 @@ class DiscountService extends BaseService
         ]);
         return $form;
     }
+
+    public function getTotals(): array
+    {
+        $total = (float)str_replace(',', '', cart()->total());
+        $discounted = 0;
+
+        foreach ($this->getDiscounts() as $discount) {
+
+            if ($discount->min_order_amount && $total < $discount->min_order_amount) {
+                continue;
+            }
+
+            if ($discount->type === 'percentage') {
+                $value = $total * $discount->value / 100;
+            } else {
+                $value = $discount->value;
+            }
+
+            $discounted += $value;
+        }
+
+        return [
+            'subtotal' => $total,
+            'discounted' => $discounted,
+            'total' => $total - $discounted
+        ];
+    }
+    public function getActiveDiscount()
+    {
+        $today = date('Y-m-d');
+
+        return model("Discount")
+            ->where(['is_active' => true])
+            ->whereOp('started_at', '<=', $today)
+            ->whereOp('finished_at', '>=', $today)
+            ->get();
+    }
     private function getTableData($discounts)
     {
         $table = new Table($discounts->data, [
