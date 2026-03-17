@@ -64,6 +64,7 @@
     <div class="mt-6 text-right">
         <button
             class="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition"
+            data-order_id="{{ $order->id }}"
             id="confirmOrder"
         >
             Confirm Order

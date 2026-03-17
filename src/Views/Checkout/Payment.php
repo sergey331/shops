@@ -5,7 +5,9 @@
             @foreach($payments as $payment)
             <label class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer">
                 <input type="radio" name="payment_id" value="{{ $payment->id }}"
-                       class="checkout-radio">
+                       class="checkout-radio"
+                       {{ $payment_id ==  $payment->id ? 'checked' : ''}}
+                >
                 <span class="font-medium">{{ $payment->name }}</span>
             </label>
             @endforeach

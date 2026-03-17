@@ -11,7 +11,7 @@
                             name="first_name"
                             id="first_name"
                             class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
-                            placeholder=" "
+                            value="{{ $orderData['first_name'] ?? '' }}"
                     />
                     <label
                             for="first_name"
@@ -26,7 +26,7 @@
                             name="last_name"
                             id="last_name"
                             class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
-                            placeholder=" "
+                            value="{{ $orderData['last_name'] ?? '' }}"
                     />
                     <label
                             for="last_name"
@@ -44,7 +44,7 @@
                             name="phone"
                             id="phone"
                             class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
-                            placeholder=" "
+                            value="{{ $orderData['phone'] ?? '' }}"
                     />
                     <label
                             for="phone"
@@ -60,7 +60,7 @@
                             name="email"
                             id="email"
                             class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
-                            placeholder=" "
+                            value="{{ $orderData['email'] ?? '' }}"
                     />
                     <label
                             for="email"
@@ -78,7 +78,7 @@
                     <select id="region_id" name="region_id" class="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body">
                         <option selected>Choose a region</option>
                         @foreach($regions as $region)
-                        <option value="{{ $region->id }}">{{ $region->name }}</option>
+                        <option value="{{ $region->id }}" {{ isset($orderData['region_id']) && $orderData['region_id'] ? 'selected' : '' ?? '' }}>{{ $region->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -88,7 +88,7 @@
                             name="city"
                             id="city"
                             class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
-                            placeholder=" "
+                            value="{{ $orderData['city'] ?? '' }}"
                     />
                     <label
                             for="city"
@@ -106,7 +106,7 @@
                             name="address"
                             id="address"
                             class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
-                            placeholder=" "
+                            value="{{ $orderData['address'] ?? '' }}"
                     />
                     <label
                             for="address"
@@ -121,7 +121,7 @@
                             name="address1"
                             id="address1"
                             class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
-                            placeholder=" "
+                            value="{{ $orderData['address1'] ?? '' }}"
                     />
                     <label
                             for="address1"
@@ -140,7 +140,7 @@
                             name="zip"
                             id="zip"
                             class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
-                            placeholder=" "
+                            value="{{ $orderData['zip'] ?? '' }}"
                     />
                     <label
                             for="zip"
@@ -155,7 +155,7 @@
                             name="company"
                             id="company"
                             class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
-                            placeholder=" "
+                            value="{{ $orderData['company'] ?? '' }}"
                     />
                     <label
                             for="company"
@@ -172,7 +172,7 @@
                                 name="password"
                                 id="password"
                                 class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
-                                placeholder=" "
+                                value="{{ $orderData['company'] ?? '' }}"
                         />
                         <label
                                 for="password"

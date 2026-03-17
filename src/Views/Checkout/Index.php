@@ -10,11 +10,11 @@
                     <div class="bg-white shadow-lg rounded-xl p-6">
                         <ul>
                             @guest
-                                <li class="px-7 py-1 border border-dashed cursor-pointer border-primary  text-2xl  rounded-xl mt-3">Choose type</li>
+                                <li data-step="type" class="steps type px-7 py-1 border {{ $step === '' ? 'border-dashed border-primary' : '' }} cursor-pointer   text-2xl  rounded-xl mt-3">Choose type</li>
                             @endguest
-                            <li class="px-7 py-1 border border-dashed cursor-pointer border-primary  text-2xl  rounded-xl mt-3">Personal info</li>
-                            <li class="px-7 py-1 border border-dashed cursor-pointer border-primary  text-2xl  rounded-xl mt-3">Payment</li>
-                            <li class="px-7 py-1 border border-dashed cursor-pointer border-primary  text-2xl  rounded-xl mt-3">Confirm</li>
+                            <li data-step="personal_info" class="steps personal_info px-7 py-1 border {{ $step === 'personal_info' ? 'border-dashed border-primary' : '' }} cursor-pointer   text-2xl  rounded-xl mt-3">Personal info</li>
+                            <li data-step="payment" class="steps payment px-7 py-1 border {{ $step === 'payment' ? 'border-dashed border-primary' : '' }} cursor-pointer   text-2xl  rounded-xl mt-3">Payment</li>
+                            <li data-step="confirm" class="steps confirm px-7 py-1 border {{ $step === 'confirm' ? 'border-dashed border-primary' : '' }} cursor-pointer   text-2xl  rounded-xl mt-3">Confirm</li>
                         </ul>
                     </div>
                 </div>

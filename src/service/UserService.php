@@ -27,4 +27,9 @@ class UserService extends BaseService
             'address_id' => $address->id
         ]);
     }
+
+    public function getAddress($id)
+    {
+        return model('Address')->find($id);
+    }
 }

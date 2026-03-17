@@ -17,8 +17,10 @@ class CheckoutController extends BaseController
 
     public function index(): void
     {
+        $step = session()->get('order');
         $this->view()->load('Checkout.Index', [
             'title' => 'Checkout',
+            'step' => $step['step'] ?? ''
         ]);
     }
 
@@ -26,6 +28,14 @@ class CheckoutController extends BaseController
     {
         $this->response()->html(
             $this->orderService->step1()
+        );
+    }
+
+
+    public function updateStep()
+    {
+        $this->response()->json(
+            $this->orderService->updateStep()
         );
     }
 
@@ -42,5 +52,9 @@ class CheckoutController extends BaseController
     public function savePaymentMethod(): void
     {
         $this->response()->json($this->orderService->savePaymentMethod());
+    }
+    public function confirm(): void
+    {
+        $this->response()->json($this->orderService->confirm());
     }
 }

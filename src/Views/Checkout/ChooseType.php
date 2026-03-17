@@ -4,11 +4,13 @@
         <div class="space-y-3 mb-8">
             <label class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer">
                 <input type="radio" name="checkout_type" value="register"
+                       {{ $type ==  'register' ? 'checked' : ''}}
                        class="checkout-radio">
                 <span class="font-medium">Create Account</span>
             </label>
             <label class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer">
                 <input type="radio" name="checkout_type" value="guest"
+                       {{ $type ==  'guest' ? 'checked' : ''}}
                        class="checkout-radio">
                 <span class="font-medium">Continue as Guest</span>
             </label>

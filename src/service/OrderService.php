@@ -2,8 +2,10 @@
 
 namespace Shop\service;
 
+use Exception;
 use Kernel\Service\BaseService;
 use Kernel\Validator\Validator;
+use Shop\model\OrderStatus;
 use Shop\rules\CheckoutPersonalInfoRules;
 
 class OrderService extends BaseService
@@ -19,6 +21,9 @@ class OrderService extends BaseService
         $this->userService = new UserService();
     }
 
+    /**
+     * @throws Exception
+     */
     public function step1(): string
     {
         if (!auth()->check()) {
@@ -27,10 +32,44 @@ class OrderService extends BaseService
         }
         return '';
     }
+
+    /**
+     * @throws Exception
+     */
+    public function updateStep(): array
+    {
+        $sessionData = $this->getOrderData();
+        $step = request()->input('step');
+
+        if (!$sessionData) {
+            return $this->fail('You dont have permissions for this "'.$step.'" step');
+        }
+
+        $rules = [
+            'payment' => 'address_id',
+            'confirm' => 'payment_id',
+        ];
+
+        if (isset($rules[$step]) && !isset($sessionData[$rules[$step]])) {
+            return $this->fail('You dont have permissions for this "'.$step.'" step');
+        }
+
+        $this->updateOrderData(array_merge($sessionData, request()->all()));
+
+        $view = $this->getStepView();
+
+        return [
+            'success' => true,
+            'content' => view()->getHtml($view['path'], $view['data'])
+        ];
+    }
+
+    /**
+     * @throws Exception
+     */
     public function saveStep1(): array
     {
         $data = request()->all();
-
         if (empty($data['checkout_type'])) {
             return ['success' => false];
         }
@@ -40,7 +79,8 @@ class OrderService extends BaseService
         return [
             'success' => true,
             'content' => view()->getHtml("Checkout.$type", [
-                'regions' => $this->getRegions()
+                'regions' => $this->getRegions(),
+                'orderData' => $this->getOrderData()
             ])
         ];
     }
@@ -66,7 +106,8 @@ class OrderService extends BaseService
         return [
             'success' => true,
             'content' => view()->getHtml("Checkout.Payment", [
-                'payments' => $this->getPayments()
+                'payments' => $this->getPayments(),
+                'payment_id' => $sessionData['payment_id'] ?? null
             ])
         ];
     }
@@ -93,17 +134,31 @@ class OrderService extends BaseService
 
         $order = $this->createOrder($orderData,$shippingMethod->id,$shippingItem->id,$paymentId,$totals);
 
-       $this->createOrderProduct($order->id);
-       $this->createOrderHistory($order->id);
+        $this->createOrderProduct($order->id);
+        $this->createOrderHistory($order->id);
 
         $order = model('Order')->find($order->id);
         $orderData['step'] = 'confirm';
+        $orderData['payment_id'] = $paymentId;
         $this->updateOrderData(array_merge($orderData, ['order_id' => $order->id]));
         return [
             'success' => true,
             'content' => view()->getHtml("Checkout.Confirm", [
                 'order' => $order
             ])
+        ];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function confirm(): array
+    {
+        $order_id = request()->input('order_id');
+        $this->createOrderHistory($order_id, OrderStatus::PENDING_ID,'Order pending');
+        return [
+            'success' => true,
+            'content' => view()->getHtml("Checkout.Success")
         ];
     }
     private function getRegions()
@@ -123,24 +178,24 @@ class OrderService extends BaseService
         $orderData = $this->getOrderData();
 
         if (!$orderData) {
-            return ['path' => 'Checkout.ChooseType', 'data' => []];
+            return ['path' => 'Checkout.ChooseType', 'data' => ['type' => '']];
         }
 
         $step = $orderData['step'] ?? '';
         return match ($step) {
             'personal_info' => [
                 'path' => "Checkout." . ucfirst($orderData['checkout_type'] ?? ''),
-                'data' => ['regions' => $this->getRegions()]
+                'data' => ['regions' => $this->getRegions(),'orderData' => $this->getOrderData()]
             ],
             'payment' => [
                 'path' => "Checkout.Payment",
-                'data' => ['payments' => $this->getPayments()]
+                'data' => ['payments' => $this->getPayments(),'payment_id' => $orderData['payment_id'] ?? null]
             ],
             'confirm' => [
                 'path' => "Checkout.Confirm",
                 'data' => ['order' => model('Order')->find($orderData['order_id'] ?? 0)]
             ],
-            default => ['path' => 'Checkout.ChooseType', 'data' => []],
+            default => ['path' => 'Checkout.ChooseType', 'data' => ['type' => $orderData['checkout_type'] ?? '']],
         };
     }
     private function createOrder($orderData,$shipping_method_id,$shipping_method_item_id,$paymentId,$totals)
@@ -176,12 +231,19 @@ class OrderService extends BaseService
     {
         session()->set('order', $data);
     }
-    private function createOrderHistory($order_id): void
+    private function createOrderHistory($order_id,$status = 0,$comment = 'Order Created'): void
     {
         model('OrderHistory')->create([
-            'comment' => 'Order Created',
-            'status_id' => 0,
+            'comment' => $comment,
+            'status_id' => $status,
             'order_id' => $order_id
         ]);
+    }
+    private function fail(string $message): array
+    {
+        return [
+            'success' => false,
+            'content' => $message
+        ];
     }
 }
