@@ -3,6 +3,7 @@
 namespace Shop\model;
 
 use Kernel\Model\Model;
+use Kernel\Model\Relations\BelongsTo;
 use Kernel\Model\Relations\HasMany;
 
 class User extends Model
@@ -24,5 +25,10 @@ class User extends Model
     public function wishLists(): HasMany
     {
         return $this->hasMany(WishList::class);
+    }
+
+    public function address(): BelongsTo
+    {
+        return $this->belongsTo(Address::class);
     }
 }

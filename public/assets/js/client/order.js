@@ -31,17 +31,16 @@ async function changeStep(e,el) {
 async function loadCheckoutStep(url) {
     try {
         const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            method: 'GET'
         });
 
         if (!response.ok) {
             throw new Error(`HTTP error: ${response.status}`);
         }
 
-        loadData(await response.text(),'type');
+        let data = await response.json()
+        console.log(data.content)
+        loadData(await data.content,data.step);
 
     } catch (error) {
 
@@ -58,7 +57,6 @@ async function saveStep1() {
 async function confirms(e,el) {
     let formData = new FormData();
     let order_id = el.dataset.order_id;
-    console.log(order_id)
     formData.append('order_id',order_id);
     await send('/checkout/confirm',formData);
 }
@@ -90,17 +88,12 @@ function loadData(html,active) {
     document.querySelectorAll('.steps').forEach(i => {
         i.classList.remove('border-dashed','border-primary')
     })
-
    if (active !== '') {
        let li = document.querySelector('.' + active);
-       console.log(active)
-
        if (li) {
            li.classList.add('border-dashed','border-primary');
        }
    }
-
-
     orderContent.innerHTML = html;
 }
 

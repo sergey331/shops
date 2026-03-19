@@ -26,7 +26,7 @@ class CheckoutController extends BaseController
 
     public function step1()
     {
-        $this->response()->html(
+        $this->response()->json(
             $this->orderService->step1()
         );
     }
