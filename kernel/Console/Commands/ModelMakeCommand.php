@@ -2,43 +2,20 @@
 
 namespace Kernel\Console\Commands;
 
-class ModelMakeCommand
+class ModelMakeCommand extends MakeCommand
 {
-    protected string $content = '';
-    protected string $name = '';
     protected string $arg = '';
 
     public function __construct($name,$arg = '')
     {
-        $this->name = $name;
+        parent::__construct($name,'model');
         $this->arg = $arg;
-        $className = ucfirst($name);
-        $this->content = <<<PHP
-<?php
-namespace Shop\\model;
-
-use Kernel\\Model\\Model;
-
-class {$className} extends Model
-{
-    protected string \$table = '';
-    protected array \$fillable = [];
-}
-PHP;
     }
 
     public function make(): void
     {
-        if (!$this->name) {
-            exit(1);
-        }
         $filename = __DIR__ . "/../../../src/model/$this->name.php";
-
-        if (file_exists($filename)) {
-            echo "Model file already exists: $filename" . PHP_EOL;
-            exit(1);
-        }
-        if (file_put_contents($filename, $this->content)) {
+        if ($this->makeFile($filename, $this->content)) {
             echo "Model created successfully: $filename" . PHP_EOL;
             if (!empty($this->arg) && $this->arg === '-m') {
                 (new MigrationMakeCommand($this->name))->make();

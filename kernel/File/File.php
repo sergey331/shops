@@ -5,8 +5,8 @@ use Kernel\File\interface\FileInterface;
 
 class File implements FileInterface
 {
-    private $path;
-    private $file;
+    private string $path;
+    private mixed $file;
     private $fileName;
     private $size;
     private $error = '';
@@ -16,7 +16,7 @@ class File implements FileInterface
         $this->size = ini_get('upload_max_filesize');
     }
 
-    public function setPath($path)
+    public function setPath($path): void
     {
         $this->path = $path;
     }
@@ -36,7 +36,7 @@ class File implements FileInterface
         return $this->file;
     }
 
-    public function upload()
+    public function upload(): bool
     {
         $file = $this->getFile();
         $path = $this->getPath();

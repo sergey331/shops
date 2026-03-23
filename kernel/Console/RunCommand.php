@@ -98,6 +98,9 @@ class RunCommand implements RunCommandInterface
      *  HANDLER METHODS
      * ===================== */
 
+    /**
+     * @throws Exception
+     */
     private function handleMake(?string $arg): void
     {
         if (empty($this->arg1)) {

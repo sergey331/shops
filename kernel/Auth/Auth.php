@@ -2,11 +2,13 @@
 
 namespace Kernel\Auth;
 
+use Exception as ExceptionAlias;
 use Kernel\Auth\interface\AuthInterface;
 use Kernel\Cart\Cart;
 use Kernel\Cart\DbCartStorage;
 use Kernel\Cart\SessionCartStorage;
 use Kernel\Hash\Hash;
+use Random\RandomException;
 
 class Auth implements AuthInterface
 {
@@ -14,6 +16,7 @@ class Auth implements AuthInterface
 
     /**
      * Attempt to login user
+     * @throws ExceptionAlias
      */
     public function attempt(string $email, string $password, bool $remember = false): bool
     {
@@ -38,6 +41,7 @@ class Auth implements AuthInterface
 
     /**
      * Check authentication (session OR remember token)
+     * @throws ExceptionAlias
      */
     public function check(): bool
     {
@@ -50,6 +54,7 @@ class Auth implements AuthInterface
 
     /**
      * Get authenticated user ID
+     * @throws ExceptionAlias
      */
     public function id(): ?int
     {
@@ -60,6 +65,7 @@ class Auth implements AuthInterface
 
     /**
      * Get authenticated user model
+     * @throws ExceptionAlias
      */
     public function user(): ?object
     {
@@ -77,6 +83,7 @@ class Auth implements AuthInterface
 
     /**
      * Check if user is admin
+     * @throws ExceptionAlias
      */
     public function isAdmin(): bool
     {
@@ -85,6 +92,7 @@ class Auth implements AuthInterface
 
     /**
      * Logout user
+     * @throws ExceptionAlias
      */
     public function logout(): void
     {
@@ -99,6 +107,9 @@ class Auth implements AuthInterface
         $this->cachedUser = null;
     }
 
+    /**
+     * @throws RandomException
+     */
     private function setRememberToken(int $userId): void
     {
         $token = bin2hex(random_bytes(32));
@@ -117,6 +128,9 @@ class Auth implements AuthInterface
         );
     }
 
+    /**
+     * @throws ExceptionAlias
+     */
     private function loginViaRememberToken(): bool
     {
         $token = cookie()->get('remember_token');
@@ -147,6 +161,9 @@ class Auth implements AuthInterface
             ->first();
     }
 
+    /**
+     * @throws ExceptionAlias
+     */
     private function fail(string $message): bool
     {
         session()->set($this->errorKey(), $message);
@@ -178,6 +195,9 @@ class Auth implements AuthInterface
         return (int) config('auth.session_expire', 2592000);
     }
 
+    /**
+     * @throws ExceptionAlias
+     */
     public function setCart(): void
     {
         $sessionCart = new Cart(

@@ -19,7 +19,7 @@ class Make implements MakeInterface
     ){
     }
 
-    public function run()
+    public function run(): void
     {
         $this->{$this->type}();
     }
@@ -48,7 +48,7 @@ class Make implements MakeInterface
         (new ServiceMakeCommand($this->arg1))->make();
     }
 
-    private function rule()
+    private function rule(): void
     {
         (new RuleMakeCommand($this->arg1))->make();
     }

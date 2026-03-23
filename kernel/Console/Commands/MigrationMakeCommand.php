@@ -2,57 +2,22 @@
 
 namespace Kernel\Console\Commands;
 
-class MigrationMakeCommand
+class MigrationMakeCommand extends MakeCommand
 {
-    protected string $content = '';
-    protected string $name = '';
-
     public function __construct($name)
     {
-        $this->name = $name;
-        $className = ucfirst($name);        $this->content = <<<PHP
-<?php
-
-namespace Migration;
-
-use Kernel\Migration\interface\MigrationsInterface;
-use Kernel\Migration\interface\TableInterface;
-
-class {$className} implements MigrationsInterface
-{
-    public static function up(TableInterface \$table): void
-    {
-        // Your migration logic here
-    }
-
-    public static function down(TableInterface \$table): void
-    {
-        // Your rollback logic here
-    }
-}
-PHP;
+        parent::__construct($name,'migration');
     }
 
     public function make()
     {
-        if (!$this->name) {
-            echo "Usage: php migration.php make <MigrationName>" . PHP_EOL;
-            exit(1);
-        }
         $timestamp = date('Y-m-d H-i-s');
         $filename = __DIR__ . "/../../../databases/migration/{$timestamp}_" . lcfirst($this->name) . ".php";
-
-        if (file_exists($filename)) {
-            echo "Migration file already exists: $filename" . PHP_EOL;
-            exit(1);
-        }
-        $result = file_put_contents($filename, $this->content);
-        if ($result === false) {
+        if (!$this->makeFile($filename)) {
             echo "Failed to write migration file!" . PHP_EOL;
             exit(1);
         } else {
             echo "Migration created successfully: $filename" . PHP_EOL;
         }
-
     }
 }

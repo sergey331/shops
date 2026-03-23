@@ -83,13 +83,8 @@ class Request implements RequestInterface
 
         $files = $this->normalizeFiles($this->files[$name]);
 
-        foreach ($files as $file) {
-            if ($file['error'] !== UPLOAD_ERR_NO_FILE) {
-                return true;
-            }
-        }
+        return array_any($files, fn($file) => $file['error'] !== UPLOAD_ERR_NO_FILE);
 
-        return false;
     }
 
     /**
