@@ -22,11 +22,10 @@ class UserService extends BaseService
     {
         $addressData  = $this->addressData($data);
 
-        if ($user->address_id) {
+        if ($user && $user->address_id) {
             model('Address')->where(['id' => $user->address_id])->update($addressData);
             return $this->getAddress($user->address_id);
         }
-dd($addressData);
         return model('Address')->create($addressData);
     }
 

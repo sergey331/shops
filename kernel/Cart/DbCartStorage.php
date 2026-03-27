@@ -68,4 +68,15 @@ class DbCartStorage implements CartStorageInterface
             ])
             ->delete();
     }
+    public function removeAll(): void
+    {
+        model('CartItem')
+            ->where([
+                'cart_id' => $this->cartId
+            ])
+            ->delete();
+        model('Cart')->where([
+            'id' => $this->cartId
+        ])->delete();
+    }
 }

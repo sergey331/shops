@@ -33,6 +33,9 @@ function session(): Session
     return container()->get('session');
 }
 
+/**
+ * @throws Exception
+ */
 function cookie(): Cookie
 {
     return container()->get('cookie');
@@ -47,10 +50,17 @@ function auth(): Auth
     return container()->get('auth');
 }
 
+/**
+ * @throws Exception
+ */
 function model($name)
 {
     return container()->get('db')->model($name);
 }
+
+/**
+ * @throws Exception
+ */
 function view()
 {
     return container()->get('views');
@@ -61,11 +71,17 @@ function public_path($path): string
     return env('APP_URL') . '/' . $path;
 }
 
+/**
+ * @throws Exception
+ */
 function config($key, $default = null)
 {
     return container()->get('config')->get($key, $default);
 }
 
+/**
+ * @throws Exception
+ */
 function cart(): Cart
 {
     return container()->get('cart');
@@ -76,7 +92,7 @@ function setting()
     return (new SettingService())->getSetting();
 }
 
-function getBookPrice($book,$count = 1): mixed
+function getBookPrice($book,$count = 1): string
 {
     if ($book->discount) {
         if ($book->discount->type === "percentage") {
@@ -95,7 +111,7 @@ function getBookPrice($book,$count = 1): mixed
     return $html;
 }
 
-function showDiscount($discount, $symbol, $key = 'price')
+function showDiscount($discount, $symbol, $key = 'price'): string
 {
     $text = '';
 
@@ -107,15 +123,48 @@ function showDiscount($discount, $symbol, $key = 'price')
     return $text;
 }
 
-function formatNumber($number) {
+function formatNumber($number): string
+{
     return ($number == intval($number))
         ? number_format($number, 0)
         : number_format($number, 2);
 }
 
-function checkInWishlist($bookId)
+function checkInWishlist($bookId): bool
 {
     $wishlist = (new Wishlist())->getByBookId($bookId);
     return !empty($wishlist);
+}
 
+function timeAgo(string $datetime): string
+{
+    try {
+
+        // Convert DB time to proper timezone
+        $datetimeDb  = new DateTime($datetime, new DateTimeZone('UTC'));
+        $datetimeNow = new DateTime('now', new DateTimeZone('UTC'));
+
+        $interval = $datetimeNow->diff($datetimeDb);
+
+
+        if ($interval->m > 0) {
+            return $interval->m . ' month' . ($interval->m > 1 ? 's' : '') . ' ago';
+        }
+
+        if ($interval->days > 0) {
+            return $interval->days . ' day' . ($interval->days > 1 ? 's' : '') . ' ago';
+        }
+
+        if ($interval->h > 0) {
+            return $interval->h . ' hour' . ($interval->h > 1 ? 's' : '') . ' ago';
+        }
+
+        if ($interval->i > 0) {
+            return $interval->i . ' min ago';
+        }
+
+        return 'Just now';
+    } catch (Exception $e) {
+        return '';
+    }
 }

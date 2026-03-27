@@ -6,6 +6,7 @@ use Shop\controllers\admin\AdminController;
 use Shop\controllers\admin\CategoryController;
 use Shop\controllers\admin\DiscountController;
 use Shop\controllers\admin\GeoZoneController;
+use Shop\controllers\admin\NotificationController;
 use Shop\controllers\admin\OrderController;
 use Shop\controllers\admin\PostController;
 use Shop\controllers\admin\ShippingMethodController;
@@ -106,5 +107,11 @@ Route::prefix("/admin")->group(function () {
 
     Route::group(['prefix' => '/orders'], function () {
         Route::get('/',[OrderController::class,'index']);
+        Route::get('/{Order}',[OrderController::class,'show']);
+    });
+
+    Route::group(['prefix' => '/notification'], function () {
+        Route::get('/',[NotificationController::class,'index']);
+        Route::get('/{Order}',[OrderController::class,'show']);
     });
 });

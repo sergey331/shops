@@ -8,7 +8,7 @@ use Kernel\Model\Paginator;
         <h4 class="card-title">Orders</h4>
         <div class="table-responsive">
             {{ $tableData->render() }}
-            {{ Paginator::html($discounts) }}
+            {{ Paginator::html($orders) }}
         </div>
     </div>
 </div>

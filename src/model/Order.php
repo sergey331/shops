@@ -10,13 +10,6 @@ class Order extends Model
 {
     protected string $table = 'orders';
 
-    protected array $with = [
-        'shippingMethod',
-        'shippingMethodItem',
-        'paymentMethod',
-        'address',
-        'books'
-    ];
     protected array $fillable = [
         'first_name',
         'last_name',
@@ -54,5 +47,10 @@ class Order extends Model
     public function books(): HasMany
     {
         return $this->hasMany(OrderBook::class,'order_id');
+    }
+
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(OrderStatus::class,'status_id');
     }
 }

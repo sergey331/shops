@@ -3,6 +3,7 @@
 namespace Shop\controllers\admin;
 
 use Kernel\Controller\BaseController;
+use Shop\model\Order;
 use Shop\service\OrderService;
 
 class OrderController extends BaseController
@@ -16,5 +17,10 @@ class OrderController extends BaseController
     public function index()
     {
         $this->view()->load('Admin.Order.Index', $this->orderService->getOrders(), 'admin');
+    }
+
+    public function show(Order $order)
+    {
+
     }
 }

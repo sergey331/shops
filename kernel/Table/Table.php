@@ -63,6 +63,15 @@ class Table
         return htmlspecialchars((string)$v, ENT_QUOTES, "UTF-8");
     }
 
+    public function  getBooleanValue(bool $v): string
+    {
+        return sprintf(
+            '<span class="p-2 text-white %s">%s</span>',
+            $v ? 'bg-success' : 'bg-danger',
+            $v ? 'Yes' : 'No'
+        );
+    }
+
     protected function attrs(array $attrs): string
     {
         $out = [];
@@ -154,7 +163,11 @@ class Table
                         $value = $this->getValue($row, $field);
                     } else {
                         $value = $this->getValue($row, $field);
-                        $value = $this->escape((string)$value);
+                        if (isset($col['type']) && $col['type'] === 'boolean'){
+                            $value = $this->getBooleanValue((bool)$value);
+                        } else {
+                            $value = $this->escape((string)$value);
+                        }
                     }
                 }
 

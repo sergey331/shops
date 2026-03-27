@@ -13,4 +13,5 @@ interface CartStorageInterface
     public function save(array $items): void;
 
     public function remove(int $bookId): void;
+    public function removeAll(): void;
 }

@@ -19,7 +19,8 @@ class Setting extends Model
         'logo',
         'default_discount_days',
         'currency_id',
-        'theme'
+        'theme',
+        'order_email'
     ];
 
     public function currency(): BelongsTo

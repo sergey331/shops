@@ -1,6 +1,7 @@
 <?php
 namespace Shop\service;
 
+use Exception;
 use Kernel\Form\Form;
 use Kernel\Table\Table;
 use Kernel\Validator\Validator;
@@ -23,7 +24,10 @@ class SettingService extends BaseService
         );
     }
 
-    public function save(Setting $setting)
+    /**
+     * @throws Exception
+     */
+    public function save(Setting $setting): bool
     {
         $data = request()->all();
         $validator = new Validator($data, SettingRules::rules());
@@ -32,6 +36,7 @@ class SettingService extends BaseService
             return false;
         }
 
+        $data['order_email'] = isset($data['order_email']) ? 1 : 0;
         $path = APP_PATH . '/public/uploads/setting';
         if (
             $setting &&
@@ -82,6 +87,12 @@ class SettingService extends BaseService
             'class' => 'form-control'
         ]);
 
+        $form->setCheckbox('order_email', 'Email notification for order',[
+            'class' => 'form-check-input',
+            'checked' => (bool) $setting->order_email,
+            'value' => 1
+        ]);
+
         return $form;
 
     }
@@ -95,6 +106,7 @@ class SettingService extends BaseService
             "Address" => ['field' => 'address'],
             "Default discount days" => ['field' => 'default_discount_days'],
             "Currency" => ['field' => 'currency.name'],
+            "Email notification for order" => ['field' => 'order_email','type' => 'boolean'],
             "Logo" => ['field' => 'logo', 'data' => ['type' => 'image', 'path' => "/uploads/setting"]],
             "Actions" => [
                 'callback' => function ($row) {

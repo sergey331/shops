@@ -44,4 +44,9 @@ class SessionCartStorage implements CartStorageInterface
             session()->set('cart', $cart);
         }
     }
+
+    public function removeAll(): void
+    {
+        session()->remove('cart');
+    }
 }

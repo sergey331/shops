@@ -14,20 +14,31 @@ class OrderService extends BaseService
     private ShippingService $shippingService;
     private UserService $userService;
     private DiscountService $discountService;
+    private NotificationService $notificationService;
+
+    public function __construct(
+        ShippingService $shippingService = new ShippingService(),
+        UserService $userService = new UserService(),
+        DiscountService $discountService = new DiscountService(),
+        NotificationService $notificationService = new NotificationService()
+    ) {
+        $this->shippingService = $shippingService;
+        $this->userService = $userService;
+        $this->discountService = $discountService;
+        $this->notificationService = $notificationService;
+    }
 
     public function getOrders(): array
     {
-        $discounts = model('Order')->paginate();
+        $orders = model('Order')
+            ->with(['status'])
+            ->whereOp('status_id', '!=', 0)
+            ->paginate();
+
         return [
-            'discounts' => $discounts,
-            'tableData' => $this->getTableData($discounts)
+            'orders' => $orders,
+            'tableData' => $this->getTableData($orders)
         ];
-    }
-    public function __construct()
-    {
-        $this->shippingService = new ShippingService();
-        $this->discountService = new DiscountService();
-        $this->userService = new UserService();
     }
 
     /**
@@ -37,8 +48,12 @@ class OrderService extends BaseService
     {
         $view = $this->getStepView();
         $sessionData = $this->getOrderData();
+
+        $step = $sessionData['step']
+            ?? (auth()->check() ? 'personal_info' : 'type');
+
         return [
-            'step' => $sessionData['step'] ?? auth()->check() ? 'personal_info' : 'type',
+            'step' => $step,
             'content' => view()->getHtml($view['path'], $view['data'])
         ];
     }
@@ -52,26 +67,21 @@ class OrderService extends BaseService
         $step = request()->input('step');
 
         if (!$sessionData) {
-            return $this->fail('You dont have permissions for this "' . $step . '" step');
+            return $this->fail("No access to step '{$step}'");
         }
 
-        $rules = [
+        $required = [
             'payment' => 'address_id',
             'confirm' => 'payment_id',
         ];
 
-        if (isset($rules[$step]) && !isset($sessionData[$rules[$step]])) {
-            return $this->fail('You dont have permissions for this "' . $step . '" step');
+        if (isset($required[$step]) && empty($sessionData[$required[$step]])) {
+            return $this->fail("No access to step '{$step}'");
         }
 
         $this->updateOrderData(array_merge($sessionData, request()->all()));
 
-        $view = $this->getStepView();
-
-        return [
-            'success' => true,
-            'content' => view()->getHtml($view['path'], $view['data'])
-        ];
+        return $this->renderStep();
     }
 
     /**
@@ -80,12 +90,16 @@ class OrderService extends BaseService
     public function saveStep1(): array
     {
         $data = request()->all();
+
         if (empty($data['checkout_type'])) {
             return ['success' => false];
         }
+
         $data['step'] = 'personal_info';
         $this->updateOrderData($data);
+
         $type = ucfirst($data['checkout_type']);
+
         return [
             'success' => true,
             'content' => view()->getHtml("Checkout.$type", [
@@ -112,27 +126,20 @@ class OrderService extends BaseService
             ];
         }
 
-        $user = auth()->user();
-        if (!$user) {
-            $address = $this->userService->saveAddress((object)[], $data);
-            if (($sessionData['checkout_type'] ?? null) === 'register') {
-                $user = $this->userService->saveUser($data, $address);
-            }
-        } else {
-            $address = $this->userService->saveAddress($user, $data);
-            $user = $this->userService->saveUser($data, $address, $user);
-        }
-        $payload = array_merge($sessionData, [
-            'user_id' => $user->id ?? null,
-            'address_id' => $address->id ?? null,
-            'step' => 'payment'
+        [$user, $address] = $this->handleUserAndAddress($data, $sessionData);
+
+        $payload = array_merge($sessionData, $data, [
+            'user_id'    => $user?->id,
+            'address_id' => $address->id,
+            'step'       => 'payment'
         ]);
 
         $this->updateOrderData($payload);
+
         return [
             'success' => true,
             'content' => view()->getHtml("Checkout.Payment", [
-                'payments' => $this->getPayments(),
+                'payments'   => $this->getPayments(),
                 'payment_id' => $payload['payment_id'] ?? null
             ])
         ];
@@ -151,7 +158,9 @@ class OrderService extends BaseService
                 'errors' => ['payment is required']
             ];
         }
+
         $orderData = $this->getOrderData();
+
         $shippingMethod = $this->shippingService->getShippingMethod($orderData['region_id']);
         $totals = $this->discountService->getTotals();
 
@@ -162,15 +171,26 @@ class OrderService extends BaseService
 
         $totals['total'] += (int)$shippingItem->price;
 
-        $order = $this->createOrder($orderData, $shippingMethod->id, $shippingItem->id, $paymentId, $totals);
+        $order = $this->createOrder(
+            $orderData,
+            $shippingMethod->id,
+            $shippingItem->id,
+            $paymentId,
+            $totals
+        );
 
         $this->createOrderProduct($order->id);
         $this->createOrderHistory($order->id);
 
-        $order = model('Order')->find($order->id);
-        $orderData['step'] = 'confirm';
-        $orderData['payment_id'] = $paymentId;
-        $this->updateOrderData(array_merge($orderData, ['order_id' => $order->id]));
+        $orderData = array_merge($orderData, [
+            'step' => 'confirm',
+            'payment_id' => $paymentId,
+            'order_id' => $order->id
+        ]);
+
+        $this->updateOrderData($orderData);
+
+        $order = model('Order')->with(['books','shippingMethodItem'])->find($order->id);
         return [
             'success' => true,
             'content' => view()->getHtml("Checkout.Confirm", [
@@ -184,12 +204,47 @@ class OrderService extends BaseService
      */
     public function confirm(): array
     {
-        $order_id = request()->input('order_id');
-        $this->createOrderHistory($order_id, OrderStatus::PENDING_ID, 'Order pending');
+        $orderId = request()->input('order_id');
+
+        $this->createOrderHistory($orderId, OrderStatus::PENDING_ID, 'Order pending');
+        $this->updateOrderStatus($orderId, OrderStatus::PENDING_ID);
+
         $this->removeOrderSession();
+        $this->removeCartProduct();
+
+        $this->notificationService->notifyOrder($orderId);
+
         return [
             'success' => true,
             'content' => view()->getHtml("Checkout.Success")
+        ];
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function handleUserAndAddress(array $data, array $sessionData): array
+    {
+        $user = auth()->user();
+
+        $address = $this->userService->saveAddress($user, $data);
+
+        if (!$user && ($sessionData['checkout_type'] ?? null) === 'register') {
+            $user = $this->userService->saveUser($data, $address);
+        } elseif ($user) {
+            $user = $this->userService->saveUser($data, $address, $user);
+        }
+
+        return [$user, $address];
+    }
+
+    private function renderStep(): array
+    {
+        $view = $this->getStepView();
+
+        return [
+            'success' => true,
+            'content' => view()->getHtml($view['path'], $view['data'])
         ];
     }
 
@@ -203,9 +258,6 @@ class OrderService extends BaseService
         return model('Payment')->get();
     }
 
-    /**
-     * @throws Exception
-     */
     private function getOrderData()
     {
         return session()->get('order');
@@ -219,7 +271,6 @@ class OrderService extends BaseService
         $orderData = $this->getOrderData() ?? [];
         $user = auth()->user();
 
-
         if (empty($orderData) && !$user) {
             return [
                 'path' => 'Checkout.ChooseType',
@@ -227,9 +278,8 @@ class OrderService extends BaseService
             ];
         }
 
-        $step = $orderData['step'] ?? $user ? "personal_info" : '';
+        $step = $orderData['step'] ?? ($user ? 'personal_info' : '');
         $checkoutType = $orderData['checkout_type'] ?? '';
-
 
         if ($step === 'personal_info') {
             if ($user) {
@@ -243,6 +293,7 @@ class OrderService extends BaseService
                     ]
                 ];
             }
+
             return [
                 'path' => "Checkout." . ucfirst($checkoutType),
                 'data' => [
@@ -251,9 +302,8 @@ class OrderService extends BaseService
                 ]
             ];
         }
-        // 🔹 OTHER STEPS
-        return match ($step) {
 
+        return match ($step) {
             'payment' => [
                 'path' => "Checkout.Payment",
                 'data' => [
@@ -261,14 +311,12 @@ class OrderService extends BaseService
                     'payment_id' => $orderData['payment_id'] ?? null
                 ]
             ],
-
             'confirm' => [
                 'path' => "Checkout.Confirm",
                 'data' => [
-                    'order' => model('Order')->find($orderData['order_id'] ?? 0)
+                    'order' => model('Order')->with(['books','shippingMethodItem'])->find($orderData['order_id'] ?? 0)
                 ]
             ],
-
             default => [
                 'path' => 'Checkout.ChooseType',
                 'data' => ['type' => $checkoutType]
@@ -276,7 +324,7 @@ class OrderService extends BaseService
         };
     }
 
-    private function createOrder($orderData, $shipping_method_id, $shipping_method_item_id, $paymentId, $totals)
+    private function createOrder($orderData, $shippingMethodId, $shippingItemId, $paymentId, $totals)
     {
         return model('Order')->create([
             'first_name' => $orderData['first_name'],
@@ -285,8 +333,8 @@ class OrderService extends BaseService
             'address_id' => $orderData['address_id'],
             'user_id' => $orderData['user_id'] ?? null,
             'payment_id' => $paymentId,
-            'shipping_id' => $shipping_method_id,
-            'shipping_item_id' => $shipping_method_item_id,
+            'shipping_id' => $shippingMethodId,
+            'shipping_item_id' => $shippingItemId,
             'status_id' => 0,
             'subtotal' => $totals['subtotal'],
             'discounted' => $totals['discounted'],
@@ -294,7 +342,12 @@ class OrderService extends BaseService
         ]);
     }
 
-    private function createOrderProduct($order_id): void
+    private function updateOrderStatus($orderId, $statusId): void
+    {
+        model('Order')->where(['id' => $orderId])->update(['status_id' => $statusId]);
+    }
+
+    private function createOrderProduct($orderId): void
     {
         foreach (cart()->get() as $book) {
             model('OrderBook')->create([
@@ -302,26 +355,35 @@ class OrderService extends BaseService
                 'name' => $book->getBook()->title,
                 'price' => $book->getBook()->price,
                 'quantity' => $book->getQty(),
-                'order_id' => $order_id
+                'order_id' => $orderId
             ]);
         }
     }
 
-    /**
-     * @throws Exception
-     */
     private function updateOrderData(array $data): void
     {
         session()->set('order', $data);
     }
 
-    private function createOrderHistory($order_id, $status = 0, $comment = 'Order Created'): void
+    private function createOrderHistory($orderId, $status = 0, $comment = 'Order Created'): void
     {
         model('OrderHistory')->create([
             'comment' => $comment,
             'status_id' => $status,
-            'order_id' => $order_id
+            'order_id' => $orderId
         ]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function removeOrderSession(): void
+    {
+        session()->remove('order');
+     }
+    private function removeCartProduct(): void
+    {
+        cart()->removeAll();
     }
 
     private function fail(string $message): array
@@ -332,35 +394,26 @@ class OrderService extends BaseService
         ];
     }
 
-    /**
-     * @throws Exception
-     */
-    private function removeOrderSession()
+    private function getTableData($orders): Table
     {
-        session()->remove('order');
-    }
-
-    private function getTableData($discounts)
-    {
-        $table = new Table($discounts->data, [
+        $table = new Table($orders->data, [
             "#" => ['field' => 'id'],
             "First Name" => ['field' => 'first_name'],
             "Last Name" => ['field' => 'last_name'],
-            "email" => ['field' => 'email'],
+            "Email" => ['field' => 'email'],
+            "Status" => ['field' => 'status.name'],
+            "Total (" . setting()->currency->code . ")" => ['field' => 'total'],
             "Actions" => [
                 'callback' => function ($row) {
-                    $id = $row->id;
                     return '
                         <div class="d-flex gap-1">
-                            <a href="/admin/orders/' . $id . '" class="btn btn-sm btn-primary text-white">Show</a>
+                            <a href="/admin/orders/' . $row->id . '" class="btn btn-sm btn-primary text-white">Show</a>
                         </div>
                     ';
                 },
             ]
         ]);
 
-        $table
-            ->setTableAttributes(['class' => 'table']);
-        return $table;
+        return $table->setTableAttributes(['class' => 'table']);
     }
 }

@@ -44,6 +44,11 @@ class Cart
         $this->storage->remove($bookId);
     }
 
+    public function removeAll(): void
+    {
+        $this->storage->removeAll();
+    }
+
     public function get(): array
     {
         foreach ($this->cart as $item) {
