@@ -45,5 +45,6 @@ Route::group(['middleware' => ['cart']],function () {
         Route::post('/save-personal-info', [CheckoutController::class, 'savePersonalInfo']);
         Route::post('/save-payment-method', [CheckoutController::class, 'savePaymentMethod']);
         Route::post('/confirm', [CheckoutController::class, 'confirm']);
+        Route::post('/clear-order', [CheckoutController::class, 'clearOrder']);
     });
 });

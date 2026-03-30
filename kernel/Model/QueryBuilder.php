@@ -106,6 +106,16 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $query = "SELECT * FROM {$table}";
         if ($where) $query .= " $where";
+
+
+        if (!empty($this->orderBy)) {
+            $orderClauses = [];
+            foreach ($this->orderBy as $column => $direction) {
+                $direction = strtoupper($direction);
+                $orderClauses[] = "{$column} {$direction}";
+            }
+            $query .= " ORDER BY " . implode(', ', $orderClauses);
+        }
         $query .= " LIMIT $offset, $limit";
         return $query;
     }

@@ -2,6 +2,7 @@
 
 namespace Shop\middleware;
 
+use Exception;
 use Kernel\Container\Container;
 use Kernel\Route\interface\MiddlewareInterface;
 use Kernel\Route\Middleware;
@@ -12,11 +13,18 @@ class CartMiddleware extends Middleware implements MiddlewareInterface
        parent::__construct($container);
     }
 
-    public function handle()
+    /**
+     * @throws Exception
+     */
+    public function handle(): true
     {
-        if (empty(cart()->get())) {
+        $isAjax = !empty(request()->getRequested())
+            && strtolower(request()->getRequested()) === 'xmlhttprequest';
+
+        if (!$isAjax && empty(cart()->get())) {
             $this->redirect()->to('/shop');
         }
+
         return true;
     }
 

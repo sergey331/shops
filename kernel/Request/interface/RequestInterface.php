@@ -14,6 +14,7 @@ interface RequestInterface
      public function all(): array;
     public function getUri(): ?string;
     public function getMethod(): ?string;
+    public function getRequested(): ?string;
     public function file(string $name): FileData|array|null;
     public function hasFile(string $name): bool;
     public function has(string $name): bool;

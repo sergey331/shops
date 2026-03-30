@@ -3,6 +3,7 @@
 namespace Shop\service;
 
 use Exception;
+use Kernel\Email\Handlers\OrderEmailHandler;
 use Kernel\Service\BaseService;
 use Kernel\Table\Table;
 use Kernel\Validator\Validator;
@@ -15,17 +16,22 @@ class OrderService extends BaseService
     private UserService $userService;
     private DiscountService $discountService;
     private NotificationService $notificationService;
+    private EmailService $emailService;
 
     public function __construct(
         ShippingService $shippingService = new ShippingService(),
         UserService $userService = new UserService(),
         DiscountService $discountService = new DiscountService(),
-        NotificationService $notificationService = new NotificationService()
+        NotificationService $notificationService = new NotificationService(),
+        EmailService $emailService = new EmailService([
+            'order' => new OrderEmailHandler(),
+        ])
     ) {
         $this->shippingService = $shippingService;
         $this->userService = $userService;
         $this->discountService = $discountService;
         $this->notificationService = $notificationService;
+        $this->emailService = $emailService;
     }
 
     public function getOrders(): array
@@ -33,8 +39,8 @@ class OrderService extends BaseService
         $orders = model('Order')
             ->with(['status'])
             ->whereOp('status_id', '!=', 0)
+            ->orderBy('id', 'DESC')
             ->paginate();
-
         return [
             'orders' => $orders,
             'tableData' => $this->getTableData($orders)
@@ -168,7 +174,6 @@ class OrderService extends BaseService
             $shippingMethod->items,
             $totals['total']
         );
-
         $totals['total'] += (int)$shippingItem->price;
 
         $order = $this->createOrder(
@@ -209,15 +214,25 @@ class OrderService extends BaseService
         $this->createOrderHistory($orderId, OrderStatus::PENDING_ID, 'Order pending');
         $this->updateOrderStatus($orderId, OrderStatus::PENDING_ID);
 
-        $this->removeOrderSession();
-        $this->removeCartProduct();
-
-        $this->notificationService->notifyOrder($orderId);
+        if (setting()->order_email) {
+            $this->emailService->send('order', $orderId);
+            $this->notificationService->notifyOrder($orderId);
+        }
 
         return [
             'success' => true,
+            'confirmed' => true,
             'content' => view()->getHtml("Checkout.Success")
         ];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function clearOrder(): void
+    {
+        $this->removeOrderSession();
+        $this->removeCartProduct();
     }
 
     /**
@@ -238,6 +253,9 @@ class OrderService extends BaseService
         return [$user, $address];
     }
 
+    /**
+     * @throws Exception
+     */
     private function renderStep(): array
     {
         $view = $this->getStepView();
@@ -248,16 +266,25 @@ class OrderService extends BaseService
         ];
     }
 
+    /**
+     * @throws Exception
+     */
     private function getRegions()
     {
         return model('Region')->get();
     }
 
+    /**
+     * @throws Exception
+     */
     private function getPayments()
     {
         return model('Payment')->get();
     }
 
+    /**
+     * @throws Exception
+     */
     private function getOrderData()
     {
         return session()->get('order');
@@ -324,6 +351,9 @@ class OrderService extends BaseService
         };
     }
 
+    /**
+     * @throws Exception
+     */
     private function createOrder($orderData, $shippingMethodId, $shippingItemId, $paymentId, $totals)
     {
         return model('Order')->create([
@@ -342,11 +372,17 @@ class OrderService extends BaseService
         ]);
     }
 
+    /**
+     * @throws Exception
+     */
     private function updateOrderStatus($orderId, $statusId): void
     {
         model('Order')->where(['id' => $orderId])->update(['status_id' => $statusId]);
     }
 
+    /**
+     * @throws Exception
+     */
     private function createOrderProduct($orderId): void
     {
         foreach (cart()->get() as $book) {
@@ -360,11 +396,17 @@ class OrderService extends BaseService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function updateOrderData(array $data): void
     {
         session()->set('order', $data);
     }
 
+    /**
+     * @throws Exception
+     */
     private function createOrderHistory($orderId, $status = 0, $comment = 'Order Created'): void
     {
         model('OrderHistory')->create([
@@ -381,6 +423,10 @@ class OrderService extends BaseService
     {
         session()->remove('order');
      }
+
+    /**
+     * @throws Exception
+     */
     private function removeCartProduct(): void
     {
         cart()->removeAll();

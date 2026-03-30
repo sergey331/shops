@@ -13,7 +13,12 @@ class NotificationService extends BaseService
      */
     public function getNotification(): array
     {
-        return ['notifications' => model('Notification')->where(['is_read' => 0])->get()];
+        return [
+            'notifications' => model('Notification')
+                ->where(['is_read' => 0])
+                ->orderBy('created_at', 'DESC')
+                ->get()
+        ];
     }
 
     /**

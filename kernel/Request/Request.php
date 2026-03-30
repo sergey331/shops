@@ -70,6 +70,10 @@ class Request implements RequestInterface
     {
         return $this->server['REQUEST_METHOD'] ?? null;
     }
+    public function getRequested(): ?string
+    {
+        return $this->server['HTTP_X_REQUESTED_WITH'] ?? null;
+    }
 
     /* ==========================
        FILE HANDLING

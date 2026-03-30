@@ -81,6 +81,14 @@ async function send(url,formData,activeClass) {
     const data = await response.json();
     if (data.success) {
         loadData(data.content,activeClass);
+        if (data.confirmed) {
+            await fetch('/checkout/clear-order', {
+                method: 'POST'
+            });
+            setTimeout(() => {
+                location.href = '/shop'
+            },3000)
+        }
     }
 }
 
