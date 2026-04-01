@@ -39,12 +39,8 @@ Route::prefix('/wishlist')->group(function () {
 Route::group(['middleware' => ['cart']],function () {
     Route::prefix('/checkout')->group(function () {
         Route::get('/', [CheckoutController::class, 'index']);
-        Route::get('/step-1', [CheckoutController::class, 'step1']);
-        Route::post('/update-step', [CheckoutController::class, 'updateStep']);
-        Route::post('/save-step-1', [CheckoutController::class, 'saveStep1']);
-        Route::post('/save-personal-info', [CheckoutController::class, 'savePersonalInfo']);
-        Route::post('/save-payment-method', [CheckoutController::class, 'savePaymentMethod']);
-        Route::post('/confirm', [CheckoutController::class, 'confirm']);
+        Route::get('/load-process', [CheckoutController::class, 'loadProcess']);
+        Route::post('/process-Checkout', [CheckoutController::class, 'processCheckout']);
         Route::post('/clear-order', [CheckoutController::class, 'clearOrder']);
     });
 });

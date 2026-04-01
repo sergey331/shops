@@ -1,23 +1,14 @@
 <?php
 
-namespace Shop\service;
+namespace Kernel\Order\Service;
 
-use Kernel\Service\BaseService;
+use Exception;
 
-class UserService extends BaseService
+class User
 {
-    private function addressData(array $data): array
-    {
-        return [
-            'phone'      => $data['phone'] ?? null,
-            'region_id'  => $data['region_id'] ?? null,
-            'city'       => $data['city'] ?? null,
-            'address'    => $data['address'] ?? null,
-            'address1'   => $data['address1'] ?? null,
-            'zip'        => $data['zip'] ?? null,
-        ];
-    }
-
+    /**
+     * @throws Exception
+     */
     public function saveAddress($user, array $data)
     {
         $addressData  = $this->addressData($data);
@@ -29,6 +20,9 @@ class UserService extends BaseService
         return model('Address')->create($addressData);
     }
 
+    /**
+     * @throws Exception
+     */
     public function saveUser(array $data, $address, $user = null)
     {
         $payload = [
@@ -54,6 +48,17 @@ class UserService extends BaseService
         return model('User')->create($payload);
     }
 
+    private function addressData(array $data): array
+    {
+        return [
+            'phone'      => $data['phone'] ?? null,
+            'region_id'  => $data['region_id'] ?? null,
+            'city'       => $data['city'] ?? null,
+            'address'    => $data['address'] ?? null,
+            'address1'   => $data['address1'] ?? null,
+            'zip'        => $data['zip'] ?? null,
+        ];
+    }
     private function generateUsername(array $data): string
     {
         $first = strtolower($data['first_name'] ?? 'user');

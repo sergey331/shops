@@ -25,7 +25,7 @@ async function changeStep(e,el) {
     const step = el.dataset.step;
     let formData = new FormData();
     formData.append('step', step)
-    await send('/checkout/update-step',formData,step)
+    await send(formData,step)
 }
 
 async function loadCheckoutStep(url) {
@@ -39,11 +39,9 @@ async function loadCheckoutStep(url) {
         }
 
         let data = await response.json()
-        console.log(data.content)
         loadData(await data.content,data.step);
 
     } catch (error) {
-
         loadData('<p>Failed to load checkout.</p>','');
     }
 }
@@ -52,29 +50,29 @@ async function saveStep1() {
     let formData = new FormData();
     const checkout_type = document.querySelector('input[name="checkout_type"]:checked').value;
     formData.append('checkout_type', checkout_type)
-    await send('/checkout/save-step-1',formData,'personal_info')
+    await send(formData,'personal_info')
 }
 async function confirms(e,el) {
     let formData = new FormData();
     let order_id = el.dataset.order_id;
     formData.append('order_id',order_id);
-    await send('/checkout/confirm',formData);
+    await send(formData);
 }
 async function savePaymentMethod() {
     let formData = new FormData();
     const payment_id = document.querySelector('input[name="payment_id"]:checked').value;
     formData.append('payment_id', payment_id)
-    await send('/checkout/save-payment-method',formData, 'confirm')
+    await send(formData, 'confirm')
 }
 
 async function personalInfo() {
     let personalInfoForm = document.getElementById('savePersonalInfoForm')
     let formData = new FormData(personalInfoForm)
-    await send('/checkout/save-personal-info',formData,'payment')
+    await send(formData,'payment')
 }
 
-async function send(url,formData,activeClass) {
-    const response = await fetch(url, {
+async function send(formData,activeClass) {
+    const response = await fetch('/checkout/process-Checkout', {
         method: 'POST',
         body: formData
     });
@@ -105,4 +103,4 @@ function loadData(html,active) {
     orderContent.innerHTML = html;
 }
 
-loadCheckoutStep('/checkout/step-1');
+loadCheckoutStep('/checkout/load-process');

@@ -1,10 +1,10 @@
 <?php
-namespace Shop\service;
+
+namespace Kernel\Order\Service;
 
 use Exception;
-use Kernel\Service\BaseService;
 
-class ShippingService extends BaseService
+class Shipping
 {
     /**
      * @throws Exception
@@ -16,7 +16,7 @@ class ShippingService extends BaseService
     }
     public function getShippingMethodItem(array $items, $total)
     {
-        $total = (int)$total;
+        $total = (int) $total;
         $best = null;
         $fallback = null;
 

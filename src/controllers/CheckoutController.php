@@ -27,10 +27,10 @@ class CheckoutController extends BaseController
     /**
      * @throws Exception
      */
-    public function step1(): void
+    public function loadProcess(): void
     {
         $this->response()->json(
-            $this->orderService->step1()
+            $this->orderService->loadProcess()
         );
     }
 
@@ -38,49 +38,17 @@ class CheckoutController extends BaseController
     /**
      * @throws Exception
      */
-    public function updateStep(): void
+    public function processCheckout(): void
     {
         $this->response()->json(
-            $this->orderService->updateStep()
+            $this->orderService->processCheckout()
         );
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function saveStep1(): void
-    {
-        $this->response()->json($this->orderService->saveStep1());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function savePersonalInfo(): void
-    {
-        $this->response()->json($this->orderService->savePersonalInfo());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function savePaymentMethod(): void
-    {
-        $this->response()->json($this->orderService->savePaymentMethod());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function confirm(): void
-    {
-        $this->response()->json($this->orderService->confirm());
     }
     /**
      * @throws Exception
      */
     public function clearOrder(): void
     {
-        $this->response()->json($this->orderService->clearOrder());
+        $this->orderService->clearOrder();
     }
 }

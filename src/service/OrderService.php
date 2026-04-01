@@ -3,57 +3,23 @@
 namespace Shop\service;
 
 use Exception;
-use Kernel\Email\Handlers\OrderEmailHandler;
+use Kernel\Order\Factory\OrderFactory;
+use Kernel\Order\Order;
+use Kernel\Order\Service\ViewRender;
+use Kernel\Order\SessionData;
 use Kernel\Service\BaseService;
 use Kernel\Table\Table;
-use Kernel\Validator\Validator;
-use Shop\model\OrderStatus;
-use Shop\rules\CheckoutPersonalInfoRules;
 
 class OrderService extends BaseService
 {
-    private ShippingService $shippingService;
-    private UserService $userService;
-    private DiscountService $discountService;
-    private NotificationService $notificationService;
-    private EmailService $emailService;
-
-    public function __construct(
-        ShippingService $shippingService = new ShippingService(),
-        UserService $userService = new UserService(),
-        DiscountService $discountService = new DiscountService(),
-        NotificationService $notificationService = new NotificationService(),
-        EmailService $emailService = new EmailService([
-            'order' => new OrderEmailHandler(),
-        ])
-    ) {
-        $this->shippingService = $shippingService;
-        $this->userService = $userService;
-        $this->discountService = $discountService;
-        $this->notificationService = $notificationService;
-        $this->emailService = $emailService;
-    }
-
-    public function getOrders(): array
-    {
-        $orders = model('Order')
-            ->with(['status'])
-            ->whereOp('status_id', '!=', 0)
-            ->orderBy('id', 'DESC')
-            ->paginate();
-        return [
-            'orders' => $orders,
-            'tableData' => $this->getTableData($orders)
-        ];
-    }
 
     /**
      * @throws Exception
      */
-    public function step1(): array
+    public function loadProcess(): array
     {
-        $view = $this->getStepView();
-        $sessionData = $this->getOrderData();
+        $view = ViewRender::getStepView();
+        $sessionData = SessionData::get();
 
         $step = $sessionData['step']
             ?? (auth()->check() ? 'personal_info' : 'type');
@@ -67,376 +33,37 @@ class OrderService extends BaseService
     /**
      * @throws Exception
      */
-    public function updateStep(): array
+
+    public function processCheckout()
     {
-        $sessionData = $this->getOrderData();
-        $step = request()->input('step');
+        $step = request()->has('step')
+            ? 'updateStep'
+            : (SessionData::get()['step'] ?? '');
 
-        if (!$sessionData) {
-            return $this->fail("No access to step '{$step}'");
-        }
-
-        $required = [
-            'payment' => 'address_id',
-            'confirm' => 'payment_id',
-        ];
-
-        if (isset($required[$step]) && empty($sessionData[$required[$step]])) {
-            return $this->fail("No access to step '{$step}'");
-        }
-
-        $this->updateOrderData(array_merge($sessionData, request()->all()));
-
-        return $this->renderStep();
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function saveStep1(): array
-    {
-        $data = request()->all();
-
-        if (empty($data['checkout_type'])) {
-            return ['success' => false];
-        }
-
-        $data['step'] = 'personal_info';
-        $this->updateOrderData($data);
-
-        $type = ucfirst($data['checkout_type']);
-
-        return [
-            'success' => true,
-            'content' => view()->getHtml("Checkout.$type", [
-                'regions' => $this->getRegions(),
-                'orderData' => $this->getOrderData()
-            ])
-        ];
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function savePersonalInfo(): array
-    {
-        $data = request()->all();
-        $sessionData = $this->getOrderData() ?? [];
-
-        $validator = Validator::make($data, CheckoutPersonalInfoRules::rules());
-
-        if (!$validator->validate()) {
-            return [
-                'success' => false,
-                'errors' => $validator->errors()
-            ];
-        }
-
-        [$user, $address] = $this->handleUserAndAddress($data, $sessionData);
-
-        $payload = array_merge($sessionData, $data, [
-            'user_id'    => $user?->id,
-            'address_id' => $address->id,
-            'step'       => 'payment'
-        ]);
-
-        $this->updateOrderData($payload);
-
-        return [
-            'success' => true,
-            'content' => view()->getHtml("Checkout.Payment", [
-                'payments'   => $this->getPayments(),
-                'payment_id' => $payload['payment_id'] ?? null
-            ])
-        ];
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function savePaymentMethod(): array
-    {
-        $paymentId = request()->input('payment_id');
-
-        if (!$paymentId) {
-            return [
-                'success' => false,
-                'errors' => ['payment is required']
-            ];
-        }
-
-        $orderData = $this->getOrderData();
-
-        $shippingMethod = $this->shippingService->getShippingMethod($orderData['region_id']);
-        $totals = $this->discountService->getTotals();
-
-        $shippingItem = $this->shippingService->getShippingMethodItem(
-            $shippingMethod->items,
-            $totals['total']
+        return (new Order())->process(
+            OrderFactory::make($step)
         );
-        $totals['total'] += (int)$shippingItem->price;
-
-        $order = $this->createOrder(
-            $orderData,
-            $shippingMethod->id,
-            $shippingItem->id,
-            $paymentId,
-            $totals
-        );
-
-        $this->createOrderProduct($order->id);
-        $this->createOrderHistory($order->id);
-
-        $orderData = array_merge($orderData, [
-            'step' => 'confirm',
-            'payment_id' => $paymentId,
-            'order_id' => $order->id
-        ]);
-
-        $this->updateOrderData($orderData);
-
-        $order = model('Order')->with(['books','shippingMethodItem'])->find($order->id);
-        return [
-            'success' => true,
-            'content' => view()->getHtml("Checkout.Confirm", [
-                'order' => $order
-            ])
-        ];
     }
-
-    /**
-     * @throws Exception
-     */
-    public function confirm(): array
-    {
-        $orderId = request()->input('order_id');
-
-        $this->createOrderHistory($orderId, OrderStatus::PENDING_ID, 'Order pending');
-        $this->updateOrderStatus($orderId, OrderStatus::PENDING_ID);
-
-        if (setting()->order_email) {
-            $this->emailService->send('order', $orderId);
-            $this->notificationService->notifyOrder($orderId);
-        }
-
-        return [
-            'success' => true,
-            'confirmed' => true,
-            'content' => view()->getHtml("Checkout.Success")
-        ];
-    }
-
     /**
      * @throws Exception
      */
     public function clearOrder(): void
     {
-        $this->removeOrderSession();
-        $this->removeCartProduct();
+        SessionData::clear();
     }
-
     /**
      * @throws Exception
      */
-    private function handleUserAndAddress(array $data, array $sessionData): array
+    public function getOrders(): array
     {
-        $user = auth()->user();
-
-        $address = $this->userService->saveAddress($user, $data);
-
-        if (!$user && ($sessionData['checkout_type'] ?? null) === 'register') {
-            $user = $this->userService->saveUser($data, $address);
-        } elseif ($user) {
-            $user = $this->userService->saveUser($data, $address, $user);
-        }
-
-        return [$user, $address];
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function renderStep(): array
-    {
-        $view = $this->getStepView();
-
+        $orders = model('Order')
+            ->with(['status'])
+            ->whereOp('status_id', '!=', 0)
+            ->orderBy('id', 'DESC')
+            ->paginate();
         return [
-            'success' => true,
-            'content' => view()->getHtml($view['path'], $view['data'])
-        ];
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function getRegions()
-    {
-        return model('Region')->get();
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function getPayments()
-    {
-        return model('Payment')->get();
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function getOrderData()
-    {
-        return session()->get('order');
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function getStepView(): array
-    {
-        $orderData = $this->getOrderData() ?? [];
-        $user = auth()->user();
-
-        if (empty($orderData) && !$user) {
-            return [
-                'path' => 'Checkout.ChooseType',
-                'data' => ['type' => '']
-            ];
-        }
-
-        $step = $orderData['step'] ?? ($user ? 'personal_info' : '');
-        $checkoutType = $orderData['checkout_type'] ?? '';
-
-        if ($step === 'personal_info') {
-            if ($user) {
-                return [
-                    'path' => 'Checkout.Auth',
-                    'data' => [
-                        'regions' => $this->getRegions(),
-                        'orderData' => $orderData,
-                        'user' => $user,
-                        'address' => $user->with(['address'])->address ?? null
-                    ]
-                ];
-            }
-
-            return [
-                'path' => "Checkout." . ucfirst($checkoutType),
-                'data' => [
-                    'regions' => $this->getRegions(),
-                    'orderData' => $orderData
-                ]
-            ];
-        }
-
-        return match ($step) {
-            'payment' => [
-                'path' => "Checkout.Payment",
-                'data' => [
-                    'payments' => $this->getPayments(),
-                    'payment_id' => $orderData['payment_id'] ?? null
-                ]
-            ],
-            'confirm' => [
-                'path' => "Checkout.Confirm",
-                'data' => [
-                    'order' => model('Order')->with(['books','shippingMethodItem'])->find($orderData['order_id'] ?? 0)
-                ]
-            ],
-            default => [
-                'path' => 'Checkout.ChooseType',
-                'data' => ['type' => $checkoutType]
-            ],
-        };
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function createOrder($orderData, $shippingMethodId, $shippingItemId, $paymentId, $totals)
-    {
-        return model('Order')->create([
-            'first_name' => $orderData['first_name'],
-            'last_name' => $orderData['last_name'],
-            'email' => $orderData['email'],
-            'address_id' => $orderData['address_id'],
-            'user_id' => $orderData['user_id'] ?? null,
-            'payment_id' => $paymentId,
-            'shipping_id' => $shippingMethodId,
-            'shipping_item_id' => $shippingItemId,
-            'status_id' => 0,
-            'subtotal' => $totals['subtotal'],
-            'discounted' => $totals['discounted'],
-            'total' => $totals['total']
-        ]);
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function updateOrderStatus($orderId, $statusId): void
-    {
-        model('Order')->where(['id' => $orderId])->update(['status_id' => $statusId]);
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function createOrderProduct($orderId): void
-    {
-        foreach (cart()->get() as $book) {
-            model('OrderBook')->create([
-                'book_id' => $book->getBookId(),
-                'name' => $book->getBook()->title,
-                'price' => $book->getBook()->price,
-                'quantity' => $book->getQty(),
-                'order_id' => $orderId
-            ]);
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function updateOrderData(array $data): void
-    {
-        session()->set('order', $data);
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function createOrderHistory($orderId, $status = 0, $comment = 'Order Created'): void
-    {
-        model('OrderHistory')->create([
-            'comment' => $comment,
-            'status_id' => $status,
-            'order_id' => $orderId
-        ]);
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function removeOrderSession(): void
-    {
-        session()->remove('order');
-     }
-
-    /**
-     * @throws Exception
-     */
-    private function removeCartProduct(): void
-    {
-        cart()->removeAll();
-    }
-
-    private function fail(string $message): array
-    {
-        return [
-            'success' => false,
-            'content' => $message
+            'orders' => $orders,
+            'tableData' => $this->getTableData($orders)
         ];
     }
 
