@@ -13,6 +13,7 @@ class BookController extends BaseController
      */
     public function index(Book $book): void
     {
+        $book->with(['reviews']);
         $basePath = public_path("uploads/books/{$book->id}");
 
         $images = array_merge(
@@ -22,10 +23,13 @@ class BookController extends BaseController
                 $book->images
             )
         );
+        $reviews = $book->reviews()->orderBy('id','DESC')->get();
         $this->view()->load('Book.Index', [
             'title' => 'Book',
             'book' => $book,
-            'images' => $images
+            'images' => $images,
+            'review_count'=> count($book->reviews),
+            'review_content' => $this->view()->getHtml('Component.Book.Reviews',['reviews' => $reviews])
         ]);
 
     }

@@ -53,7 +53,19 @@ class Request implements RequestInterface
 
         return $data;
     }
+    public function only(array $keys): array
+    {
+        $data = $this->all();
+        $result = [];
 
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $data)) {
+                $result[$key] = $data[$key];
+            }
+        }
+
+        return $result;
+    }
 
     /* ==========================
        REQUEST INFO

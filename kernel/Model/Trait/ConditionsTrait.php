@@ -293,4 +293,14 @@ trait ConditionsTrait
         $this->modelWhere->setOrWhereHas($subSql, $relatedQuery->getWhereData());
     }
 
+    public function orderBy(string|array $column, string $direction = 'ASC'): static
+    {
+        if (is_array($column)) {
+            $orderBy = $column;
+        } else {
+            $orderBy = [$column => $direction];
+        }
+        $this->queryBuilder->setOrderBy($orderBy);
+        return $this;
+    }
 }

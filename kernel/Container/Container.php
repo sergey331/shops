@@ -5,7 +5,7 @@ namespace Kernel\Container;
 
 use Closure;
 use Exception;
-use Kernel\Container\interface\ContainerInterface;
+use Kernel\Container\Interface\ContainerInterface;
 
 
 class Container implements ContainerInterface

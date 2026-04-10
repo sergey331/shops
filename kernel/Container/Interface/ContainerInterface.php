@@ -1,9 +1,5 @@
 <?php
-
-namespace Kernel\Container\interface;
-
-
-use Closure;
+namespace Kernel\Container\Interface;
 use Exception;
 
 

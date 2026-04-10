@@ -68,10 +68,15 @@ class Book extends Model
         return $this->hasMany(BookImage::class);
     }
 
-    public function discount()
+    public function discount(): HasOne
     {
         return $this->hasOne(BookDiscount::class)
             ->whereOp('finished_at', '>', date('Y-m-d'))
             ->whereOp('started_at', '<=', date('Y-m-d'));
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
     }
 }

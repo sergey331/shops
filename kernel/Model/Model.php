@@ -190,17 +190,6 @@ class Model extends Connection implements ModelInterface, JsonSerializable
 
     // Query condition methods
 
-    public function orderBy(string|array $column, string $direction = 'ASC'): static
-    {
-        if (is_array($column)) {
-            $orderBy = $column;
-        } else {
-            $orderBy = [$column => $direction];
-        }
-        $this->queryBuilder->setOrderBy($orderBy);
-        return $this;
-    }
-
 
     public function groupBy(string|array $column): static
     {

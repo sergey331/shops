@@ -27,6 +27,7 @@ class DiscountService extends BaseService
         return model('discount')
             ->where(['is_active' => true])
             ->whereOp('started_at', '<=', date('Y-m-d'))
+            ->whereOp('finished_at', '>=', date('Y-m-d'))
             ->get();
     }
 
