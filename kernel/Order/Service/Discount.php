@@ -2,6 +2,8 @@
 
 namespace Kernel\Order\Service;
 
+use Exception;
+
 class Discount
 {
     public function getTotals(): array
@@ -31,7 +33,10 @@ class Discount
         ];
     }
 
-    public function getDiscounts()
+    /**
+     * @throws Exception
+     */
+    private function getDiscounts()
     {
         return model('discount')
             ->where(['is_active' => true])

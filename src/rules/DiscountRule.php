@@ -11,7 +11,7 @@ class DiscountRule implements RulesInterface
             'name' => 'required',
             'value' => 'required|decimal',
             'min_order_amount' => 'nullable|decimal',
-            'started_at' => 'required|after',
+            'started_at' => 'required',
             'finished_at' => 'nullable|after:started_at',
             'type' => 'required'
         ];
